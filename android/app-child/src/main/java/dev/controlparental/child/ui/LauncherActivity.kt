@@ -30,18 +30,25 @@ import dev.controlparental.child.domain.DiagnosticoAdministracion
 import dev.controlparental.child.domain.EstadoPreparacion
 import dev.controlparental.child.domain.ResultadoAccesoEmergencia
 import dev.controlparental.child.emergency.EmergencyAccess
+import dev.controlparental.child.boot.BootContextRepository
+import dev.controlparental.child.boot.FuenteArranqueAndroid
+import dev.controlparental.child.data.CargaEstado
+import dev.controlparental.child.data.EjecutorEstado
+import dev.controlparental.child.data.EstadoAndroid
 
 /** HOME mínimo; no inicia Lock Task ni registra HOME persistente todavía. */
 class LauncherActivity : ComponentActivity() {
     private var diagnostico by mutableStateOf(DiagnosticoAdministracion())
     private var resultadoEmergencia by mutableStateOf<ResultadoAccesoEmergencia?>(null)
+    private var estadoComprobado by mutableStateOf<Boolean?>(null)
+    private var consultaEstado = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             MaterialTheme {
-                PantallaInicial(diagnostico, resultadoEmergencia) {
+                PantallaInicial(diagnostico, resultadoEmergencia, estadoComprobado) {
                     resultadoEmergencia = EmergencyAccess(PolicyEnforcer(this)).irAPantallaBloqueo()
                 }
             }
@@ -51,6 +58,25 @@ class LauncherActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         diagnostico = DeviceCapabilities(this).leerAdministracion()
+        val consulta = ++consultaEstado
+        estadoComprobado = null
+        if (diagnostico.esDeviceOwner != true) return
+        val contexto = applicationContext
+        EjecutorEstado.ejecutar {
+            val resultado = try {
+                BootContextRepository(EstadoAndroid.obtener(contexto), FuenteArranqueAndroid(contexto)).actualizarContexto()
+            } catch (_: RuntimeException) {
+                CargaEstado.ErrorSeguro
+            }
+            runOnUiThread {
+                if (!isDestroyed && consultaEstado == consulta) estadoComprobado = resultado is CargaEstado.Disponible
+            }
+        }
+    }
+
+    override fun onPause() {
+        consultaEstado++ // Descartar respuesta de una pantalla que ya dejó primer plano.
+        super.onPause()
     }
 }
 
@@ -58,6 +84,7 @@ class LauncherActivity : ComponentActivity() {
 private fun PantallaInicial(
     diagnostico: DiagnosticoAdministracion,
     resultadoEmergencia: ResultadoAccesoEmergencia?,
+    estadoComprobado: Boolean?,
     solicitarEmergencia: () -> Unit,
 ) {
     Surface(modifier = Modifier.fillMaxSize()) {
@@ -69,7 +96,7 @@ private fun PantallaInicial(
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Text(
-                text = stringResource(when (diagnostico.estadoPreparacion) {
+                text = stringResource(if (estadoComprobado == false) R.string.estado_local_error else when (diagnostico.estadoPreparacion) {
                     EstadoPreparacion.NO_CONFIGURADO -> R.string.titulo_inicial
                     EstadoPreparacion.DIAGNOSTICO_NO_DISPONIBLE -> R.string.diagnostico_no_disponible
                     EstadoPreparacion.BLOQUEADO_EN_PREPARACION -> R.string.bloqueado_preparacion
@@ -77,6 +104,11 @@ private fun PantallaInicial(
                 style = MaterialTheme.typography.headlineMedium,
             )
             AccesoEmergenciaSistema(resultadoEmergencia, solicitarEmergencia)
+            Text(stringResource(when (estadoComprobado) {
+                true -> R.string.estado_local_comprobado
+                false -> R.string.estado_local_error_detalle
+                null -> R.string.estado_local_pendiente
+            }))
             Text(text = stringResource(R.string.aviso_inicial))
             Text(text = stringResource(R.string.aviso_laboratorio))
             Text(text = stringResource(R.string.diagnostico_owner, textoDiagnostico(diagnostico.esDeviceOwner)))

@@ -20,4 +20,8 @@
     <string name="emergencia_falta_credencial">Hace falta un PIN, patrón o contraseña de Android para esta ruta. El adulto debe configurarlo presencialmente, sin compartirlo aquí. Mientras tanto, usa la opción de emergencia del sistema si está disponible. No entregar el equipo sin validar la ruta.</string>
     <string name="emergencia_sin_admin">La app no puede llevarte a la pantalla de bloqueo en esta configuración. Usa el botón lateral y la opción de emergencia del sistema. El adulto debe comprobar la ruta.</string>
     <string name="emergencia_error">No se pudo comprobar o solicitar la pantalla de bloqueo. Usa el botón lateral y la opción de emergencia del sistema; no esperes al padre ni a internet.</string>
+    <string name="estado_local_error">Error seguro — estado local no disponible</string>
+    <string name="estado_local_error_detalle">No se pudo comprobar o guardar el estado. No se concede autorización ni se reinicia la configuración. Emergencia sigue accesible por el sistema. Avisar al adulto.</string>
+    <string name="estado_local_comprobado">Estado local comprobado. Esto no confirma vinculación, quiosco ni autorización de uso.</string>
+    <string name="estado_local_pendiente">Estado local: pendiente de comprobar. No se concede autorización de uso.</string>
 </resources>

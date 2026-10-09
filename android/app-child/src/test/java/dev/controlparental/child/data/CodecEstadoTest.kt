@@ -78,4 +78,20 @@ class CodecEstadoTest {
         assertThrows(UnsupportedOperationException::class.java) { (estado.approvedPackages as MutableList).clear() }
         assertThrows(UnsupportedOperationException::class.java) { (estado.recoveryConsumed as MutableSet).add(PropositoRecuperacionLocal.RETIRE) }
     }
+
+    @Test
+    fun `recalcular checksum no permite incoherencias de orden ni campos anidados desconocidos`() {
+        val payload = payloadLocal(estadoConOrden())
+        val ultima = payload.campos.getValue("lastCommand") as ObjetoJson
+        listOf("seq" to TextoJson("1"), "stage" to TextoJson("APPLIED"),
+            "payloadSha256B64" to TextoJson(Base64Cp1.codificar(ByteArray(32))), "extra" to NuloJson).forEach { cambio ->
+            val modificado = ObjetoJson(payload.campos + ("lastCommand" to ObjetoJson(ultima.campos + cambio)))
+            assertThrows(RuntimeException::class.java) { CodecEstado.decodificar(envolverPrueba(modificado)) }
+        }
+        for (nombre in listOf("binding", "policy", "bootContext")) {
+            val objeto = payload.campos.getValue(nombre) as ObjetoJson
+            val modificado = ObjetoJson(payload.campos + (nombre to ObjetoJson(objeto.campos + ("extra" to NuloJson))))
+            assertThrows(RuntimeException::class.java) { CodecEstado.decodificar(envolverPrueba(modificado)) }
+        }
+    }
 }

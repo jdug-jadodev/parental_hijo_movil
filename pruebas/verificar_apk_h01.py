@@ -36,6 +36,9 @@ def verificar() -> None:
             "android.app.action.DEVICE_ADMIN_ENABLED", "android.intent.category.HOME",
             "android.intent.category.DEFAULT", "android.intent.category.LAUNCHER",
             "android:lockTaskMode",
+            "dev.controlparental.child.boot.BootReceiver", "android:directBootAware",
+            "android.intent.action.LOCKED_BOOT_COMPLETED", "android.intent.action.BOOT_COMPLETED",
+            "android.intent.action.MY_PACKAGE_REPLACED",
         ):
             assert esperado in manifest, f"Declaración ausente: {esperado}"
         permisos = subprocess.run(
@@ -43,7 +46,8 @@ def verificar() -> None:
             check=True, capture_output=True, encoding="utf-8",
         ).stdout
         usados = re.findall(r"uses-permission: name='([^']+)'", permisos)
-        assert usados == ["dev.controlparental.child.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"], usados
+        assert set(usados) == {"dev.controlparental.child.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION",
+                               "android.permission.RECEIVE_BOOT_COMPLETED"}, usados
         # AndroidX añade su permiso signature para receivers internos; no es monitoreo.
         recursos = subprocess.run(
             [str(AAPT), "dump", "--values", "resources", str(apk)],
