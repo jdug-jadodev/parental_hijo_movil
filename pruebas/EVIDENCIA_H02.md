@@ -1,6 +1,6 @@
 # Evidencia H02 — emergencia por keyguard del sistema
 
-Fecha: 9 de octubre de 2026. Estado: PENDIENTE_VALIDACION física; código compilado y lógica JVM probada.
+Fecha: 9 de octubre de 2026. Estado: PENDIENTE_PRUEBA_PRESENCIAL; APK actualizados y siete tests Android correctos, falta probar el botón y marcador.
 
 ## Implementación
 
@@ -31,6 +31,8 @@ Seis tests JVM: acción solo explícita, cuatro precondiciones negativas, diecis
 snapshots completos/incompletos, fallo de lectura y fallo de API sin falsa confirmación.
 Un test Android de solo lectura contrasta las precondiciones con las APIs públicas.
 No ejecuta lockNow ni abre marcador: el adulto realiza la prueba explícita coordinada.
+El argumento exigirCredencialAndroid=true exige credencial Android y todas las
+precondiciones de solicitud, sin conocer ni leer el PIN/patrón/contraseña.
 
 Construcción iniciada desde android/:
 
@@ -70,4 +72,34 @@ H-EMG-01/02 y G0 siguen PENDIENTES. No se activa Lock Task ni endurecimiento y n
 considera probado un marcador por la ausencia de excepción en lockNow. Llamadas
 reales no autorizadas están prohibidas; tampoco se prueba borrar/retirar el equipo.
 
-APK instalado en el A13 sigue siendo H01. H02 no se ha instalado ni ejecutado allí.
+## Actualización y diagnóstico autorizados en A13
+
+El propietario confirmó que conoce su credencial Android y autorizó actualizar
+ambos APK H02 para la prueba sin llamar. Cada operación usó adb -s dirigido al
+único SM_A135M autorizado, con comprobación de modelo SM-A135M antes de actuar;
+serie solo en memoria. El Owner previo de nuestra app se comprobó sin sustituirlo.
+El A56 no recibió consultas, instalaciones ni tests.
+
+Construcción previa con core-protocol:test, app-child:testDebugUnitTest,
+assembleDebug, assembleDebugAndroidTest y lintDebug: BUILD SUCCESSFUL, JVM
+UP-TO-DATE (237 resultados anteriores conservados), tests Android recompilados.
+Inspector verificar_apk_base.py repetido: OK.
+
+Ambos `adb -s $serieA13 install -r -t ...`: Success. Instrumentación:
+
+```powershell
+& $adb -s $serieA13 shell am instrument -w -r -e exigirDeviceOwner true -e exigirCredencialAndroid true dev.controlparental.child.test/androidx.test.runner.AndroidJUnitRunner
+```
+
+Resultado: **OK (7 tests), 1.666 s**: tres H01, tres C02 y uno H02.
+Owner/admin real, capacidad de administración y credencial Android comprobados.
+El test H02 es solo lectura: no ejecuta lockNow ni verifica marcador.
+Salida en android/app-child/build/resultado-h02-diagnostico-a13.txt, ignorado por Git.
+LauncherActivity abierto explícitamente: Status ok, COLD.
+
+APK app SHA-256: `3227dee29d5fd0e1c3af8f5f18c658f5a372a7976fe47665aec4daec4ba19a02`.
+APK tests SHA-256: `66ccf16604e7dfcb20975e811c710d51d94c0ef79a7fb6da6da4ea50f5ab8f16`.
+
+El A13 ya tiene H02 instalado, conservando Device Owner y credencial Android.
+No se bloquearon pantalla/redes automáticamente ni se marcaron números. Falta
+que el adulto pulse el botón, abra/salga del marcador y comunique el resultado.

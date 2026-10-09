@@ -6,8 +6,8 @@ Versión Android / API / parche: 14 / 34 / 2026-02-05 (ADB)
 One UI: 6.1, confirmada por el propietario; propiedad ADB ro.build.version.oneui = 60100
 Firmware incremental: A135MUBSDDZB3 (ADB)
 Operador / SIM / PIN de SIM: REGISTRAR LOCALMENTE SIN NÚMEROS PERSONALES
-APK instalado por este proyecto: dev.controlparental.child debug H01 0.1.0 / versionCode 1, más dev.controlparental.child.test; actualización ADB autorizada el 9 de octubre de 2026
-Huella SHA-256 del certificado debug: 39f25d28e10a93f18fbdabac0223e917c9668d58a6d7ca28af40227946a9f439 (apksigner local C02; actualización normal con la misma firma). Hash de APK actuales en EVIDENCIA_H01.md.
+APK instalado por este proyecto: dev.controlparental.child debug H02 0.1.0 / versionCode 1, más dev.controlparental.child.test; actualización ADB autorizada el 9 de octubre de 2026
+Huella SHA-256 del certificado debug: 39f25d28e10a93f18fbdabac0223e917c9668d58a6d7ca28af40227946a9f439 (apksigner local C02; actualización normal con la misma firma). Hash de APK actuales en EVIDENCIA_H02.md.
 Estado de Device Owner: dev.controlparental.child/.admin.ChildAdminReceiver en usuario 0, DeviceOwner/Affiliated según dpm list-owners; confirmado además por isDeviceOwnerApp en test Android. Sin Profile Owner listado.
 Estado de arranque: ro.boot.verifiedbootstate = green; ro.boot.flash.locked = 1. Son propiedades observadas, no una certificación de integridad.
 Fecha / responsable autorizado: 8 de octubre de 2026 / propietario del laboratorio, autorización de consultas ADB en esta sesión
@@ -65,6 +65,7 @@ G4: PENDIENTE
 | H01 preflight | Consultas con adb -s al A13: modelo, Owners, recuento de usuarios/cuentas y usuario actual | Sin Owner; usuario principal único; 3 cuentas. Detenido antes de instalar/aprovisionar | 9 de octubre de 2026; cuentas y nombres no guardados; no se modificó A13 ni A56 |
 | H01 aprovisionamiento y tests | Repetir preflight, actualizar ambos APK, ejecutar 3 tests antes de Owner, set-device-owner y 6 tests con exigirDeviceOwner=true | Cero cuentas; Owner real/admin activo; OK (3 tests) y OK (6 tests). Launcher abierto; confirmación visual pendiente | 9 de octubre de 2026; SM-A135M; todo dirigido con adb -s; A56 intacto; sin quiosco añadido |
 | H01 pantalla actual y cierre mínimo | Solicitar comprobación de pantalla de preparación, Owner Sí/admin Sí y quiosco NO APLICADO | El propietario responde «perfecto»; confirmación presencial comunicada, no captura automatizada | 9 de octubre de 2026; no prueba bloqueo, emergencia ni UI previa sin Owner |
+| H02 diagnóstico Android | Actualizar ambos APK H02 solo en A13 y ejecutar runner exigiendo Owner y credencial Android | OK (7 tests), 1.666 s; credencial y Owner comprobados, launcher abierto. Botón/marcador pendientes | 9 de octubre de 2026; SM-A135M; sin lockNow automático, sin llamadas y A56 intacto |
 
 ## Emergencia
 

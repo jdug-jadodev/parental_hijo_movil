@@ -27,5 +27,9 @@ class CondicionesEmergenciaAndroidTest {
         assertEquals(contexto.packageManager.hasSystemFeature(PackageManager.FEATURE_DEVICE_ADMIN),
             condiciones.admiteAdministracion)
         assertEquals(keyguard.isDeviceSecure, condiciones.tieneCredencialAndroid)
+        if (InstrumentationRegistry.getArguments().getString("exigirCredencialAndroid") == "true") {
+            assertEquals("La prueba coordinada necesita credencial Android", true, condiciones.tieneCredencialAndroid)
+            assertEquals(true, condiciones.puedeSolicitarBloqueo)
+        }
     }
 }
