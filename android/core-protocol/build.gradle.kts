@@ -17,9 +17,15 @@ kotlin {
 // Los ejemplos congelados solo se empaquetan como recursos de pruebas.
 sourceSets.named("testFixtures") {
     resources.srcDir("../../compartido/ejemplos")
+    resources.srcDir("../../pruebas")
     resources.include("*.json")
 }
 
 dependencies {
     testImplementation(libs.junit)
+    testImplementation(libs.serialization.json)
+}
+
+tasks.named<Test>("test") {
+    outputs.dir(layout.buildDirectory.dir("interoperabilidad"))
 }

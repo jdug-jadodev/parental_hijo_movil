@@ -16,6 +16,7 @@ def verificar() -> None:
         raise FileNotFoundError("Primero construir el APK con :app-child:assembleDebug.")
 
     ejemplos = {ruta.name for ruta in (RAIZ / "compartido/ejemplos").glob("*.json")}
+    ejemplos.add("vectores_crypto.json")
     clases_de_prueba = set()
     for modulo in ("app-child", "core-protocol"):
         for carpeta in ("test", "testFixtures"):
