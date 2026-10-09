@@ -270,6 +270,35 @@ actividad/contenido de otras apps ni se cambió Owner, archivos, ajustes o A56.
 Pedir reabrir manualmente nuestra app y comparar PID/contexto. Esta desaparición
 no equivale a un crash controlado entre fases de una orden ni prueba de enforcement.
 
+## Reapertura después de desaparición del proceso
+
+Tras «listo» del propietario, se consultó solo el A13 anunciado y comprobado:
+
+- PID actual **11819**, diferente del inicial **2745**; se había observado ausencia
+  intermedia del proceso antes de enviar cualquier señal.
+- BOOT_COUNT sistema/registro **3** y mismo hash de bootId que antes de desaparecer.
+- lastObservedElapsed pasó de **451173** a **1088871 ms**, sin retroceso.
+- Checksum correcto; autorización/vínculo/política/última orden siguen ausentes;
+  PREPARACION conservada.
+
+Observada recreación real del proceso conservando contexto de preparación en el
+mismo arranque, sin inicializar otro bootId ni autorizar uso. No se ejecutó am kill,
+force-stop, instalación, borrado o reinicio en esta comprobación. Ningún comando
+dirigido al A56. El propietario comunicó reapertura; no se capturó automáticamente
+la UI ni se infiere una nueva validación de emergencia.
+
+## Balance de validación H04 de laboratorio
+
+Demostrado: 262 resultados JVM, 12 tests Android, AtomicFile/corrupción en archivos
+efímeros, contexto nuevo después de reinicio manual/desbloqueo, estabilidad al
+reanudar launcher y tras recreación real de proceso en PREPARACION.
+
+Pendiente: lectura/ejecución antes del PIN (ADB no disponible), prueba individual
+de LOCKED_BOOT_COMPLETED y BOOT_COMPLETED, orden/política/temporizador reales y
+crash entre aceptación/enforcement. H-BOOT-01/02/03 y H-STATE-01 no están aprobados
+completamente; H-STATE-02 tiene evidencia automática con archivos de laboratorio,
+sin inyectar corrupción en producción. No se certifica control parental ni G0–G4.
+
 ## Fuentes oficiales consultadas para Android
 
 - https://developer.android.com/reference/android/util/AtomicFile — openRead, startWrite, finishWrite/failWrite y exclusión externa requerida.

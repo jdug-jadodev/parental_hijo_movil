@@ -3,7 +3,7 @@
 Última actualización: 9 de octubre de 2026
 Commit de partida: ac7d801 (C01 completada)
 Tarea actual: H04 — estado atómico y contexto de arranque
-Estado: PENDIENTE_VALIDACION — H04 instalado en A13 y 12 tests Android aprobados tras corregir aislamiento; boot/proceso reales pendientes de coordinación
+Estado: VALIDACION_PARCIAL — 12 tests Android y contexto de preparación conservado tras reinicio/recreación real del proceso; Direct Boot y políticas reales pendientes
 Commit de partida de H03: 499b31f.
 Primer commit H03: 80e1cb4. Commit de cierre: «Cerrar H03 con pruebas de mantenimiento y evidencia».
 C02 comprobada en JVM/Node y Android/Keystore. Commit de esta unidad: «Validar C02 en el A13 y excluir expresamente el A56».
@@ -18,6 +18,7 @@ One UI: 6.1 confirmada por el propietario; propiedad 60100 observada. Device Own
 
 ## Terminado y demostrado
 
+- H04 físico parcial: tras reinicio manual BOOT_COUNT 2→3 y bootId nuevo sin autorización; reanudación y recreación real del proceso PID 2745→ausente→11819 conservan bootId del arranque 3 y checksum correcto. Solo PREPARACION sin vínculo/política/orden; no prueba temporizador/enforcement. Direct Boot antes del PIN no observable por ADB en esta sesión.
 - H04: adaptador AtomicFile en Device Protected con lectura acotada, readback de escritura, singleton por ruta/proceso y cola de IO. BootContextRepository conserva inicio/política/contador y retira autorización en arranque nuevo o incierto. BootReceiver directBootAware no exportado; UI muestra error de estado sin ocultar emergencia. No hace enforcement ni usa Keystore privado.
 - H04: 25 tests JVM nuevos aprobados dentro de 262 totales. Repetición Android tras corregir aislamiento: OK (12 tests), 1.892 s, incluidos cinco H04. AtomicFile/rollback/corrupción comprobados en archivos efímeros DP del destino; no control-state.json ni boot/proceso reales. App H04 instalada; A56 intacto. Primer intento fallido conservado como evidencia histórica.
 - H04 primera unidad: registro local versionado con checksum sobre bytes del payload, parser estricto, última orden firmada y campos derivados comprobados con pública del vínculo. Sin claves privadas, códigos reales ni historial. Puerto de almacenamiento y transacciones serializadas probados con fake, NO AtomicFile Android aún.
@@ -48,6 +49,7 @@ Hay Device Owner de laboratorio en el A13, pero no quiosco, bloqueo parental apl
 
 ## Archivos modificados en la última tarea
 
+- H04 recreación de proceso y balance parcial: ESTADO.md, pruebas/EVIDENCIA_H04.md y pruebas/FICHA_DISPOSITIVO.md; documentación solamente, sin nuevos tests/código.
 - H04 repetición física aprobada: ESTADO.md, pruebas/EVIDENCIA_H04.md y pruebas/FICHA_DISPOSITIVO.md; sin cambios de código.
 - H04 primer intento físico y corrección: AtomicFileEstadoAndroidTest.kt (targetContext y subdirectorio UUID efímero, limpieza limitada), ESTADO.md, pruebas/EVIDENCIA_H04.md y pruebas/FICHA_DISPOSITIVO.md.
 - H04 segunda unidad: data/EstadoAndroid.kt; boot/BootContextRepository.kt, FuenteArranqueAndroid.kt y BootReceiver.kt; LauncherActivity.kt, manifest y strings.xml; tests BootContextRepositoryTest.kt y AtomicFileEstadoAndroidTest.kt, ampliación CodecEstadoTest.kt; verificar_apk_h01.py, pruebas/EVIDENCIA_H04.md y ESTADO.md.
@@ -69,6 +71,7 @@ android/local.properties es local, está ignorado y no se incluye en commits.
 
 ## Pruebas ejecutadas y resultado
 
+- H04 reapertura tras proceso ausente: consultas de lectura al único A13 comprobado; PID 11819 distinto de 2745, mismo bootId/BOOT_COUNT=3, elapsed 451173→1088871 ms, checksum correcto, PREPARACION sin autorización/vínculo/política/orden. No se ejecutó am kill/force-stop ni se cambió A56. Recreación real de contexto comprobada, no continuidad de políticas aún inexistentes.
 - H04 proceso: autorización para am kill en segundo plano recibida. Consulta inicial PID 2745 con app en primer plano: no se ejecutó. Tras pulsar Inicio por propietario, pidof vacío/código 1 confirma proceso ausente ANTES de am kill. Causa no determinada; no se enviaron señales ni force-stop. Falta reabrir manualmente y comparar PID/contexto; no prueba crash entre fases ni enforcement.
 - H04 launcher después del desbloqueo: propietario confirma pantalla con estado local comprobado/Owner/admin Sí. Lectura ADB solo A13: BOOT_COUNT=3 y mismo hash bootId, elapsed 230143→451173 ms, checksum correcto y PREPARACION sin autorización/vínculo/política/orden. Estabilidad al reanudar comprobada; no equivale a dos broadcasts ni proceso muerto. Sin nuevas pruebas automáticas ni modificaciones del teléfono por ADB.
 - H04 tras reinicio manual y primer desbloqueo: A13 único comprobado, Owner conservado, dumpsys user State RUNNING_UNLOCKED. BOOT_COUNT 2→3, hash bootId distinto, checksum correcto, autorización/vínculo/política/orden ausentes y PREPARACION. Contexto nuevo persistido observado después del PIN; no demuestra recepción individual de broadcasts ni Direct Boot. cmd user is-user-unlocked no disponible en intento (código no cero); se usó lectura filtrada dumpsys, sin evasión.
@@ -144,14 +147,14 @@ android/local.properties es local, está ignorado y no se incluye en commits.
 
 H01: bloqueo por registros de cuentas resuelto por el propietario; recuento ADB 0 y Owner establecido. Pantalla de preparación confirmada por el propietario. Retirada del admin testOnly, UI previa sin Owner y recuperación completa aún requieren pruebas coordinadas; no se consideran comprobadas por la confirmación de pantalla actual.
 G0–G4 pendientes. Hay inventario físico ADB del A13, no validación del control, emergencia ni recuperación.
-H04: AtomicFile real comprobado en archivos efímeros DP; faltan recepción idempotente de broadcasts, Direct Boot antes de PIN y recreación de proceso en A13. Los tests actuales no prueban esas condiciones. No hay temporizador/enforcement Android ni reanudación de servicio de control implementados.
+H04: AtomicFile real y recreación real de contexto PREPARACION comprobados; faltan recepción individual/idempotente de broadcasts y Direct Boot antes de PIN. No hay temporizador/enforcement Android ni reanudación de servicio de control implementados; no afirmar conservación de políticas reales por la prueba de contexto vacío.
 H02: rutas básica, sin internet y tras reinicio antes de PIN Android confirmadas por propietario SIN SIM. Variantes con SIM/PIN SIM no disponibles/no comprobadas. G0 completo y emergencia bajo quiosco pendientes; no endurecer todavía. Marcador accesible sin SIM no demuestra cobertura ni llamada efectiva.
 El validador Python del esquema no se ha repetido con éxito: instalación de jsonschema 4.26.0 en un venv temporal falló por conexión/timeout. No se modificó Python global; ver evidencia C01.
 La supervivencia del control ante muerte de proceso y suspensión sigue pendiente de pruebas reales.
 
 ## Próxima tarea y lectura mínima
 
-Continuar H04: contexto nuevo tras reinicio y estabilidad al reanudar launcher comprobados. Coordinar permiso específico para `am kill` SOLO nuestra app en segundo plano, comprobar PID antes/ausencia/nuevo PID al reabrir manualmente y comparar estado; sin force-stop ni borrar datos. Direct Boot/broadcasts individuales pendientes: ADB no disponible antes del PIN. Sin vínculo/política aceptada no se aprueban H-BOOT-01 ni H-STATE-01 completos. H02 inicial sin SIM cerrada; variantes SIM/G0 y H05 siguen bloqueando H06. A56 fuera de alcance: no tocarlo.
+Continuar solo H04: diseñar evidencia acotada de callbacks/Direct Boot sin depender de ADB antes del PIN ni registrar historial/secretos; cualquier cambio/instalación y reinicio requieren coordinación. Contexto nuevo, estabilidad y recreación real en PREPARACION comprobados. Sin vínculo/política aceptada no se aprueban H-BOOT-01 ni H-STATE-01 completos. No saltar dependencias ni activar quiosco: H05/recuperación y variantes SIM/G0 siguen pendientes antes de H06. A56 fuera de alcance: no tocarlo.
 H00 cerrado: ADB autorizado, inventario obtenido y preparación confirmada. El formateo fue previo y declarado por el propietario, no ejecutado por el agente.
 Lectura mínima H00: hijo/PLAN_HIJO.md H00, hijo/INSTALACION_A13.md §1–3, compartido/02_FUENTES_Y_COMPATIBILIDAD.md.
 C02 cerrada tras ejecución real de tres tests Android. Lectura mínima H01: hijo/PLAN_HIJO.md H01, hijo/SPEC_HIJO.md H2/H4 e hijo/INSTALACION_A13.md §3; consultar fuentes oficiales correspondientes.

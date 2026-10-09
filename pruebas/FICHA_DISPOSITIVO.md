@@ -71,6 +71,7 @@ G4: PENDIENTE
 | H-EMG-01 arranque sin SIM (parcial) | Pedir reinicio manual A13, abrir/salir del marcador antes de PIN Android SIN llamar, desbloquear y comprobar Owner/admin Sí | Propietario responde «correcto» | 9 de octubre de 2026; confirmación presencial, no reinicio ADB; con SIM/PIN SIM pendiente; no prueba persistencia de política |
 | H04 primera instrumentación | Actualizar app/test con adb -s solo al A13 y ejecutar runner con Owner/credencial exigidos | 12 tests/4 fallos (1.98 s): ocho aprobados, cuatro de acceso al directorio DP del paquete test fallan | 9 de octubre de 2026; corrección local del aislamiento compilada, no instalada/ejecutada; sin reinicio, endurecimiento ni cambios en A56 |
 | H04 repetición corregida | Actualizar SOLO APK test; runner con Owner/credencial exigidos dirigido al único A13 comprobado | OK (12 tests), 1.892 s; cinco H04 aprobados, incluidos AtomicFile/rollback/corrupción en archivos efímeros DP | 9 de octubre de 2026; no se accedió a control-state.json ni se reinició/endureció; A56 intacto; boot/proceso reales pendientes |
+| H04 contexto tras reinicio y proceso recreado | Reinicio manual del propietario, lectura DP después del PIN; reapertura tras PID ausente | BOOT_COUNT 2→3 con bootId nuevo; mismo bootId tras reanudar y PID 2745→ausente→11819, checksum correcto y PREPARACION sin autorización | 9 de octubre de 2026; consultas de lectura solo A13, sin am kill/force-stop; antes del PIN ADB no disponible; sin política/temporizador reales ni cambios al A56 |
 
 ## Emergencia
 
