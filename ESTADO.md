@@ -1,10 +1,10 @@
 # Estado de implementación
 
 Última actualización: 8 de octubre de 2026
-Commit de partida: cd6b74d (documentación existente del propietario)
-Tarea actual: C00
-Estado: COMPLETADA — C00; controles del producto y pruebas físicas todavía PENDIENTES
-Commit de cierre: identificar por el mensaje «Crear base Android del hijo y registrar acuerdos de desarrollo».
+Commit de partida: bb70002 (C00 completada)
+Tarea actual: C01
+Estado: EN_CURSO — parser, base64url y DTO compilados y probados; falta codec por tipo de mensaje
+Commit de esta unidad: «Añadir parser estricto y modelos base de CP/1».
 
 ## Entorno observado
 
@@ -15,6 +15,9 @@ SM / Android / One UI / parche del hijo: NO COMPROBADO
 
 ## Terminado y demostrado
 
+- C01 parcial: JSON con UTF-8 estricto, ASCII imprimible, rechazo de claves duplicadas, números ambiguos y tamaños excesivos; comparación byte a byte del payload canónico.
+- C01 parcial: base64url canónico con límites y DTO de todos los tipos del esquema; aún no se construyen DTO desde mensajes recibidos.
+- C01 parcial: diez pruebas nuevas del parser/base64 correctas; 17 pruebas JVM totales correctas incluyendo la app.
 - Proyecto Android Kotlin/Compose compilado, núcleo JVM separado y Wrapper reproducible.
 - Siete pruebas JVM correctas: seis del núcleo/simulador y una de dependencia desde Android.
 - Simulador que entrega los bytes de ejemplos congelados, aislado en testFixtures.
@@ -23,17 +26,19 @@ No hay Device Owner, políticas, cuenta regresiva implementada ni validación f�
 
 ## Archivos modificados en la última tarea
 
-- AGENTS.md: acuerdos del propietario y reglas de commits.
-- .gitignore y .gitattributes: exclusiones locales y conservación de bytes del contrato.
-- BUILD_ENV.md y android/LEEME.md: herramientas y construcción.
-- android/: Wrapper, catálogo de versiones, configuración de módulos, pantalla Compose, manifest, recursos, núcleo mínimo y pruebas.
-- pruebas/verificar_apk_base.py: inspección del APK sin dispositivo ni dependencias externas.
-- 00_EMPIEZA_AQUI.md, hijo/AGENTS.md y hijo/PLAN_HIJO.md: referencias actualizadas a la base de código; corregida ruta de plantilla de relevo.
+- android/core-protocol/src/main/kotlin/dev/controlparental/protocol/JsonCp1.kt
+- android/core-protocol/src/main/kotlin/dev/controlparental/protocol/Base64Cp1.kt
+- android/core-protocol/src/main/kotlin/dev/controlparental/protocol/ErrorProtocolo.kt
+- android/core-protocol/src/main/kotlin/dev/controlparental/protocol/ModelosCp1.kt
+- android/core-protocol/src/test/kotlin/dev/controlparental/protocol/JsonCp1Test.kt
 - ESTADO.md: resultados, riesgos y siguiente tarea.
 android/local.properties es local, está ignorado y no se incluye en commits.
 
 ## Pruebas ejecutadas y resultado
 
+- C01, primera unidad: `.\gradlew.bat :core-protocol:test :app-child:testDebugUnitTest --console=plain`, desde android/ con el entorno registrado: BUILD SUCCESSFUL, 17 tests, 0 fallos.
+- El APK no se ha reconstruido todavía con el codec C01 completo; no hay verificaciones de firmas Kotlin, autorización ni pruebas físicas.
+- Resultados anteriores de C00, conservados como antecedente:
 - `node pruebas/verificar_vectores.mjs`: OK, 10 vectores y 78 comprobaciones, Node 24.21.0.
 - Gradle Wrapper generado con Gradle 8.13 y JDK 21.0.10: OK.
 - Primera construcción con Kotlin 2.2.0: seis tests del núcleo y uno de app correctos, APK generado; lint falló por el separador de unidad sin escapar en local.properties.
@@ -63,7 +68,7 @@ La supervivencia del control ante muerte de proceso y suspensión sigue pendient
 
 ## Próxima tarea y lectura mínima
 
-C01 — compartido/03_INICIO_TECNICO.md: modelos, parser estricto y serialización CP/1.
+C01, segunda unidad: codec completo por tipo, campos obligatorios/desconocidos, límites de secuencia Long, asociaciones de propósito y tests de fixtures/contraejemplos. No cerrar C01 todavía.
 Lectura mínima: CP/1 §3–4 y límites de §2.3, compartido/protocolo.schema.json y compartido/04_USO_ESQUEMA.md; consultar secciones adicionales solo según los modelos que se implementen.
 H00/H01 requerirán coordinar con el propietario la conexión ADB y el aprovisionamiento físico; todavía no es necesario para C01.
 
