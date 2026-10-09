@@ -94,11 +94,15 @@ https://developer.android.com/identity/data/autobackup
 ## Teléfono y límites
 
 El propietario identifica el teléfono como Samsung A13 y lo ofrece como equipo de laboratorio.
-Código SM, Android/API, One UI, parche, estado de cuentas y posibilidad de aprovisionamiento:
-**NO COMPROBADOS**. Se registrarán en H00, sin asumir que utiliza Android 14.
+Inventario ADB H00 del 8 de octubre de 2026: Samsung SM-A135M, Android 14/API 34,
+parche 2026-02-05, firmware A135MUBSDDZB3. One UI devuelve propiedad 60100;
+versión visible pendiente de confirmación. `dpm list-owners`: `no owners`.
+Estado de cuentas y posibilidad de aprovisionamiento: **NO COMPROBADOS**.
+Evidencia y preparación pendiente en `pruebas/FICHA_DISPOSITIVO.md`.
 
 No se ha conectado, instalado, aprovisionado ni restablecido el teléfono en C00.
 Antes de pruebas físicas se avisará al propietario para habilitar y autorizar ADB.
-El siguiente diagnóstico no destructivo será obtener modelo y versión, sin publicar el número de serie.
+En H00 se conectó y autorizó ADB y se consultaron propiedades, sin publicar serie.
+No se instaló, aprovisionó, reinició ni restableció el teléfono en este inventario.
 
 La configuración del proyecto no certifica el A13 ni otras marcas. G0–G4 permanecen pendientes.

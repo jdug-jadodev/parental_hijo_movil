@@ -1,20 +1,46 @@
 # Ficha de validación física
 
 Equipo declarado por el propietario: A13.
-Fabricante / código SM completo: NO COMPROBADO
-Versión Android / API / One UI / parche: NO COMPROBADO
+Fabricante / código SM completo: samsung / SM-A135M (ADB)
+Versión Android / API / parche: 14 / 34 / 2026-02-05 (ADB)
+One UI: propiedad ro.build.version.oneui = 60100; versión visible en Ajustes NO COMPROBADA
+Firmware incremental: A135MUBSDDZB3 (ADB)
 Operador / SIM / PIN de SIM: REGISTRAR LOCALMENTE SIN NÚMEROS PERSONALES
-APK / versionCode / huella del certificado de firma: NO CONSTRUIDO
-Estado de Device Owner / bloqueo de arranque: NO COMPROBADO
-Fecha / responsable autorizado: POR COMPLETAR
+APK en el teléfono / versionCode / huella de firma instalada: NO INSTALADO por este proyecto; no se inspeccionaron paquetes existentes
+Estado de Device Owner / Profile Owner: ninguno según `dpm list-owners`
+Estado de arranque: ro.boot.verifiedbootstate = green; ro.boot.flash.locked = 1. Son propiedades observadas, no una certificación de integridad.
+Fecha / responsable autorizado: 8 de octubre de 2026 / propietario del laboratorio, autorización de consultas ADB en esta sesión
 
 ## Intento de inventario H00 — 8 de octubre de 2026
 
 El propietario confirmó que el equipo estaba listo. ADB detectó un dispositivo
-USB en estado `unauthorized`; falta aceptar el diálogo RSA de depuración USB.
+USB inicialmente en estado `unauthorized`; faltaba aceptar el diálogo RSA de depuración USB.
 No se registró el número de serie ni se consultaron propiedades del teléfono.
 Sin instalación, aprovisionamiento, cambios de ajustes ni borrado.
-Modelo y versiones siguen NO COMPROBADOS; conexión USB no acredita inventario.
+En ese primer intento no se comprobaron modelo ni versiones.
+
+## Inventario autorizado H00 — 8 de octubre de 2026
+
+Tras la segunda confirmación del propietario, un único equipo apareció en estado
+`device`. Se consultaron únicamente las propiedades enumeradas arriba y
+`adb shell dpm list-owners`, que devolvió `no owners`.
+No se guardaron serie, IMEI, cuentas, números de teléfono ni contenido del equipo.
+Sin instalación, aprovisionamiento, cambio de ajustes, reinicio ni borrado.
+
+Pendientes de confirmación presencial:
+
+- Versión One UI visible en Ajustes → Acerca del teléfono → Información de software.
+- Copia de los datos que se quieran conservar y disponibilidad de credenciales Google/Samsung, sin compartirlas aquí.
+- SIM/PIN de SIM y ruta de emergencia: NO COMPROBADOS. No registrar operador ni números si no son necesarios.
+- Cuentas/usuarios, administradores activos y elegibilidad real para Device Owner: NO COMPROBADOS. Ausencia de Owner no basta para aprovisionar.
+
+## Plan de laboratorio posterior
+
+1. Confirmar preparación de copia y recuperación con el propietario; no pedir contraseñas ni códigos.
+2. Coordinar aparte la instalación de APK/app de pruebas C02 para comprobar Keystore; no activa Device Owner.
+3. H01: implementar DPC/launcher mínimo y coordinar su instalación/aprovisionamiento, verificando precondiciones. No borrar automáticamente ante errores.
+4. Validar emergencia H02 y recuperación H05 antes de endurecer H06. No retirar ADB ni bloquear Wi-Fi en esta preparación.
+5. Mantener NO CERTIFICADO hasta las pruebas de aceptación físicas correspondientes.
 
 ## Puertas
 
@@ -28,7 +54,7 @@ G4: PENDIENTE
 
 | Caso | Procedimiento realmente ejecutado | Resultado observado | Evidencia y entorno |
 |---|---|---|---|
-| POR COMPLETAR | | | |
+| H00 (inventario ADB parcial) | Consultas getprop de modelo, Android/API, parche, One UI, firmware y arranque; dpm list-owners | SM-A135M, Android 14/API 34, parche 2026-02-05; no owners | ADB 1.0.41 / Platform Tools 37.0.0; valores arriba; pendientes de preparación presencial |
 
 ## Emergencia
 

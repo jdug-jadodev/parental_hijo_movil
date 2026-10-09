@@ -3,7 +3,7 @@
 Última actualización: 8 de octubre de 2026
 Commit de partida: ac7d801 (C01 completada)
 Tarea actual: H00
-Estado: PENDIENTE_AUTORIZACION_ADB — equipo USB detectado como unauthorized; inventario aún no ejecutado
+Estado: EN_CURSO — inventario ADB obtenido; falta confirmar preparación presencial y One UI visible
 Commit de partida de H03: 499b31f.
 Primer commit H03: 80e1cb4. Commit de cierre: «Cerrar H03 con pruebas de mantenimiento y evidencia».
 C02 continúa PENDIENTE_VALIDACION Android/Keystore; no bloquea H03.
@@ -13,10 +13,12 @@ C02 continúa PENDIENTE_VALIDACION Android/Keystore; no bloquea H03.
 Android Studio/JDK/Gradle/AGP/Kotlin: registrados en BUILD_ENV.md.
 JDK de construcción 21.0.10 / Wrapper 8.13 / AGP 8.11.1 / Kotlin 2.2.21 / SDK 36.
 Node 24.21.0 / Windows 11 amd64.
-SM / Android / One UI / parche del hijo: NO COMPROBADO
+Hijo: Samsung SM-A135M / Android 14 / API 34 / parche 2026-02-05 / firmware A135MUBSDDZB3.
+One UI: propiedad 60100 observada; versión visible NO COMPROBADA. `dpm list-owners`: no owners.
 
 ## Terminado y demostrado
 
+- H00 parcial: equipo autorizado ADB e inventariado sin instalar ni modificar datos. Ficha y plan de laboratorio en pruebas/FICHA_DISPOSITIVO.md; copia, credenciales de recuperación, SIM/PIN y elegibilidad de aprovisionamiento siguen pendientes.
 - H03: cuatro acciones, prioridades locales y reloj monotónico inyectable; no hay importaciones Android ni reloj civil en el motor.
 - H03: cuenta regresiva sin reiniciar por reevaluación/reconexión, bloqueo por boot distinto, márgenes de red/canal y siguiente transición positiva.
 - H03: 57 nuevas pruebas del motor correctas, dentro de 227 pruebas JVM totales; mantenimiento y 1024 combinaciones de condiciones incluidos. Evidencia en pruebas/EVIDENCIA_H03.md.
@@ -39,6 +41,8 @@ No hay Device Owner, aplicación física de políticas, persistencia ni temporiz
 
 ## Archivos modificados en la última tarea
 
+- H00: pruebas/FICHA_DISPOSITIVO.md, BUILD_ENV.md y ESTADO.md (inventario y preparación pendiente, sin código nuevo).
+- Antecedente H03:
 - android/app-child/src/main/java/dev/controlparental/child/domain/: PolicyEngine.kt y ModelosEvaluacion.kt.
 - android/app-child/src/test/java/dev/controlparental/child/domain/: PreparacionPoliticas.kt, PoliticasTablaTest.kt, PrioridadesPoliticaTest.kt, RedYArranquePoliticaTest.kt y TiempoYCoherenciaTest.kt.
 - Cierre: domain/LEEME.md, MantenimientoPoliticaTest.kt e InvariantesPoliticaTest.kt; pruebas/EVIDENCIA_H03.md y hijo/PLAN_HIJO.md.
@@ -47,6 +51,7 @@ android/local.properties es local, está ignorado y no se incluye en commits.
 
 ## Pruebas ejecutadas y resultado
 
+- H00 segundo intento: equipo autorizado en estado device; `adb shell getprop` de manufacturer/model/release/sdk/security_patch/oneui/incremental/verifiedbootstate/flash.locked y `adb shell dpm list-owners` correctos. Modelo/firmware arriba; propiedades de arranque green y 1; no owners. No se inspeccionaron cuentas, paquetes ni contenido. Sin instalación, aprovisionamiento, cambios, reinicio o borrado.
 - H00: `adb version` comprobado: Platform Tools 37.0.0-14910828 / ADB 1.0.41. `adb devices` detectó un equipo USB en estado unauthorized; número de serie omitido. No se consultaron propiedades ni administración, no se instaló ni modificó el teléfono. Falta aceptar la autorización RSA en su pantalla.
 - Cierre H03: `.\gradlew.bat :core-protocol:test :app-child:testDebugUnitTest :app-child:assembleDebug :app-child:assembleDebugAndroidTest :app-child:lintDebug --console=plain`: BUILD SUCCESSFUL, informes con 227 tests/0 fallos/0 errores/0 omitidos; núcleo UP-TO-DATE y nuevos tests de cierre ejecutados. Dos APK compilados; lint 0 errores y 10 avisos de actualización.
 - Cierre H03: `python -B pruebas/verificar_apk_base.py`: OK, APK sin fixtures ni clases declaradas de pruebas.
@@ -94,13 +99,13 @@ android/local.properties es local, está ignorado y no se incluye en commits.
 
 ## Bloqueos y riesgos abiertos
 
-G0–G4 pendientes. No hay validación física del A13.
+G0–G4 pendientes. Hay inventario físico ADB del A13, no validación del control, emergencia ni recuperación.
 El validador Python del esquema no se ha repetido con éxito: instalación de jsonschema 4.26.0 en un venv temporal falló por conexión/timeout. No se modificó Python global; ver evidencia C01.
 La supervivencia del control ante muerte de proceso y suspensión sigue pendiente de pruebas reales.
 
 ## Próxima tarea y lectura mínima
 
-Continuar H00 cuando el propietario acepte la autorización de depuración USB en el teléfono. Detectado como unauthorized tras su confirmación «listo»; no confundir conexión USB con autorización ADB. H03 completada en lógica pura. H04 depende de H01 y no se adelanta saltando esa dependencia.
+Cerrar H00 tras confirmar One UI visible y preparación de copia/recuperación con el propietario. Coordinar aparte instalación de tests C02 y posterior H01; la autorización de consultas ADB no autoriza instalar ni aprovisionar. H03 completada en lógica pura. H04 depende de H01 y no se adelanta saltando esa dependencia.
 Primer punto físico: H00 — inventario y laboratorio, depende de C00 ya completada. Solicitar conexión y autorización ADB al propietario para identificar SM/Android/API/parche y registrar disponibilidad; sin instalar, aprovisionar ni borrar.
 Lectura mínima H00: hijo/PLAN_HIJO.md H00, hijo/INSTALACION_A13.md §1–3, compartido/02_FUENTES_Y_COMPATIBILIDAD.md.
 C02 queda PENDIENTE_VALIDACION: coordinar después de H00 la instalación de app/test APK y ejecutar sus tres tests en Android desbloqueado. El inventario H00 no instala ni borra nada; no confundir compilar los tests con aprobarlos.
