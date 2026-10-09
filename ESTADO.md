@@ -3,8 +3,9 @@
 Última actualización: 8 de octubre de 2026
 Commit de partida: bb70002 (C00 completada)
 Tarea actual: C01
-Estado: EN_CURSO — codec completo probado en JVM; falta reconstrucción final del APK y lint
-Commit de esta unidad: «Validar y serializar todos los mensajes de CP/1».
+Estado: COMPLETADA — C01 estructural; criptografía C02 y controles Android pendientes
+Commits de código: 2d2afb3 y dcff87f.
+Commit de cierre: «Cerrar C01 con evidencia y preparar coordinación de pruebas físicas».
 
 ## Entorno observado
 
@@ -15,13 +16,13 @@ SM / Android / One UI / parche del hijo: NO COMPROBADO
 
 ## Terminado y demostrado
 
-- C01 parcial: JSON con UTF-8 estricto, ASCII imprimible, rechazo de claves duplicadas, números ambiguos y tamaños excesivos; comparación byte a byte del payload canónico.
+- C01: JSON con UTF-8 estricto, ASCII imprimible, rechazo de claves duplicadas, números ambiguos y tamaños excesivos; comparación byte a byte del payload canónico.
 - C01: base64url canónico con límites, DTO y codec de todos los tipos del esquema.
 - C01: 28 ejemplos congelados aceptados con ida/vuelta a los mismos bytes canónicos; campos extra y cada campo omitido se rechazan.
 - C01: secuencias positivas de 64 bits, null explícitos, UUID v4, nonces/hashes de 32 bytes, duraciones, coherencia STATE, roles fijos, propósito y transporte comprobados.
 - C01: 112 pruebas JVM totales correctas incluyendo la app. Las firmas y claves todavía solo tienen validación estructural; C02 debe verificar criptografía real.
 - Proyecto Android Kotlin/Compose compilado, núcleo JVM separado y Wrapper reproducible.
-- Siete pruebas JVM correctas: seis del núcleo/simulador y una de dependencia desde Android.
+- C00 conserva sus siete pruebas de preparación dentro de las 112 pruebas actuales.
 - Simulador que entrega los bytes de ejemplos congelados, aislado en testFixtures.
 - APK debug mínimo con pantalla «No configurado»; sin clases de pruebas ni fixtures congelados dentro del APK.
 No hay Device Owner, políticas, cuenta regresiva implementada ni validación física.
@@ -33,6 +34,11 @@ No hay Device Owner, políticas, cuenta regresiva implementada ni validación f�
 - android/core-protocol/src/main/kotlin/dev/controlparental/protocol/LectorCampos.kt
 - android/core-protocol/src/test/kotlin/dev/controlparental/protocol/EjemplosCp1Test.kt
 - android/core-protocol/src/test/kotlin/dev/controlparental/protocol/CodecCp1Test.kt
+- Unidades anteriores de C01: JsonCp1.kt, Base64Cp1.kt, ErrorProtocolo.kt, ModelosCp1.kt y JsonCp1Test.kt, bajo los mismos paquetes del núcleo.
+- android/core-protocol/LEEME.md: flujo y límites de seguridad de C01.
+- pruebas/verificar_apk_base.py: inspección ampliada a todas las clases declaradas en las fuentes de prueba.
+- pruebas/EVIDENCIA_C01.md: comandos, resultados, cobertura y pruebas no ejecutadas.
+- AGENTS.md: coordinación del avance autónomo y primer punto físico.
 - ESTADO.md: resultados, riesgos y siguiente tarea.
 android/local.properties es local, está ignorado y no se incluye en commits.
 
@@ -40,7 +46,11 @@ android/local.properties es local, está ignorado y no se incluye en commits.
 
 - C01, primera unidad: `.\gradlew.bat :core-protocol:test :app-child:testDebugUnitTest --console=plain`, desde android/ con el entorno registrado: BUILD SUCCESSFUL, 17 tests, 0 fallos.
 - C01, segunda unidad: mismo comando, BUILD SUCCESSFUL; 112 tests, 0 fallos, 0 errores: 84 parametrizados de fixtures, 11 codec, 10 parser/base64, 6 preparación y 1 app.
-- El APK no se ha reconstruido todavía con el codec C01 completo; no hay verificaciones de firmas Kotlin, autorización ni pruebas físicas.
+- Cierre C01: `.\gradlew.bat :core-protocol:test :app-child:testDebugUnitTest :app-child:assembleDebug :app-child:lintDebug --console=plain`: BUILD SUCCESSFUL; pruebas ya ejecutadas UP-TO-DATE, APK reconstruido y lint con 0 errores/7 avisos.
+- `python -B pruebas/verificar_apk_base.py`: OK con inspección ampliada de todas las clases declaradas del simulador/tests.
+- `node pruebas/verificar_vectores.mjs`: repetido correctamente en Node 24.21.0, 78 comprobaciones.
+- SHA-256 del contrato y esquema repetidos: sin cambios; coinciden con INTEGRACION_FUTURA.md.
+- No hay verificaciones criptográficas Kotlin, autorización ni pruebas físicas. Detalles en pruebas/EVIDENCIA_C01.md.
 - Resultados anteriores de C00, conservados como antecedente:
 - `node pruebas/verificar_vectores.mjs`: OK, 10 vectores y 78 comprobaciones, Node 24.21.0.
 - Gradle Wrapper generado con Gradle 8.13 y JDK 21.0.10: OK.
@@ -66,14 +76,15 @@ android/local.properties es local, está ignorado y no se incluye en commits.
 ## Bloqueos y riesgos abiertos
 
 G0–G4 pendientes. No hay validación física del A13.
-El validador Python del esquema no se ha repetido con éxito: falta jsonschema.
+El validador Python del esquema no se ha repetido con éxito: instalación de jsonschema 4.26.0 en un venv temporal falló por conexión/timeout. No se modificó Python global; ver evidencia C01.
 La supervivencia del control ante muerte de proceso y suspensión sigue pendiente de pruebas reales.
 
 ## Próxima tarea y lectura mínima
 
-C01: reconstruir APK y ejecutar lint e inspección de empaquetado antes de cerrar la tarea. La criptografía y las firmas alteradas se comprobarán en C02, no se finge esa verificación en el parser.
-Lectura mínima: CP/1 §3–4 y límites de §2.3, compartido/protocolo.schema.json y compartido/04_USO_ESQUEMA.md; consultar secciones adicionales solo según los modelos que se implementen.
-H00/H01 requerirán coordinar con el propietario la conexión ADB y el aprovisionamiento físico; todavía no es necesario para C01.
+Primer punto físico: H00 — inventario y laboratorio, depende de C00 ya completada. Solicitar conexión y autorización ADB al propietario para identificar SM/Android/API/parche y registrar disponibilidad; sin instalar, aprovisionar ni borrar.
+Lectura mínima H00: hijo/PLAN_HIJO.md H00, hijo/INSTALACION_A13.md §1–3, compartido/02_FUENTES_Y_COMPATIBILIDAD.md.
+C02 sigue PENDIENTE y puede desarrollarse independientemente del teléfono: CP/1 §4 y pruebas/vectores_crypto.json. El inventario H00 no exige que C02 esté terminada.
+No proceder al endurecimiento H06 sin comprobar emergencia H02 y recuperación H05 en el equipo real.
 
 ## Seguridad
 

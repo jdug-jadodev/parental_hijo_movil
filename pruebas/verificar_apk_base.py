@@ -3,6 +3,7 @@
 Solo requiere Python estándar. No prueba Device Owner, UI ni bloqueo real.
 """
 from pathlib import Path
+import re
 from zipfile import ZipFile
 
 
@@ -15,11 +16,14 @@ def verificar() -> None:
         raise FileNotFoundError("Primero construir el APK con :app-child:assembleDebug.")
 
     ejemplos = {ruta.name for ruta in (RAIZ / "compartido/ejemplos").glob("*.json")}
-    clases_de_prueba = (
-        b"SimuladorDeMensajes",
-        b"PreparacionNucleoTest",
-        b"DependenciaNucleoTest",
-    )
+    clases_de_prueba = set()
+    for modulo in ("app-child", "core-protocol"):
+        for carpeta in ("test", "testFixtures"):
+            fuentes = RAIZ / "android" / modulo / "src" / carpeta
+            for fuente in fuentes.rglob("*.kt"):
+                texto = fuente.read_text(encoding="utf-8")
+                for nombre in re.findall(r"\b(?:class|object)\s+([A-Za-z][A-Za-z0-9_]*)", texto):
+                    clases_de_prueba.add(nombre.encode("ascii"))
     with ZipFile(APK) as archivo:
         for nombre in archivo.namelist():
             if Path(nombre).name in ejemplos:
@@ -30,7 +34,7 @@ def verificar() -> None:
                     if clase in contenido:
                         raise AssertionError(f"Clase de prueba incluida: {clase.decode()}")
 
-    print("OK: APK sin ejemplos congelados ni clases del simulador o pruebas de C00.")
+    print("OK: APK sin ejemplos congelados ni clases declaradas del simulador o pruebas.")
     print("Esta inspección no certifica Android, emergencias ni control del tiempo.")
 
 
