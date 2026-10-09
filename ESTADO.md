@@ -2,11 +2,11 @@
 
 Última actualización: 9 de octubre de 2026
 Commit de partida: ac7d801 (C01 completada)
-Tarea actual: H00
-Estado: COMPLETADA — inventario y plan de laboratorio; no certifica control ni autoriza instalación/aprovisionamiento
+Tarea actual: C02 — cierre de validación Android
+Estado: COMPLETADA — tres tests Android/Keystore aprobados únicamente en el A13; no certifica control parental
 Commit de partida de H03: 499b31f.
 Primer commit H03: 80e1cb4. Commit de cierre: «Cerrar H03 con pruebas de mantenimiento y evidencia».
-C02 continúa PENDIENTE_VALIDACION Android/Keystore; no bloquea H03.
+C02 comprobada en JVM/Node y Android/Keystore. Commit de esta unidad: «Validar C02 en el A13 y excluir expresamente el A56».
 
 ## Entorno observado
 
@@ -27,7 +27,7 @@ One UI: 6.1 confirmada por el propietario; propiedad 60100 observada. `dpm list-
 - C02 parcial: diez sobres nuevos firmados en JVM y verificados en Node 24.21.0, 70 comprobaciones de interoperabilidad.
 - C02: 170 pruebas JVM totales correctas. Los resultados verificados conservan bytes defensivamente y hash del payload, nunca de la firma.
 - C02: adaptador Android Keystore compilado, sin generación/importación/exportación de privadas ni reemplazo automático de identidad; requiere primer desbloqueo.
-- C02: tres tests instrumentados compilados, todavía NO EJECUTADOS en Android. No se considera C02 validada físicamente.
+- C02: tres tests instrumentados EJECUTADOS en el A13: OK (3 tests), 1.676 s. App y APK test instalados por ADB con destino explícito; A56 excluido, sin comandos dirigidos a él. Evidencia en pruebas/EVIDENCIA_C02.md.
 - C01: JSON con UTF-8 estricto, ASCII imprimible, rechazo de claves duplicadas, números ambiguos y tamaños excesivos; comparación byte a byte del payload canónico.
 - C01: base64url canónico con límites, DTO y codec de todos los tipos del esquema.
 - C01: 28 ejemplos congelados aceptados con ida/vuelta a los mismos bytes canónicos; campos extra y cada campo omitido se rechazan.
@@ -37,10 +37,11 @@ One UI: 6.1 confirmada por el propietario; propiedad 60100 observada. `dpm list-
 - C00 conserva sus siete pruebas de preparación dentro de las 112 pruebas actuales.
 - Simulador que entrega los bytes de ejemplos congelados, aislado en testFixtures.
 - APK debug mínimo con pantalla «No configurado»; sin clases de pruebas ni fixtures congelados dentro del APK.
-No hay Device Owner, aplicación física de políticas, persistencia ni temporizador Android conectado a la UI. El motor calcula intenciones, no APPLIED. No hay validación física.
+No hay Device Owner, aplicación física de políticas, persistencia ni temporizador Android conectado a la UI. El motor calcula intenciones, no APPLIED. Solo se validó físicamente la unidad criptográfica C02, no bloqueo/emergencia/recuperación.
 
 ## Archivos modificados en la última tarea
 
+- C02 cierre Android: AGENTS.md (no tocar A56), pruebas/EVIDENCIA_C02.md, pruebas/FICHA_DISPOSITIVO.md, BUILD_ENV.md y ESTADO.md. Sin cambios de código o contrato.
 - H00: pruebas/FICHA_DISPOSITIVO.md, BUILD_ENV.md y ESTADO.md (inventario y preparación pendiente, sin código nuevo).
 - Antecedente H03:
 - android/app-child/src/main/java/dev/controlparental/child/domain/: PolicyEngine.kt y ModelosEvaluacion.kt.
@@ -51,6 +52,9 @@ android/local.properties es local, está ignorado y no se incluye en commits.
 
 ## Pruebas ejecutadas y resultado
 
+- C02 Android, 9 de octubre: instalación de ambos APK Success y `adb -s $serieA13 shell am instrument -w -r -e class dev.controlparental.child.security.CriptografiaAndroidTest dev.controlparental.child.test/androidx.test.runner.AndroidJUnitRunner`: OK (3 tests). Destino seleccionado únicamente SM-A135M; comprobación de modelo antes de cada operación. No se usó connectedDebugAndroidTest con ambos equipos conectados.
+- Construcción C02 repetida antes de instalar: core-protocol:test, app-child:testDebugUnitTest, assembleDebug y assembleDebugAndroidTest: BUILD SUCCESSFUL, 74 tareas UP-TO-DATE. Se reutilizaron resultados JVM (227), no se afirma una nueva ejecución.
+- C02 cierre: verificar_apk_base.py OK; verificar_vectores.mjs OK (78 comprobaciones); apksigner verify --print-certs OK. Hashes de APK y certificado en evidencia C02. Sin cambios de restricciones, borrado ni desinstalación.
 - H00 segundo intento: equipo autorizado en estado device; `adb shell getprop` de manufacturer/model/release/sdk/security_patch/oneui/incremental/verifiedbootstate/flash.locked y `adb shell dpm list-owners` correctos. Modelo/firmware arriba; propiedades de arranque green y 1; no owners. No se inspeccionaron cuentas, paquetes ni contenido. Sin instalación, aprovisionamiento, cambios, reinicio o borrado.
 - H00: `adb version` comprobado: Platform Tools 37.0.0-14910828 / ADB 1.0.41. `adb devices` detectó un equipo USB en estado unauthorized; número de serie omitido. No se consultaron propiedades ni administración, no se instaló ni modificó el teléfono. Falta aceptar la autorización RSA en su pantalla.
 - Cierre H03: `.\gradlew.bat :core-protocol:test :app-child:testDebugUnitTest :app-child:assembleDebug :app-child:assembleDebugAndroidTest :app-child:lintDebug --console=plain`: BUILD SUCCESSFUL, informes con 227 tests/0 fallos/0 errores/0 omitidos; núcleo UP-TO-DATE y nuevos tests de cierre ejecutados. Dos APK compilados; lint 0 errores y 10 avisos de actualización.
@@ -105,10 +109,10 @@ La supervivencia del control ante muerte de proceso y suspensión sigue pendient
 
 ## Próxima tarea y lectura mínima
 
-Siguiente unidad: validar C02 Android tras autorización explícita de instalación de app/test APK y ejecución de sus tres tests Keystore. No solicita Device Owner ni borra el equipo. Después H01, con coordinación independiente de aprovisionamiento. H03 completada en lógica pura; H04 depende de H01 y no se adelanta saltando esa dependencia.
+Siguiente unidad: H01 — DPC y launcher mínimos. Implementar código/tests primero; coordinar aparte instalación de la nueva versión y aprovisionamiento del A13 como Device Owner, sin endurecimiento. La autorización de C02 no autoriza ese aprovisionamiento. H04 depende de H01 y no se adelanta saltando esa dependencia. A56 fuera de alcance: no tocarlo.
 H00 cerrado: ADB autorizado, inventario obtenido y preparación confirmada. El formateo fue previo y declarado por el propietario, no ejecutado por el agente.
 Lectura mínima H00: hijo/PLAN_HIJO.md H00, hijo/INSTALACION_A13.md §1–3, compartido/02_FUENTES_Y_COMPATIBILIDAD.md.
-C02 queda PENDIENTE_VALIDACION: coordinar después de H00 la instalación de app/test APK y ejecutar sus tres tests en Android desbloqueado. El inventario H00 no instala ni borra nada; no confundir compilar los tests con aprobarlos.
+C02 cerrada tras ejecución real de tres tests Android. Lectura mínima H01: hijo/PLAN_HIJO.md H01, hijo/SPEC_HIJO.md H2/H4 e hijo/INSTALACION_A13.md §3; consultar fuentes oficiales correspondientes.
 No proceder al endurecimiento H06 sin comprobar emergencia H02 y recuperación H05 en el equipo real.
 
 ## Seguridad

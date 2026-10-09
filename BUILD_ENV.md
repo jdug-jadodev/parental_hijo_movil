@@ -75,10 +75,13 @@ Desde la raíz: `node pruebas/verificar_interoperabilidad_jvm.mjs`.
 Los tests generan únicamente datos públicos de interoperabilidad bajo build/, fuera de Git.
 Compilar el APK de pruebas **no ejecuta** Android Keystore ni acredita que el A13 funcione.
 
-Para ejecutar después, solo con el dispositivo de laboratorio autorizado y desbloqueado:
-`.\gradlew.bat :app-child:connectedDebugAndroidTest`.
-Ese comando instala app/test APK y crea/elimina claves efímeras con alias únicos de test.
-No ejecutarlo hasta coordinar esa instalación con el propietario; no solicita Device Owner ni restablece el equipo.
+Ejecución C02 del 9 de octubre de 2026: ambos APK instalados y tres tests aprobados
+mediante `adb -s` dirigido exclusivamente al A13. Detalles en `pruebas/EVIDENCIA_C02.md`.
+NO usar `connectedDebugAndroidTest` sin limitar dispositivos: también está conectado
+un A56 que el propietario prohíbe tocar. Seleccionar un único SM_A135M anunciado por
+ADB, comprobar SM-A135M y usar siempre su mismo destino `-s`, sin publicar la serie.
+Los tests crean/eliminan claves efímeras con alias únicos; no solicitan Device Owner ni restablecen el equipo.
+Cada instalación o prueba posterior requiere coordinación con el propietario.
 
 ## Separación de módulos
 

@@ -6,7 +6,8 @@ Versión Android / API / parche: 14 / 34 / 2026-02-05 (ADB)
 One UI: 6.1, confirmada por el propietario; propiedad ADB ro.build.version.oneui = 60100
 Firmware incremental: A135MUBSDDZB3 (ADB)
 Operador / SIM / PIN de SIM: REGISTRAR LOCALMENTE SIN NÚMEROS PERSONALES
-APK en el teléfono / versionCode / huella de firma instalada: NO INSTALADO por este proyecto; no se inspeccionaron paquetes existentes
+APK instalado por este proyecto: dev.controlparental.child debug 0.1.0 / versionCode 1, más dev.controlparental.child.test; instalación ADB autorizada el 9 de octubre de 2026
+Huella SHA-256 del certificado del APK instalado: 39f25d28e10a93f18fbdabac0223e917c9668d58a6d7ca28af40227946a9f439 (debug, apksigner local). Hash de ambos APK en EVIDENCIA_C02.md.
 Estado de Device Owner / Profile Owner: ninguno según `dpm list-owners`
 Estado de arranque: ro.boot.verifiedbootstate = green; ro.boot.flash.locked = 1. Son propiedades observadas, no una certificación de integridad.
 Fecha / responsable autorizado: 8 de octubre de 2026 / propietario del laboratorio, autorización de consultas ADB en esta sesión
@@ -60,6 +61,7 @@ G4: PENDIENTE
 |---|---|---|---|
 | H00 (inventario ADB parcial) | Consultas getprop de modelo, Android/API, parche, One UI, firmware y arranque; dpm list-owners | SM-A135M, Android 14/API 34, parche 2026-02-05; no owners | ADB 1.0.41 / Platform Tools 37.0.0; valores arriba; pendientes de preparación presencial |
 | H00 (cierre de inventario y plan) | Confirmación presencial comunicada por el propietario | One UI 6.1; equipo ya formateado y sin datos que conservar | 9 de octubre de 2026; inventario no certifica quiosco ni emergencia; campos de fases posteriores siguen NO COMPROBADOS |
+| C02 Android | Instalar ambos APK y ejecutar solo CriptografiaAndroidTest con adb -s dirigido al A13 | OK (3 tests), 1.676 s; verificación de fixtures, Keystore no exportable y alias ausente | 9 de octubre de 2026; SM-A135M / API 34 / A135MUBSDDZB3; A56 excluido, sin Owner ni restricciones nuevas |
 
 ## Emergencia
 
