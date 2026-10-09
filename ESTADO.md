@@ -111,6 +111,7 @@ android/local.properties es local, está ignorado y no se incluye en commits.
 ## Bloqueos y riesgos abiertos
 
 H01: tres cuentas registradas en el A13 impiden cumplir la precondición de laboratorio sin cuentas. El formateo previo declarado no acredita ausencia actual de cuentas. El propietario debe preparar las cuentas presencialmente si decide continuar; no borrarlas automáticamente, no restablecer ni buscar bypass.
+Precisión: Ajustes muestra una cuenta según el propietario. La consulta de tipos identifica tres registros de servicios Samsung, no tres cuentas personales necesariamente. Detalles sin identidades en EVIDENCIA_H01.md; no deshabilitar servicios ni eliminar registros internos a ciegas.
 G0–G4 pendientes. Hay inventario físico ADB del A13, no validación del control, emergencia ni recuperación.
 El validador Python del esquema no se ha repetido con éxito: instalación de jsonschema 4.26.0 en un venv temporal falló por conexión/timeout. No se modificó Python global; ver evidencia C01.
 La supervivencia del control ante muerte de proceso y suspensión sigue pendiente de pruebas reales.

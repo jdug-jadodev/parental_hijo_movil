@@ -81,6 +81,15 @@ set-device-owner, retirada de admin, reinicio ni borrado.** La app H01 no llegó
 teléfono; siguen instalados los APK C02 anteriores. No se eliminan cuentas ni se
 buscan bypasses. Esperar al propietario y repetir el preflight después de su preparación.
 
+Ante la observación del propietario de que Ajustes solo muestra una cuenta, se
+consultaron únicamente los tipos técnicos en el A13: com.osp.app.signin,
+com.samsung.android.mobileservice y com.samsung.android.coreapps (uno de cada tipo).
+Son registros de servicios Samsung; el recuento 3 de AccountManager NO demuestra
+tres cuentas personales distintas ni tres entradas visibles en Ajustes. No se
+compararon nombres o identidades ni se mostraron correos. No se deshabilitaron
+servicios ni se borraron sus datos. Preparar la cuenta visible por vías normales
+y volver a comprobar el recuento, sin exigir eliminar cuentas internas a ciegas.
+
 ## Pruebas físicas NO EJECUTADAS en esta unidad
 
 - Actualización de APK H01 e instalación de sus tests en el A13.
