@@ -1,6 +1,6 @@
 # Evidencia H02 — emergencia por keyguard del sistema
 
-Fecha: 9 de octubre de 2026. Estado: VALIDACION_PARCIAL — rutas básica y sin internet confirmadas; variantes de arranque y SIM pendientes.
+Fecha: 9 de octubre de 2026. Estado: H02 completada en laboratorio sin SIM — rutas básica, sin internet y tras reinicio confirmadas; variantes con SIM/PIN SIM y G0 completo pendientes.
 
 ## Implementación
 
@@ -151,3 +151,23 @@ para comprobar Owner/admin. No se ejecuta reboot ADB ni se modifica el A56.
 Variante con SIM/PIN SIM no disponible: pendiente para una prueba posterior.
 Abrir el marcador sin SIM no demuestra cobertura ni posibilidad efectiva de
 realizar una llamada; no se certifica emergencia telefónica completa ni G0.
+
+## Confirmación presencial de arranque sin SIM
+
+Se indicó al propietario reiniciar manualmente solo el A13, abrir «Llamada de
+emergencia» ANTES de introducir el PIN Android, salir SIN marcar/llamar, luego
+desbloquear y comprobar en nuestra app Device Owner Sí / Administrador activo Sí.
+Respondió «correcto». Se registra como confirmación presencial comunicada de esos
+pasos, no como captura o reinicio ejecutado por el agente. No se compartieron códigos.
+
+Resultado: emergencia del keyguard accesible antes del primer desbloqueo Android
+en la variante SIN SIM; Owner/admin permanecen activos tras reiniciar. No se
+interpreta como supervivencia de política/temporizador, aún no integrados.
+Se cierra H02 en su alcance inicial de ruta pública y laboratorio sin SIM.
+
+H-EMG-01 queda PARCIAL (sin SIM comprobado; con SIM/PIN SIM pendiente), H-EMG-02
+aprobado sin quiosco y G0 completo pendiente. No se probaron llamadas completas,
+cobertura, devoluciones, emergencia bajo Lock Task ni recuperación. No endurecer
+H06 sin comprobar variantes aplicables y recuperación H05 en el teléfono.
+Siguiente tarea de código: H04, estado atómico/contexto de arranque, dependiente
+de H01 y H03 ya completadas. Sus pruebas físicas se coordinan por separado.
