@@ -94,3 +94,54 @@ H-REC-01/02/03 físicos no aprobados; H05 NO cerrada. No avanzar a endurecimient
 
 No se usó ADB, instaló, reinició ni cambió ningún teléfono en esta unidad.
 El A13 conserva APK H04 con traza debug; A56 intacto. Servidor externo no consultado.
+
+## Segunda unidad — desafío y respuesta OFFLINE firmados
+
+RecoveryController incorpora un único desafío en RAM, nonce aleatorio de 32 bytes,
+pareja/boot/acción y vigencia de cinco minutos. Solo MAINTENANCE o RETIRE; no ALLOW
+offline ni RECOVER_PARENT por QR, conforme a CP/1. Emitir desafío devuelve
+DESAFIO_CREADO, no una autorización de sesión. Firmante inyectado mediante el puerto
+existente: su pública debe coincidir con childPublicKeyB64 del vínculo. Por defecto
+no hay firmante y no se fabrica identidad; todavía no está conectado a Keystore/UI.
+
+La respuesta se verifica con la pública del padre del vínculo LOCAL, rol PARENT y
+propósito OFFLINE, antes de comparar tipo, pareja, boot, acción y nonce vigentes.
+No se admiten claves aportadas por la respuesta ni un desafío del hijo como respuesta.
+Revisar contexto/expiración de nuevo después de la operación criptográfica evita
+conceder sesión si pasó el límite o se bloqueó Android durante la comprobación.
+
+El desafío se consume en RAM antes del commit/readback que precede a la sesión.
+Crash/reinicio/cancelación/nuevo desafío lo pierden; respuesta repetida no prolonga
+una sesión. Fallo de persistencia no devuelve el desafío consumido ni emite sesión.
+Las respuestas inválidas no afectan el contador de códigos impresos ni gastan su
+consumo. Un QR válido funciona durante la espera de códigos, sin borrar esa espera.
+MAINTENANCE por QR no gasta código impreso ni autoriza boot/política; RETIRE sigue
+siendo una autorización RAM limitada y NO ejecuta borrado. Cambio del vínculo o boot
+invalida el desafío/sesión. No persistir nonce, sobre ni historial de desafíos.
+Entrada de respuesta acotada a MAX_FRAME_BYTES antes de copiar/verificar.
+
+24 tests nuevos con identidades P-256 efímeras en memoria JVM, sin privadas en archivo:
+firma confiable del desafío, respuesta válida y replay, espera independiente,
+RETIRE sin mantenimiento/borrado, clave/rol/pair/boot/acción/nonce incorrectos,
+caducidad exacta y retroceso de reloj, reemplazo de desafío, cancelación/proceso,
+Android bloqueado, cambio de pública, fallo de persistencia, identidad ausente/
+equivocada/inaccesible, nonce inválido/repetido, entrada vacía/excesiva/corrupta,
+sesión expirada y concurrencia, caducidad/bloqueo durante criptografía, firma antes
+del desbloqueo no invocada, corrupción intacta y cambio de boot duradero.
+
+Comando Gradle completo anterior ejecutado y repetido tras añadir los casos de carrera:
+BUILD SUCCESSFUL. Informes finales: núcleo 169 tests UP-TO-DATE; hijo debug **148**
+ejecutados, total núcleo+debug **317/0 fallos/0 errores/0 omitidos**; hijo release **141**
+ejecutados, sin fallos/errores/omitidos (repite casos). APK debug/instrumentado y release
+sin firmar construidos o UP-TO-DATE; lint 0 errores/10 avisos. Inspectores base/H01 OK.
+
+Rutas: recovery/ModelosRecuperacion.kt, recovery/RecoveryController.kt,
+tests recovery/OfflineRecoveryTest.kt, ESTADO.md y esta evidencia. Contrato CP/1,
+esquema y fixtures congelados sin cambios; servidor Render fuera de alcance.
+
+NO se ha generado/escaneado un QR en Android ni probado esta recuperación en A13.
+Faltan pantalla/puertos Android, singleton por proceso, integración Keystore con
+vínculo confiable y pruebas instrumentadas de recuperación aisladas de producción.
+No se cambia la espera de códigos desde la vía OFFLINE ni se modifica emergencia.
+No se usó ADB ni se instaló, reinició, endureció o borró ningún equipo en esta unidad.
+H05 sigue EN_CURSO; H06/puertas siguen pendientes.
