@@ -247,3 +247,39 @@ Presentación/cancelación y ruta básica de emergencia del APK H05 inicial conf
 en A13 sin quiosco. No valida recuperación con código real, QR, herramientas,
 borrado, retorno bajo quiosco o variantes SIM. H05 sigue EN_CURSO y H06 bloqueada.
 En este registro solo se actualizó documentación; no ADB ni nuevas pruebas.
+
+## Cuarta unidad — OFFLINE con Android Keystore, preparado
+
+Se añadió OfflineKeystoreAndroidTest con **ocho tests instrumentados**, compilados
+NO EJECUTADOS. No cambió la app, interfaz, consumo UI o contrato; solo APK de pruebas.
+Total previsto de instrumentación: **23 tests** (15 anteriores + ocho nuevos).
+
+Cada test exige Android desbloqueado, crea dos alias UUID únicos en Android Keystore
+para identidad del hijo y firma parental SIMULADA exclusivamente en laboratorio.
+Las privadas se comprueban no exportables y jamás se serializan. No es desarrollo
+de la app padre ni requiere su repo. Al terminar elimina solo esos dos alias y
+comprueba ausencia. El caso de identidad perdida elimina únicamente su propio
+alias temporal del hijo y exige error sin crear reemplazo.
+
+Archivo AtomicFile en subdirectorio DP UUID efímero con públicas/hashes ficticios,
+sin control-state.json de producción, códigos reales ni política real. Limpieza de
+tres nombres conocidos y directorio vacío, no namespaces o borrado recursivo.
+No llama wipe/lockNow, no instala restricciones ni cambia Owner/credencial/red.
+
+Casos: desafío CHILD firmado por Keystore, respuesta parental temporal confiable,
+replay/recreación/cancelación, espera impresa no bloquea OFFLINE ni desaparece,
+acción/nonce/pair/boot/clave incorrectos, RETIRE solo autorización RAM sin borrado,
+caducidad exacta de desafío/sesión, identidad Keystore ausente sin reemplazo,
+contexto bloqueado simulado y boot duradero distinto. Reloj/contexto inyectados para
+límites: no prueban cinco minutos reales de reposo ni bloqueo previo al PIN.
+Las firmas y el archivo sí serán APIs reales de Android cuando se ejecute en A13.
+
+Mismo comando completo Gradle: BUILD SUCCESSFUL; tests JVM debug/release/núcleo
+UP-TO-DATE (321 resultados núcleo+debug y 145 release anteriores, no nueva ejecución).
+APK test recompilado, app debug y release sin firmar UP-TO-DATE; lint correcto con
+10 avisos anteriores. Ambos inspectores APK OK; clase de laboratorio fuera del APK app.
+
+Rutas: androidTest/recovery/OfflineKeystoreAndroidTest.kt, ESTADO.md y esta evidencia.
+NO ADB, instalación/reinicio/endurecimiento/borrado en esta unidad. Próxima coordinación:
+actualizar SOLO APK test en A13 y ejecutar 23 tests exigiendo Owner/credencial. No
+reinstalar app ni habilitar consumo UI, QR real o identidades de producción.
