@@ -3,7 +3,7 @@
 Última actualización: 9 de octubre de 2026
 Commit de partida: ac7d801 (C01 completada)
 Tarea actual: H02 — ruta de emergencia del sistema
-Estado: VALIDACION_PARCIAL — ruta básica de emergencia confirmada por el propietario; variantes sin red, arranque y SIM pendientes
+Estado: VALIDACION_PARCIAL — rutas básica y sin internet confirmadas por propietario; arranque y SIM pendientes
 Commit de partida de H03: 499b31f.
 Primer commit H03: 80e1cb4. Commit de cierre: «Cerrar H03 con pruebas de mantenimiento y evidencia».
 C02 comprobada en JVM/Node y Android/Keystore. Commit de esta unidad: «Validar C02 en el A13 y excluir expresamente el A56».
@@ -18,7 +18,7 @@ One UI: 6.1 confirmada por el propietario; propiedad 60100 observada. Device Own
 
 ## Terminado y demostrado
 
-- H02 parcial: botón de emergencia sin dependencia de red/clave parental, solicitud lockNow pública con precondiciones y error explícito. Seis tests JVM nuevos correctos. APK H02 instalado solo en A13; runner con Owner/credencial exigidos: OK (7 tests). Propietario confirma «todo correcto» al probar botón, apertura/salida del marcador sin llamar y vuelta a la app. Confirmación presencial, no observación automatizada; sin red/arranque/SIM pendientes.
+- H02 parcial: botón de emergencia sin dependencia de red/clave parental, solicitud lockNow pública con precondiciones y error explícito. Seis tests JVM nuevos correctos. APK H02 instalado solo en A13; runner con Owner/credencial exigidos: OK (7 tests). Propietario confirma ruta básica y repetición sin internet, sin marcar/llamar. Confirmación presencial, no observación automatizada; arranque/SIM pendientes.
 - H01: APK actualizados y Device Owner real establecido por ADB únicamente en el A13, sin quiosco/endurecimiento añadido. Tres tests H01 antes de Owner aprobados; seis tests H01+C02 después, exigiendo Owner/admin real, aprobados. Debug testOnly separado de release. El propietario respondió «perfecto» a la comprobación de pantalla de preparación; confirmación presencial comunicada, no captura automatizada. A56 intacto.
 - H00: equipo autorizado ADB e inventariado sin instalar ni modificar datos. One UI 6.1 y preparación del laboratorio confirmadas por el propietario: teléfono ya formateado, sin datos que conservar. Ficha y plan en pruebas/FICHA_DISPOSITIVO.md. SIM/PIN, emergencia y elegibilidad real de aprovisionamiento siguen NO COMPROBADOS para fases posteriores; no se autoriza otro borrado.
 - H03: cuatro acciones, prioridades locales y reloj monotónico inyectable; no hay importaciones Android ni reloj civil en el motor.
@@ -60,6 +60,7 @@ android/local.properties es local, está ignorado y no se incluye en commits.
 
 ## Pruebas ejecutadas y resultado
 
+- H-EMG-02 presencial: propietario responde «correcto» a repetir ruta de emergencia en A13 con Wi-Fi/datos apagados, SIN modo avión ni llamadas, y reactivar conectividad. Aprobado en etapa H02 sin quiosco; confirmación comunicada, no medición de red automatizada. No se ejecutó ADB ni se repitieron tests automáticos para este registro.
 - H02 manual básico: propietario confirma «todo correcto» después de las instrucciones de pulsar botón, acceder a emergencia sin marcar/llamar, salir y volver a la app con credencial Android. No comunicó diferencias; no se infiere apagado/deslizamiento exacto. Evidencia H02 y ficha actualizadas. No se repitieron tests automáticos ni se ejecutó ADB en este registro documental.
 - H02 físico autorizado: Owner previo comprobado, actualizaciones de ambos APK Success y runner dirigido exclusivamente a A13 con exigirDeviceOwner=true/exigirCredencialAndroid=true: OK (7 tests), 1.666 s. Launcher Status ok/COLD. No se llamó lockNow, no se abrió marcador ni se tocó A56. Previa construcción BUILD SUCCESSFUL con JVM UP-TO-DATE y test instrumentado recompilado; verificar_apk_base.py OK.
 - H02: comando Gradle documentado en EVIDENCIA_H02.md repetido tras último ajuste UI: BUILD SUCCESSFUL, 237 tests JVM/0 fallos/0 errores/0 omitidos; tests hijo ejecutados, núcleo UP-TO-DATE. Debug, instrumentado y release sin firmar compilados; lint 0 errores/10 avisos. verificar_apk_base.py y verificar_apk_h01.py OK. No se usó ADB ni se instaló o bloqueó ningún equipo en esta unidad.
@@ -121,13 +122,13 @@ android/local.properties es local, está ignorado y no se incluye en commits.
 
 H01: bloqueo por registros de cuentas resuelto por el propietario; recuento ADB 0 y Owner establecido. Pantalla de preparación confirmada por el propietario. Retirada del admin testOnly, UI previa sin Owner y recuperación completa aún requieren pruebas coordinadas; no se consideran comprobadas por la confirmación de pantalla actual.
 G0–G4 pendientes. Hay inventario físico ADB del A13, no validación del control, emergencia ni recuperación.
-H02: ruta básica confirmada presencialmente por el propietario, pero variantes SIM, arranque y sin red siguen pendientes. No confundir esta prueba con G0 completo ni emergencia bajo quiosco; no endurecer todavía.
+H02: rutas básica y sin internet confirmadas presencialmente por propietario. Variantes SIM y arranque pendientes. No confundir estas pruebas con G0 completo ni emergencia bajo quiosco; no endurecer todavía.
 El validador Python del esquema no se ha repetido con éxito: instalación de jsonschema 4.26.0 en un venv temporal falló por conexión/timeout. No se modificó Python global; ver evidencia C01.
 La supervivencia del control ante muerte de proceso y suspensión sigue pendiente de pruebas reales.
 
 ## Próxima tarea y lectura mínima
 
-Continuar H02: coordinar repetición sin internet (H-EMG-02) en A13, con adulto desactivando Wi-Fi/datos y conservando radio/SIM, NO modo avión; abrir/salir sin marcar/llamar y restaurar conectividad al terminar. Arranque y SIM/PIN requieren coordinación posterior, sin reinicio automático. No avanzar a endurecimiento. A56 fuera de alcance: no tocarlo.
+Continuar H02: preguntar presencia de SIM y PIN SIM sin números/códigos; coordinar reinicio manual A13 y apertura/salida del marcador antes de introducir credencial Android, SIN marcar/llamar; luego desbloquear y volver a app. No reiniciar ni modificar credenciales/SIM automáticamente. No avanzar a endurecimiento. A56 fuera de alcance: no tocarlo.
 H00 cerrado: ADB autorizado, inventario obtenido y preparación confirmada. El formateo fue previo y declarado por el propietario, no ejecutado por el agente.
 Lectura mínima H00: hijo/PLAN_HIJO.md H00, hijo/INSTALACION_A13.md §1–3, compartido/02_FUENTES_Y_COMPATIBILIDAD.md.
 C02 cerrada tras ejecución real de tres tests Android. Lectura mínima H01: hijo/PLAN_HIJO.md H01, hijo/SPEC_HIJO.md H2/H4 e hijo/INSTALACION_A13.md §3; consultar fuentes oficiales correspondientes.

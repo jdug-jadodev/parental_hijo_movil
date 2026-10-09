@@ -1,6 +1,6 @@
 # Evidencia H02 — emergencia por keyguard del sistema
 
-Fecha: 9 de octubre de 2026. Estado: VALIDACION_PARCIAL — ruta básica confirmada presencialmente; variantes sin red, arranque y SIM pendientes.
+Fecha: 9 de octubre de 2026. Estado: VALIDACION_PARCIAL — rutas básica y sin internet confirmadas; variantes de arranque y SIM pendientes.
 
 ## Implementación
 
@@ -68,7 +68,7 @@ No se ejecutó ADB ni se actualizó ningún teléfono durante esta unidad de có
 7. Coordinar aparte variantes sin red y de arranque. No desconectar Wi-Fi/datos,
    reiniciar, bloquear la depuración ni cambiar credenciales automáticamente.
 
-H-EMG-01/02 y G0 siguen PENDIENTES. No se activa Lock Task ni endurecimiento y no se
+H-EMG-01 y G0 siguen PENDIENTES; H-EMG-02 tiene confirmación posterior abajo. No se activa Lock Task ni endurecimiento y no se
 considera probado un marcador por la ausencia de excepción en lockNow. Llamadas
 reales no autorizadas están prohibidas; tampoco se prueba borrar/retirar el equipo.
 
@@ -121,3 +121,21 @@ Siguiente comprobación a coordinar: repetir la ruta básica en A13 con Wi-Fi y
 datos móviles desactivados presencialmente, conservando radio/SIM (NO modo avión),
 sin marcar/llamar. Reactivar conectividad al terminar. No ejecutar desconexiones
 ADB, reinicios ni modificaciones del A56 automáticamente.
+
+## Confirmación presencial sin internet — H-EMG-02
+
+Se indicó al propietario, solo en A13: desactivar Wi-Fi y datos móviles sin usar
+modo avión, repetir botón → marcador → salida/vuelta a app SIN marcar/llamar y
+reactivar la conectividad. Respondió «correcto». Se registra como confirmación
+presencial comunicada de funcionamiento igual y restauración indicada, no como
+medición automatizada de red ni llamada probada.
+
+H-EMG-02 aprobado en etapa H02 sin quiosco/endurecimiento, con el firmware actual.
+Esto no acredita cobertura, llamada completa, arranque antes de PIN Android,
+variantes PIN SIM ni emergencia bajo quiosco. G0 completo continúa pendiente.
+No se ejecutó ADB ni se modificó el A56 en este registro documental.
+
+Siguiente coordinación: conocer presencia de SIM/PIN SIM sin números ni códigos,
+y solicitar al adulto prueba manual de reinicio y apertura/salida del marcador
+antes de introducir la credencial Android. No reiniciar automáticamente ni
+modificar la SIM o las credenciales.

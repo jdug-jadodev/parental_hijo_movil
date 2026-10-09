@@ -67,6 +67,7 @@ G4: PENDIENTE
 | H01 pantalla actual y cierre mínimo | Solicitar comprobación de pantalla de preparación, Owner Sí/admin Sí y quiosco NO APLICADO | El propietario responde «perfecto»; confirmación presencial comunicada, no captura automatizada | 9 de octubre de 2026; no prueba bloqueo, emergencia ni UI previa sin Owner |
 | H02 diagnóstico Android | Actualizar ambos APK H02 solo en A13 y ejecutar runner exigiendo Owner y credencial Android | OK (7 tests), 1.666 s; credencial y Owner comprobados, launcher abierto. Botón/marcador pendientes | 9 de octubre de 2026; SM-A135M; sin lockNow automático, sin llamadas y A56 intacto |
 | H02 ruta básica presencial | Solicitar al propietario botón → keyguard → marcador sin marcar/llamar → salida/desbloqueo → app | Responde «todo correcto»; no comunica diferencias | 9 de octubre de 2026; confirmación presencial comunicada, no captura automática; sin red/arranque/PIN SIM pendientes |
+| H-EMG-02 sin internet | Pedir apagar Wi-Fi/datos en A13, SIN modo avión; repetir ruta sin llamar y restaurar conectividad | Propietario responde «correcto»; funcionamiento igual confirmado | 9 de octubre de 2026; aprobado etapa H02 sin quiosco, no prueba llamada/cobertura; A56 intacto |
 
 ## Emergencia
 
@@ -74,7 +75,8 @@ Ruta básica confirmada: botón de la app «Ir a pantalla de bloqueo» → keygu
 Ruta desde boot: PENDIENTE.
 Prueba de abrir/salir del marcador sin llamada: propietario confirma «todo correcto» en la ruta básica H02.
 Prueba de llamada completa en entorno autorizado, si existe:
-Aspectos NO verificados: sin internet, reinicio/antes del PIN Android, con/sin PIN SIM, quiosco estricto, curso completo de llamada y devolución.
+Ruta sin internet: propietario confirma «correcto» tras Wi-Fi/datos apagados SIN modo avión, recorrido sin llamar y restauración indicada; etapa H02 sin quiosco.
+Aspectos NO verificados: reinicio/antes del PIN Android, con/sin PIN SIM, quiosco estricto, curso completo de llamada y devolución.
 
 ## Ejecución y consumo
 
