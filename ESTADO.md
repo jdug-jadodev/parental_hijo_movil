@@ -3,7 +3,7 @@
 Última actualización: 9 de octubre de 2026
 Commit de partida: ac7d801 (C01 completada)
 Tarea actual: H04 — estado atómico y contexto de arranque
-Estado: PENDIENTE_VALIDACION — código H04 compilado y 262 tests JVM correctos; faltan cinco tests Android nuevos y boot/proceso reales coordinados
+Estado: PENDIENTE_VALIDACION — H04 instalado en A13; primera instrumentación 8 aprobados/4 fallos de acceso al directorio de tests; corrección compilada pendiente de reinstalar y repetir
 Commit de partida de H03: 499b31f.
 Primer commit H03: 80e1cb4. Commit de cierre: «Cerrar H03 con pruebas de mantenimiento y evidencia».
 C02 comprobada en JVM/Node y Android/Keystore. Commit de esta unidad: «Validar C02 en el A13 y excluir expresamente el A56».
@@ -19,7 +19,7 @@ One UI: 6.1 confirmada por el propietario; propiedad 60100 observada. Device Own
 ## Terminado y demostrado
 
 - H04: adaptador AtomicFile en Device Protected con lectura acotada, readback de escritura, singleton por ruta/proceso y cola de IO. BootContextRepository conserva inicio/política/contador y retira autorización en arranque nuevo o incierto. BootReceiver directBootAware no exportado; UI muestra error de estado sin ocultar emergencia. No hace enforcement ni usa Keystore privado.
-- H04: 25 tests JVM nuevos aprobados dentro de 262 totales. Cinco tests Android H04 compilados NO EJECUTADOS, solo archivos efímeros del paquete de tests. A13 conserva H02; A56 intacto.
+- H04: 25 tests JVM nuevos aprobados dentro de 262 totales. Primera ejecución Android: 12 tests/4 fallos, todos de archivos H04; declaración del receiver y siete tests anteriores aprobados. App H04 instalada; A56 intacto. Corrección del aislamiento de tests compilada, no reinstalada ni ejecutada.
 - H04 primera unidad: registro local versionado con checksum sobre bytes del payload, parser estricto, última orden firmada y campos derivados comprobados con pública del vínculo. Sin claves privadas, códigos reales ni historial. Puerto de almacenamiento y transacciones serializadas probados con fake, NO AtomicFile Android aún.
 - H04 primera unidad: 15 tests nuevos JVM aprobados dentro de 252 totales; corrupción no se convierte en ausencia, contador no retrocede, repetición no reinicia inicio y 100 actualizaciones concurrentes no se pierden. No demuestra persistencia física ni bloqueo aplicado.
 - H02 cierre inicial sin SIM: propietario confirma «correcto» al reiniciar manualmente, abrir/salir del marcador antes de PIN Android SIN llamar, desbloquear y comprobar Owner/admin Sí. H-EMG-01 parcial por variantes SIM no disponibles; G0 completo y emergencia bajo quiosco pendientes. No se ejecutó reboot ADB ni se tocó A56.
@@ -48,6 +48,7 @@ Hay Device Owner de laboratorio en el A13, pero no quiosco, bloqueo parental apl
 
 ## Archivos modificados en la última tarea
 
+- H04 primer intento físico y corrección: AtomicFileEstadoAndroidTest.kt (targetContext y subdirectorio UUID efímero, limpieza limitada), ESTADO.md, pruebas/EVIDENCIA_H04.md y pruebas/FICHA_DISPOSITIVO.md.
 - H04 segunda unidad: data/EstadoAndroid.kt; boot/BootContextRepository.kt, FuenteArranqueAndroid.kt y BootReceiver.kt; LauncherActivity.kt, manifest y strings.xml; tests BootContextRepositoryTest.kt y AtomicFileEstadoAndroidTest.kt, ampliación CodecEstadoTest.kt; verificar_apk_h01.py, pruebas/EVIDENCIA_H04.md y ESTADO.md.
 - H04: data/ModelosEstado.kt, ValidadorEstado.kt, CodecEstado.kt y ChildStateStore.kt; tests data/PreparacionEstado.kt, CodecEstadoTest.kt y ChildStateStoreTest.kt; app-child/build.gradle.kts (testFixtures solo JVM), ESTADO.md.
 - H02: domain/ModelosEmergencia.kt, emergency/EmergencyAccess.kt, admin/PolicyEnforcer.kt, ui/LockedScreen.kt y LauncherActivity.kt; strings.xml; EmergencyAccessTest.kt y CondicionesEmergenciaAndroidTest.kt; pruebas/EVIDENCIA_H02.md y ESTADO.md.
@@ -67,6 +68,8 @@ android/local.properties es local, está ignorado y no se incluye en commits.
 
 ## Pruebas ejecutadas y resultado
 
+- H04 físico autorizado: A13 único seleccionado por modelo anunciado y comprobado con getprop antes de cada operación; Owner esperado confirmado. Ambas actualizaciones Success; runner con exigirDeviceOwner=true/exigirCredencialAndroid=true: 12 tests/4 fallos, 1.98 s. Directorio DP del paquete test inaccesible desde instrumentación: dos ENOENT al escribir y dos ErrorEstadoLocal al leer ausencia con padre inaccesible. No se reinició/endureció/borró ni se tocó A56.
+- H04 corrección local: test usa targetContext y subdirectorio efímero UUID, nunca control-state.json. Construcción completa BUILD SUCCESSFUL, APK test recompilado; 262 resultados JVM anteriores UP-TO-DATE, no nueva ejecución. Corrección física NO EJECUTADA; requiere coordinar actualización del APK test y repetición.
 - H04 cierre: comando Gradle en EVIDENCIA_H04.md repetido tras últimos ajustes: BUILD SUCCESSFUL; informes 262 tests/0 fallos/0 errores/0 omitidos, tests hijo ejecutados y núcleo UP-TO-DATE. APK debug/instrumentado y release sin firmar construidos; lint 0 errores/10 avisos. verificar_apk_base.py y verificar_apk_h01.py OK. No se usó ADB ni se instaló/reinició el A13.
 - H04 primera unidad: `.\gradlew.bat :core-protocol:test :app-child:testDebugUnitTest --console=plain`: BUILD SUCCESSFUL; informes 252 tests/0 fallos/0 errores/0 omitidos. Tests del hijo ejecutados; núcleo UP-TO-DATE. Se añadió únicamente soporte de fixtures en testImplementation, no en APK.
 - H02 arranque sin SIM: confirmación presencial del propietario «correcto» a los pasos de reinicio manual, emergencia antes de PIN Android sin llamar y comprobación posterior Owner/admin Sí. No es captura automatizada ni prueba de persistencia del temporizador. Solo actualización documental; no se repitieron tests ni se usó ADB.
@@ -139,7 +142,7 @@ La supervivencia del control ante muerte de proceso y suspensión sigue pendient
 
 ## Próxima tarea y lectura mínima
 
-Continuar H04 físico: solicitar autorización de actualización de app/test APK únicamente en A13 y ejecución de 12 tests Android (cinco nuevos H04 con archivos efímeros, sin tocar control-state.json de producción). La nueva app inicializa contexto local de preparación si el archivo no existe, sin vincular ni autorizar. Coordinar aparte boot/proceso reales; no borrar, reiniciar ni cerrar recuperación automáticamente. H02 inicial sin SIM cerrada; variantes SIM/G0 y H05 siguen bloqueando H06. A56 fuera de alcance: no tocarlo.
+Continuar H04 físico: solicitar actualización SOLO del APK test corregido y repetir 12 tests únicamente en A13. Los cuatro tests de archivo usarán un subdirectorio UUID efímero dentro de filesDir Device Protected del destino instrumentado, sin acceder a control-state.json. No reinstalar app sin necesidad. Coordinar aparte boot/proceso reales; no borrar, reiniciar ni cerrar recuperación automáticamente. H02 inicial sin SIM cerrada; variantes SIM/G0 y H05 siguen bloqueando H06. A56 fuera de alcance: no tocarlo.
 H00 cerrado: ADB autorizado, inventario obtenido y preparación confirmada. El formateo fue previo y declarado por el propietario, no ejecutado por el agente.
 Lectura mínima H00: hijo/PLAN_HIJO.md H00, hijo/INSTALACION_A13.md §1–3, compartido/02_FUENTES_Y_COMPATIBILIDAD.md.
 C02 cerrada tras ejecución real de tres tests Android. Lectura mínima H01: hijo/PLAN_HIJO.md H01, hijo/SPEC_HIJO.md H2/H4 e hijo/INSTALACION_A13.md §3; consultar fuentes oficiales correspondientes.

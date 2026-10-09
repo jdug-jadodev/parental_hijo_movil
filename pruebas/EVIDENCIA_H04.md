@@ -94,7 +94,7 @@ de recuperación, contraseñas Wi-Fi ni historial. recoveryWaitPending conserva
 solo un indicador: la espera/autorización de recuperación corresponde a H05,
 no está implementada aquí. Mantenimiento y canal no se persisten como permisos.
 
-## NO EJECUTADO
+## Límites al cerrar la implementación (antes del intento físico)
 
 - Instalación de H04 o ejecución de sus cinco tests Android en el A13.
 - Recepción real de ambos broadcasts, arranque antes del PIN Android, recreación
@@ -103,6 +103,47 @@ no está implementada aquí. Mantenimiento y canal no se persisten como permisos
 
 El A13 conserva H02; no se ha actualizado ni reiniciado en esta tarea.
 El A56 no se toca. G0–G4 no se aprueban por estos tests o por compilar el receiver.
+
+## Primer intento físico autorizado — 9 de octubre de 2026
+
+El propietario autorizó actualizar y ejecutar tests SIN reiniciar/endurecer.
+Un único SM_A135M anunciado por ADB fue seleccionado; modelo SM-A135M
+comprobado antes de cada operación mediante el mismo destino `adb -s`.
+No se consultó ni cambió el A56 y no se guardaron series.
+Owner previo: nuestra app, usuario 0, DeviceOwner/Affiliated.
+Ambas instalaciones `install -r -t` devolvieron Success.
+
+SHA-256 de los APK efectivamente instalados en este intento:
+
+- App: `580a5b1cdc106d544d97e3b2720a36c1fe43ee82419cb427055677db1fe4eb3c`.
+- Tests (versión inicial): `1b490d9acc70159caa161c488344c9d571dc434aa124d509b0bee0555cbeb641`.
+
+```powershell
+adb -s $serieA13 shell am instrument -w -r -e exigirDeviceOwner true -e exigirCredencialAndroid true dev.controlparental.child.test/androidx.test.runner.AndroidJUnitRunner
+```
+
+Resultado: **Tests run: 12, Failures: 4**, Time: 1.98 s. NO aprobado.
+Siete tests anteriores y declaración/permisos del BootReceiver correctos.
+Fallaron cuatro tests de archivo: dos ENOENT al intentar escribir dentro del
+directorio DP del paquete test y dos ErrorEstadoLocal al intentar leer una ruta
+ausente cuyo padre no era accesible. No demuestran un fallo del codec ni éxito
+de AtomicFile: la preparación del entorno falló antes de esos pasos.
+
+La instrumentación corre en el proceso/UID del destino, no del APK test.
+Se corrigió el helper para usar targetContext y crear un subdirectorio UUID único
+dentro de filesDir Device Protected del destino. Solo escribe estado-prueba.json
+y sus dos compañeros AtomicFile allí; limpieza explícita de esos tres nombres
+y del directorio vacío, sin borrado recursivo. **Nunca accede a control-state.json**.
+Esto reemplaza el diseño anterior de archivos en el paquete test; requiere nueva
+coordinación antes de instalar/ejecutar el APK test corregido.
+
+Tras la corrección: comando Gradle completo arriba, BUILD SUCCESSFUL; APK test
+recompilado. JVM UP-TO-DATE (262 resultados anteriores), no nueva ejecución.
+Corrección instrumentada NO EJECUTADA. La app no cambió en esta corrección.
+No se abrió launcher por ADB, reinició, endureció, llamó lockNow ni borró datos
+de producción. El receiver de actualización puede preparar contexto local;
+su ejecución y el archivo de producción no se inspeccionaron en este intento.
+H04 sigue PENDIENTE_VALIDACION; boot/proceso reales y emergencia H04 pendientes.
 
 ## Fuentes oficiales consultadas para Android
 

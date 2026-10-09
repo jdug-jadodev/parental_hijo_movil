@@ -6,8 +6,8 @@ Versión Android / API / parche: 14 / 34 / 2026-02-05 (ADB)
 One UI: 6.1, confirmada por el propietario; propiedad ADB ro.build.version.oneui = 60100
 Firmware incremental: A135MUBSDDZB3 (ADB)
 SIM: ausente, según propietario (9 de octubre de 2026). Operador/PIN SIM: no aplican en esta prueba; variantes con SIM/PIN SIM no verificadas.
-APK instalado por este proyecto: dev.controlparental.child debug H02 0.1.0 / versionCode 1, más dev.controlparental.child.test; actualización ADB autorizada el 9 de octubre de 2026
-Huella SHA-256 del certificado debug: 39f25d28e10a93f18fbdabac0223e917c9668d58a6d7ca28af40227946a9f439 (apksigner local C02; actualización normal con la misma firma). Hash de APK actuales en EVIDENCIA_H02.md.
+APK instalado por este proyecto: dev.controlparental.child debug H04 0.1.0 / versionCode 1, más dev.controlparental.child.test (primera versión H04 con cuatro fallos); actualización ADB autorizada el 9 de octubre de 2026
+Huella SHA-256 del certificado debug: 39f25d28e10a93f18fbdabac0223e917c9668d58a6d7ca28af40227946a9f439 (apksigner local C02; actualización normal con la misma firma). Hash de APK instalados actuales en EVIDENCIA_H04.md.
 Estado de Device Owner: dev.controlparental.child/.admin.ChildAdminReceiver en usuario 0, DeviceOwner/Affiliated según dpm list-owners; confirmado además por isDeviceOwnerApp en test Android. Sin Profile Owner listado.
 Estado de arranque: ro.boot.verifiedbootstate = green; ro.boot.flash.locked = 1. Son propiedades observadas, no una certificación de integridad.
 Fecha / responsable autorizado: 8 de octubre de 2026 / propietario del laboratorio, autorización de consultas ADB en esta sesión
@@ -69,6 +69,7 @@ G4: PENDIENTE
 | H02 ruta básica presencial | Solicitar al propietario botón → keyguard → marcador sin marcar/llamar → salida/desbloqueo → app | Responde «todo correcto»; no comunica diferencias | 9 de octubre de 2026; confirmación presencial comunicada, no captura automática; sin red/arranque/PIN SIM pendientes |
 | H-EMG-02 sin internet | Pedir apagar Wi-Fi/datos en A13, SIN modo avión; repetir ruta sin llamar y restaurar conectividad | Propietario responde «correcto»; funcionamiento igual confirmado | 9 de octubre de 2026; aprobado etapa H02 sin quiosco, no prueba llamada/cobertura; A56 intacto |
 | H-EMG-01 arranque sin SIM (parcial) | Pedir reinicio manual A13, abrir/salir del marcador antes de PIN Android SIN llamar, desbloquear y comprobar Owner/admin Sí | Propietario responde «correcto» | 9 de octubre de 2026; confirmación presencial, no reinicio ADB; con SIM/PIN SIM pendiente; no prueba persistencia de política |
+| H04 primera instrumentación | Actualizar app/test con adb -s solo al A13 y ejecutar runner con Owner/credencial exigidos | 12 tests/4 fallos (1.98 s): ocho aprobados, cuatro de acceso al directorio DP del paquete test fallan | 9 de octubre de 2026; corrección local del aislamiento compilada, no instalada/ejecutada; sin reinicio, endurecimiento ni cambios en A56 |
 
 ## Emergencia
 

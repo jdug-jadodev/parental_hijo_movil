@@ -12,21 +12,27 @@ import org.junit.runner.RunWith
 import java.io.File
 import java.util.UUID
 
-/** Archivos efímeros del paquete de tests, nunca control-state.json de producción. */
+/** Directorio efímero aislado en el UID instrumentado, nunca control-state.json. */
 @RunWith(AndroidJUnit4::class)
 class AtomicFileEstadoAndroidTest {
-    private val contexto = InstrumentationRegistry.getInstrumentation().context
+    // La instrumentación ejecuta con el UID del destino, no con el del APK test.
+    private val contexto = InstrumentationRegistry.getInstrumentation().targetContext
 
     private fun conArchivo(tarea: (File) -> Unit) {
         val protegido = contexto.createDeviceProtectedStorageContext()
         assertTrue(protegido.isDeviceProtectedStorage)
         assertNotEquals(contexto.filesDir.canonicalPath, protegido.filesDir.canonicalPath)
-        val archivo = File(protegido.filesDir, "h04-prueba-${UUID.randomUUID()}.json")
+        val directorio = File(protegido.filesDir, "h04-prueba-${UUID.randomUUID()}")
+        assertTrue("Crear únicamente el directorio efímero del test", directorio.mkdir())
+        val archivo = File(directorio, "estado-prueba.json")
         try {
             tarea(archivo)
         } finally {
             // Solo los tres nombres únicos creados por este test.
-            listOf(archivo, File(archivo.path + ".bak"), File(archivo.path + ".new")).forEach { it.delete() }
+            listOf(archivo, File(archivo.path + ".bak"), File(archivo.path + ".new")).forEach {
+                assertTrue("Retirar únicamente el archivo efímero del test", !it.exists() || it.delete())
+            }
+            assertTrue("Retirar únicamente el directorio efímero vacío", directorio.delete())
         }
     }
 
