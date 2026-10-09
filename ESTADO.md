@@ -59,6 +59,7 @@ Hay Device Owner de laboratorio en el A13, pero no quiosco, bloqueo parental apl
 
 ## Archivos modificados en la última tarea
 
+- Relevo solicitado para Render: COORDINACION_PADRE_HIJO_RENDER.md y ESTADO.md; solo documentación del hijo, sin cambios externos, builds o ADB.
 - Coordinación en lectura de padre/relay: INTEGRACION_FUTURA.md y ESTADO.md. Solo documentación del hijo, ningún cambio externo ni código/identidad/instalación.
 - H05 transporte QR: android/app-child/src/main/java/dev/controlparental/child/recovery/QrOffline.kt y src/test/java/dev/controlparental/child/recovery/QrOfflineTest.kt; android/app-child/build.gradle.kts, android/gradle/libs.versions.toml, ESTADO.md y pruebas/EVIDENCIA_H05.md.
 - H05 ejecución OFFLINE Android: ESTADO.md, pruebas/EVIDENCIA_H05.md y pruebas/FICHA_DISPOSITIVO.md; registro documental, sin código nuevo.
@@ -168,6 +169,7 @@ android/local.properties es local, está ignorado y no se incluye en commits.
 
 ## Decisiones locales sin cambiar ADR
 
+- Propietario delegará coordinación en sesión Render: archivo COORDINACION_PADRE_HIJO_RENDER.md preparado con responsabilidades, QR ida/vuelta, configuración pública, AUTH/latidos/mensajes y pruebas escalonadas. No delega generación de identidad del niño al relay ni autoriza modificar otros proyectos/desplegar/usarlos físicamente. Registro documental, sin pruebas nuevas.
 - Coordinación solicitada para QR inicial CHILD_OFFER (H08), no OFFLINE de H05. Propietario autoriza lectura de parental_padre/parental_render únicamente; revisados flujos y hashes de contrato/schema, idénticos en los tres repositorios. Padre devuelve PAIR_ACCEPT firmado y exportación pública manual; leer oferta no conecta automáticamente. Relay solo validado localmente según su evidencia, sin despliegue público. Detalle en INTEGRACION_FUTURA.md. H05 sigue abierta, dependencias H08/H10 no se declaran cumplidas.
 - Separación confirmada por el propietario: servidor WebSocket/Render exclusivamente en `C:\Users\Usuario\Documents\parental_render`. Revisión local: no hay implementación de servidor, package.json, render.yaml ni fuentes TypeScript; los dos scripts .mjs son verificadores del protocolo. Aquí solo app del niño, futuro cliente WSS y contrato/fixtures congelados. No se consultó ni modificó el repositorio Render.
 - Actualización documental de alcance: AGENTS.md, hijo/AGENTS.md, 00_EMPIEZA_AQUI.md, INTEGRACION_FUTURA.md, hijo/PLAN_HIJO.md y ESTADO.md. Sin cambios de código/CP/1 ni pruebas Android/JVM nuevas; próxima comprobación H04 boot/proceso sigue pendiente de coordinación.
