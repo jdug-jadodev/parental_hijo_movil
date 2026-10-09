@@ -2,8 +2,8 @@
 
 Última actualización: 8 de octubre de 2026
 Commit de partida: ac7d801 (C01 completada)
-Tarea actual: H03
-Estado: COMPLETADA en lógica pura — integración y pruebas físicas Android pendientes
+Tarea actual: H00
+Estado: PENDIENTE_AUTORIZACION_ADB — equipo USB detectado como unauthorized; inventario aún no ejecutado
 Commit de partida de H03: 499b31f.
 Primer commit H03: 80e1cb4. Commit de cierre: «Cerrar H03 con pruebas de mantenimiento y evidencia».
 C02 continúa PENDIENTE_VALIDACION Android/Keystore; no bloquea H03.
@@ -47,6 +47,7 @@ android/local.properties es local, está ignorado y no se incluye en commits.
 
 ## Pruebas ejecutadas y resultado
 
+- H00: `adb version` comprobado: Platform Tools 37.0.0-14910828 / ADB 1.0.41. `adb devices` detectó un equipo USB en estado unauthorized; número de serie omitido. No se consultaron propiedades ni administración, no se instaló ni modificó el teléfono. Falta aceptar la autorización RSA en su pantalla.
 - Cierre H03: `.\gradlew.bat :core-protocol:test :app-child:testDebugUnitTest :app-child:assembleDebug :app-child:assembleDebugAndroidTest :app-child:lintDebug --console=plain`: BUILD SUCCESSFUL, informes con 227 tests/0 fallos/0 errores/0 omitidos; núcleo UP-TO-DATE y nuevos tests de cierre ejecutados. Dos APK compilados; lint 0 errores y 10 avisos de actualización.
 - Cierre H03: `python -B pruebas/verificar_apk_base.py`: OK, APK sin fixtures ni clases declaradas de pruebas.
 - H03 primera unidad: `.\gradlew.bat :core-protocol:test :app-child:testDebugUnitTest --console=plain`: BUILD SUCCESSFUL, 216 tests totales, 0 fallos/errores; 24 de tabla y 22 de prioridades/red/arranque/tiempo, más los 170 anteriores.
@@ -99,7 +100,7 @@ La supervivencia del control ante muerte de proceso y suspensión sigue pendient
 
 ## Próxima tarea y lectura mínima
 
-Siguiente tarea: H00 — inventario físico coordinado. Se alcanzó el primer punto que necesita el A13; esperar confirmación «ADB listo». H04 depende de H01 y no se adelanta saltando esa dependencia.
+Continuar H00 cuando el propietario acepte la autorización de depuración USB en el teléfono. Detectado como unauthorized tras su confirmación «listo»; no confundir conexión USB con autorización ADB. H03 completada en lógica pura. H04 depende de H01 y no se adelanta saltando esa dependencia.
 Primer punto físico: H00 — inventario y laboratorio, depende de C00 ya completada. Solicitar conexión y autorización ADB al propietario para identificar SM/Android/API/parche y registrar disponibilidad; sin instalar, aprovisionar ni borrar.
 Lectura mínima H00: hijo/PLAN_HIJO.md H00, hijo/INSTALACION_A13.md §1–3, compartido/02_FUENTES_Y_COMPATIBILIDAD.md.
 C02 queda PENDIENTE_VALIDACION: coordinar después de H00 la instalación de app/test APK y ejecutar sus tres tests en Android desbloqueado. El inventario H00 no instala ni borra nada; no confundir compilar los tests con aprobarlos.

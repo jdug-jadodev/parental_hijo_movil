@@ -24,6 +24,7 @@ Fecha de registro: 8 de octubre de 2026. Tarea: C00.
 | Bytecode Java / Kotlin | JVM 17, compilado con JDK 21 |
 | Git | 2.47.1.windows.1 |
 | Node para verificar fixtures | 24.21.0 |
+| Platform Tools comprobado en intento H00 | 37.0.0-14910828; ADB 1.0.41 |
 
 AGP 8.11 admite API 36 y requiere como mínimo Gradle 8.13 y JDK 17:
 https://developer.android.com/build/releases/past-releases/agp-8-11-0-release-notes

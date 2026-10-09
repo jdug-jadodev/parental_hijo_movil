@@ -8,6 +8,14 @@ APK / versionCode / huella del certificado de firma: NO CONSTRUIDO
 Estado de Device Owner / bloqueo de arranque: NO COMPROBADO
 Fecha / responsable autorizado: POR COMPLETAR
 
+## Intento de inventario H00 — 8 de octubre de 2026
+
+El propietario confirmó que el equipo estaba listo. ADB detectó un dispositivo
+USB en estado `unauthorized`; falta aceptar el diálogo RSA de depuración USB.
+No se registró el número de serie ni se consultaron propiedades del teléfono.
+Sin instalación, aprovisionamiento, cambios de ajustes ni borrado.
+Modelo y versiones siguen NO COMPROBADOS; conexión USB no acredita inventario.
+
 ## Puertas
 
 G0: PENDIENTE
