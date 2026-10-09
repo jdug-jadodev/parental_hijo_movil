@@ -6,8 +6,8 @@ Versión Android / API / parche: 14 / 34 / 2026-02-05 (ADB)
 One UI: 6.1, confirmada por el propietario; propiedad ADB ro.build.version.oneui = 60100
 Firmware incremental: A135MUBSDDZB3 (ADB)
 SIM: ausente, según propietario (9 de octubre de 2026). Operador/PIN SIM: no aplican en esta prueba; variantes con SIM/PIN SIM no verificadas.
-APK instalado por este proyecto: dev.controlparental.child debug H04 con traza de laboratorio 0.1.0 / versionCode 1, más dev.controlparental.child.test corregido (12 tests aprobados); actualización ADB autorizada el 9 de octubre de 2026
-Huella SHA-256 del certificado debug: 39f25d28e10a93f18fbdabac0223e917c9668d58a6d7ca28af40227946a9f439 (apksigner local C02; actualización normal con la misma firma). Hash de APK instalados actuales en EVIDENCIA_H04.md.
+APK instalado por este proyecto: dev.controlparental.child debug H05 inicial con presentación de recuperación y consumo cerrado 0.1.0 / versionCode 1, más dev.controlparental.child.test (15 tests aprobados); actualización ADB autorizada el 9 de octubre de 2026
+Huella SHA-256 del certificado debug: 39f25d28e10a93f18fbdabac0223e917c9668d58a6d7ca28af40227946a9f439 (apksigner local C02; actualización normal con la misma firma). Hash de APK instalados actuales en EVIDENCIA_H05.md.
 Estado de Device Owner: dev.controlparental.child/.admin.ChildAdminReceiver en usuario 0, DeviceOwner/Affiliated según dpm list-owners; confirmado además por isDeviceOwnerApp en test Android. Sin Profile Owner listado.
 Estado de arranque: ro.boot.verifiedbootstate = green; ro.boot.flash.locked = 1. Son propiedades observadas, no una certificación de integridad.
 Fecha / responsable autorizado: 8 de octubre de 2026 / propietario del laboratorio, autorización de consultas ADB en esta sesión
@@ -74,6 +74,7 @@ G4: PENDIENTE
 | H04 contexto tras reinicio y proceso recreado | Reinicio manual del propietario, lectura DP después del PIN; reapertura tras PID ausente | BOOT_COUNT 2→3 con bootId nuevo; mismo bootId tras reanudar y PID 2745→ausente→11819, checksum correcto y PREPARACION sin autorización | 9 de octubre de 2026; consultas de lectura solo A13, sin am kill/force-stop; antes del PIN ADB no disponible; sin política/temporizador reales ni cambios al A56 |
 | H04 actualización de traza debug | Actualizar SOLO app y repetir runner Owner/credencial con APK test corregido anterior | Success; OK (12 tests), 1.886 s; no eventos reconocidos en lectura exclusiva ArranqueH04 | 9 de octubre de 2026; diagnóstico de arranque real pendiente de reinicio manual coordinado; sin reinicio/endurecimiento/borrado ni cambios al A56 |
 | H04 callbacks reales Direct Boot | Reinicio MANUAL, espera antes del PIN y lectura exclusiva ArranqueH04 después de desbloquear; lectura DP de contexto | LOCKED_BOOT_COMPLETED NO/NO y BOOT_COMPLETED SI/SI con bootCount=4/mismo hash bootId; checksum correcto y sin autorización | 9 de octubre de 2026; contexto PREPARACION probado, no políticas/temporizador/enforcement; H04 inicial cerrada, G0–G4 pendientes y A56 intacto |
+| H05 instalación/pruebas iniciales Android | Actualizar ambos APK SOLO A13 y runner con Owner/credencial exigidos | Success; OK (15 tests), 3.581 s; tres nuevos H05 de consumo/espera/fuente con archivos efímeros aprobados | 9 de octubre de 2026; sin tocar estado de producción desde tests H05, sin reinicio/endurecimiento/borrado; pantalla/emergencia presenciales pendientes, A56 intacto |
 
 ## Emergencia
 

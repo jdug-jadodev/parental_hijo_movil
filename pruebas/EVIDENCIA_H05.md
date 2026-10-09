@@ -203,3 +203,33 @@ No ADB ni instalación/reinicio/endurecimiento/borrado en esta unidad. Próximo 
 coordinar actualizar app/test SOLO A13 y ejecutar 15 tests con Owner/credencial
 exigidos; después confirmar presentación SIN_VINCULO, cancelar y comprobar ruta
 de emergencia SIN marcar/llamar. No habilitar consumo/inyectar vínculo en producción.
+
+## Instalación y pruebas Android autorizadas — 9 de octubre de 2026
+
+El propietario autorizó actualizar app/test SOLO A13 y ejecutar 15 tests sin
+reiniciar/endurecer/borrar. ADB anunció un único SM_A135M; se comprobó SM-A135M
+antes de cada operación y todo se dirigió al mismo destino `adb -s`, sin guardar
+serie. Owner previo esperado, usuario 0, DeviceOwner/Affiliated. A56 excluido.
+
+Ambas actualizaciones `install -r -t` devolvieron Success.
+SHA-256 de APK instalados:
+
+- App: `19b8e074d3393477cacbff525c5fde59ef6a334c9accbf3508265eb5f59ed410`.
+- Tests: `d9c0ce2a04e451b4bef223409c015bee3f200625d365e5e505c6d18415108c24`.
+
+```powershell
+adb -s $serieA13 shell am instrument -w -r -e exigirDeviceOwner true -e exigirCredencialAndroid true dev.controlparental.child.test/androidx.test.runner.AndroidJUnitRunner
+```
+
+Resultado: **OK (15 tests), Time: 3.581 s**. Los tres nuevos H05 y los doce anteriores
+aprobados. Se comprobó consumo/espera persistidos en archivos DP efímeros aislados,
+recreación del controlador y fuente Android comparada con APIs públicas. Espera
+usa reloj inyectado: no prueba reposo/reinicio real durante esos 60 segundos.
+No se consumieron códigos de producción ni se accedió al control-state.json real
+desde los tests H05. No se inyectó vínculo en producción ni se habilitó consumo UI.
+
+No se abrió marcador, llamó lockNow, reinició, borró, retiró administración o
+endureció el A13. No comandos dirigidos al A56. Sin nueva construcción/JVM en
+esta unidad documental. Presentación SIN_VINCULO, cancelación, FLAG_SECURE y
+regresión presencial de emergencia de este APK siguen pendientes. H05 NO cerrada;
+QR/identidad operativos y herramientas reales no se consideran implementados.
