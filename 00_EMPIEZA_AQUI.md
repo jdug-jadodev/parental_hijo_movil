@@ -19,6 +19,8 @@ conectadas indiscriminadas con ambos teléfonos presentes.
 
 Este repositorio **no contiene el código del otro dispositivo**. El protocolo compartido CP/1 tiene la misma copia en los dos paquetes. Mantenerlo sin editar hasta la integración.
 
+**Servidor externo:** el backend WebSocket y su despliegue en Render se desarrollan exclusivamente en `C:\Users\Usuario\Documents\parental_render`. Aquí solo corresponde la app del niño, incluido su cliente de conexión al servidor. Las referencias a Render en CP/1 son documentación de compatibilidad; no autorizan desarrollar el servidor aquí.
+
 ## Orden de trabajo para una IA pequeña o un desarrollador principiante
 
 1. Usar este repositorio Git independiente; el proyecto Android está en `android/`.

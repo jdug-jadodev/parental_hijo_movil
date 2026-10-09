@@ -128,6 +128,8 @@ android/local.properties es local, está ignorado y no se incluye en commits.
 
 ## Decisiones locales sin cambiar ADR
 
+- Separación confirmada por el propietario: servidor WebSocket/Render exclusivamente en `C:\Users\Usuario\Documents\parental_render`. Revisión local: no hay implementación de servidor, package.json, render.yaml ni fuentes TypeScript; los dos scripts .mjs son verificadores del protocolo. Aquí solo app del niño, futuro cliente WSS y contrato/fixtures congelados. No se consultó ni modificó el repositorio Render.
+- Actualización documental de alcance: AGENTS.md, hijo/AGENTS.md, 00_EMPIEZA_AQUI.md, INTEGRACION_FUTURA.md, hijo/PLAN_HIJO.md y ESTADO.md. Sin cambios de código/CP/1 ni pruebas Android/JVM nuevas; próxima comprobación H04 boot/proceso sigue pendiente de coordinación.
 - Acuerdos del propietario guardados en AGENTS.md: español, commits cada aproximadamente 500 líneas, cuenta regresiva y aviso antes de ADB.
 - Cuenta regresiva basada en tiempo transcurrido, incluso con pantalla apagada; sin cambios a CP/1.
 - Simulador aislado en testFixtures, sin dependencia de producción ni ACK fabricados.

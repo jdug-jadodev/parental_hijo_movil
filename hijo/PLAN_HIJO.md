@@ -182,6 +182,8 @@ Estado: H00 completada en inventario y plan; H01 completada en laboratorio míni
 
 ## H10 — Conexión WSS y estado firmado
 
+**Alcance:** solo cliente WSS de la app del niño. R03 es una dependencia externa del servidor en `C:\Users\Usuario\Documents\parental_render`; no se implementa aquí ni implica configurar/desplegar Render desde este repositorio.
+
 **Depende de:** H07, H08, H09, R03.
 
 **Leer:** CP/1 §6–8; SPEC-H H7.

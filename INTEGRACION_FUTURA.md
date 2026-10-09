@@ -2,6 +2,8 @@
 
 **Ahora:** este repo se desarrolla de manera independiente. No importar el proyecto hermano ni forzar sincronización de repositorios.
 
+**Límite de responsabilidad:** servidor WebSocket, endpoints y despliegue Render pertenecen a `C:\Users\Usuario\Documents\parental_render`. Aquí se implementa únicamente la app del hijo y su cliente de comunicación. Conservar la copia congelada de CP/1 para compatibilidad; no implementar tareas Rxx del servidor ni modificar el repositorio externo desde esta sesión sin autorización explícita.
+
 ## Identidad del contrato — mismo valor para ambos
 
 - Protocolo: `CP/1` (v1).

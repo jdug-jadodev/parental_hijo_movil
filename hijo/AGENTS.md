@@ -11,7 +11,7 @@ Tu responsabilidad es **DPC, quiosco y ejecución local del hijo**. El repositor
 
 ## Invariantes
 
-Dos APK Kotlin. Hijo Device Owner y Lock Task; padre sin permisos de administración. Render es relay WSS de una instancia, Node24/TypeScript/`ws`, sin DB, Firebase, Redis, historial ni secretos privados del padre. Configuración pública de claves en env sí está permitida y es obligatoria.
+Este repositorio desarrolla exclusivamente el APK del hijo: Device Owner, Lock Task y su cliente WSS. El APK del padre es externo. El servidor relay y su despliegue/configuración Render corresponden exclusivamente a `C:\Users\Usuario\Documents\parental_render`; no implementarlos ni configurarlos aquí. El contrato CP/1 y los fixtures locales se conservan como dependencia compartida congelada, no como código del servidor.
 
 Claves P-256, firmas SHA-256 ECDSA DER y bytes deterministas CP/1. No aceptar claves suministradas por un comando. Un ACK del relay no prueba bloqueo. Duraciones con reloj monotónico, contador persistido, contexto de boot/sesión y desafío. Nunca ampliar permisos ante errores.
 

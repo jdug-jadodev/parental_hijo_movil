@@ -2,6 +2,8 @@
 
 **Proyecto autónomo.** Solo implementar aplicación del hijo Android, Device Owner y modo quiosco. No crear ni modificar el repositorio del otro rol.
 
+**Separación del servidor acordada con el propietario:** el servidor Render/WebSocket se desarrolla exclusivamente en `C:\Users\Usuario\Documents\parental_render`, no aquí. No crear backend, endpoints de servidor, configuración de despliegue Render ni tareas de implementación del relay en este repositorio. Aquí permanecen el cliente de comunicación de la app del niño, el contrato CP/1 congelado y sus fixtures/pruebas locales. Las referencias al servidor describen una dependencia externa, no trabajo autorizado sobre él. No modificar el repositorio Render desde esta sesión sin una petición explícita.
+
 1. Leer `00_EMPIEZA_AQUI.md`, `ESTADO.md` y `hijo/AGENTS.md`.
 2. Elegir una sola tarea de `hijo/PLAN_HIJO.md` o C00-C02 en `compartido/03_INICIO_TECNICO.md`.
 3. Consultar solamente las secciones precisas de las SPEC/ADR y del contrato `compartido/00_CONTRATO_V1.md` indicadas para la tarea.
