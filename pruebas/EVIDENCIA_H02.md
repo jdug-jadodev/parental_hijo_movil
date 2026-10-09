@@ -139,3 +139,15 @@ Siguiente coordinación: conocer presencia de SIM/PIN SIM sin números ni códig
 y solicitar al adulto prueba manual de reinicio y apertura/salida del marcador
 antes de introducir la credencial Android. No reiniciar automáticamente ni
 modificar la SIM o las credenciales.
+
+## Coordinación de la prueba de arranque sin SIM
+
+El propietario confirma que el A13 NO tiene SIM y autoriza la prueba de reinicio
+manual, sin marcar/llamar. La autorización no se registra como resultado de prueba.
+Se solicitará reiniciar presencialmente el A13, abrir/salir del marcador desde
+keyguard antes de introducir el PIN Android, luego desbloquear y volver a la app
+para comprobar Owner/admin. No se ejecuta reboot ADB ni se modifica el A56.
+
+Variante con SIM/PIN SIM no disponible: pendiente para una prueba posterior.
+Abrir el marcador sin SIM no demuestra cobertura ni posibilidad efectiva de
+realizar una llamada; no se certifica emergencia telefónica completa ni G0.

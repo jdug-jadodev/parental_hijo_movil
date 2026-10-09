@@ -5,7 +5,7 @@ Fabricante / código SM completo: samsung / SM-A135M (ADB)
 Versión Android / API / parche: 14 / 34 / 2026-02-05 (ADB)
 One UI: 6.1, confirmada por el propietario; propiedad ADB ro.build.version.oneui = 60100
 Firmware incremental: A135MUBSDDZB3 (ADB)
-Operador / SIM / PIN de SIM: REGISTRAR LOCALMENTE SIN NÚMEROS PERSONALES
+SIM: ausente, según propietario (9 de octubre de 2026). Operador/PIN SIM: no aplican en esta prueba; variantes con SIM/PIN SIM no verificadas.
 APK instalado por este proyecto: dev.controlparental.child debug H02 0.1.0 / versionCode 1, más dev.controlparental.child.test; actualización ADB autorizada el 9 de octubre de 2026
 Huella SHA-256 del certificado debug: 39f25d28e10a93f18fbdabac0223e917c9668d58a6d7ca28af40227946a9f439 (apksigner local C02; actualización normal con la misma firma). Hash de APK actuales en EVIDENCIA_H02.md.
 Estado de Device Owner: dev.controlparental.child/.admin.ChildAdminReceiver en usuario 0, DeviceOwner/Affiliated según dpm list-owners; confirmado además por isDeviceOwnerApp en test Android. Sin Profile Owner listado.
@@ -72,7 +72,7 @@ G4: PENDIENTE
 ## Emergencia
 
 Ruta básica confirmada: botón de la app «Ir a pantalla de bloqueo» → keyguard (encender con botón lateral si se apaga) → «Llamada de emergencia» → salir → desbloquear con credencial Android → volver a app. Propietario no comunicó diferencias ni detalló si hubo apagado/deslizamiento.
-Ruta desde boot: PENDIENTE.
+Ruta desde boot: PENDIENTE; propietario autoriza prueba con reinicio manual y sin SIM, antes de introducir credencial Android.
 Prueba de abrir/salir del marcador sin llamada: propietario confirma «todo correcto» en la ruta básica H02.
 Prueba de llamada completa en entorno autorizado, si existe:
 Ruta sin internet: propietario confirma «correcto» tras Wi-Fi/datos apagados SIN modo avión, recorrido sin llamar y restauración indicada; etapa H02 sin quiosco.

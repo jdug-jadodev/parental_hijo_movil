@@ -123,12 +123,13 @@ android/local.properties es local, está ignorado y no se incluye en commits.
 H01: bloqueo por registros de cuentas resuelto por el propietario; recuento ADB 0 y Owner establecido. Pantalla de preparación confirmada por el propietario. Retirada del admin testOnly, UI previa sin Owner y recuperación completa aún requieren pruebas coordinadas; no se consideran comprobadas por la confirmación de pantalla actual.
 G0–G4 pendientes. Hay inventario físico ADB del A13, no validación del control, emergencia ni recuperación.
 H02: rutas básica y sin internet confirmadas presencialmente por propietario. Variantes SIM y arranque pendientes. No confundir estas pruebas con G0 completo ni emergencia bajo quiosco; no endurecer todavía.
+El propietario confirma A13 sin SIM y autoriza prueba de reinicio manual. Resultado de arranque antes de PIN aún pendiente; variantes con SIM/PIN SIM no disponibles y no comprobadas. Marcador accesible sin SIM no demuestra cobertura ni llamada efectiva.
 El validador Python del esquema no se ha repetido con éxito: instalación de jsonschema 4.26.0 en un venv temporal falló por conexión/timeout. No se modificó Python global; ver evidencia C01.
 La supervivencia del control ante muerte de proceso y suspensión sigue pendiente de pruebas reales.
 
 ## Próxima tarea y lectura mínima
 
-Continuar H02: preguntar presencia de SIM y PIN SIM sin números/códigos; coordinar reinicio manual A13 y apertura/salida del marcador antes de introducir credencial Android, SIN marcar/llamar; luego desbloquear y volver a app. No reiniciar ni modificar credenciales/SIM automáticamente. No avanzar a endurecimiento. A56 fuera de alcance: no tocarlo.
+Continuar H02: reinicio manual A13 autorizado, sin SIM; pedir al adulto abrir/salir del marcador antes de introducir credencial Android, SIN marcar/llamar; luego desbloquear y volver a app y comprobar Owner/admin. Esperar resultado presencial, no inferirlo de la autorización. No reiniciar ni modificar credenciales/SIM automáticamente. No avanzar a endurecimiento. A56 fuera de alcance: no tocarlo.
 H00 cerrado: ADB autorizado, inventario obtenido y preparación confirmada. El formateo fue previo y declarado por el propietario, no ejecutado por el agente.
 Lectura mínima H00: hijo/PLAN_HIJO.md H00, hijo/INSTALACION_A13.md §1–3, compartido/02_FUENTES_Y_COMPATIBILIDAD.md.
 C02 cerrada tras ejecución real de tres tests Android. Lectura mínima H01: hijo/PLAN_HIJO.md H01, hijo/SPEC_HIJO.md H2/H4 e hijo/INSTALACION_A13.md §3; consultar fuentes oficiales correspondientes.
