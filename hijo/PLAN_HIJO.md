@@ -1,6 +1,6 @@
 # Plan de implementación — hijo
 
-Estado: H03 completada en lógica pura; H00–H02 y H04–H12 pendientes. Evidencia y límites en `ESTADO.md` y `pruebas/EVIDENCIA_H03.md`. El avance de preparación C00–C02 se registra en `ESTADO.md`; compilar un proyecto o aprobar tests JVM no demuestra el control parental. Cada tarea termina con código, tests y actualización de `ESTADO.md`. Leer únicamente la sección indicada y las dependencias necesarias; no enviar todo el documento completo a una IA pequeña.
+Estado: H00 completada en inventario y plan de laboratorio; H03 completada en lógica pura; H01–H02 y H04–H12 pendientes. Evidencia y límites en `ESTADO.md`, `pruebas/FICHA_DISPOSITIVO.md` y `pruebas/EVIDENCIA_H03.md`. El avance de preparación C00–C02 se registra en `ESTADO.md`; compilar un proyecto o aprobar tests JVM no demuestra el control parental. Cada tarea termina con código, tests y actualización de `ESTADO.md`. Leer únicamente la sección indicada y las dependencias necesarias; no enviar todo el documento completo a una IA pequeña.
 
 ## Índice de ejecución
 

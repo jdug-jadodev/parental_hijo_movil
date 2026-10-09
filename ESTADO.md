@@ -1,9 +1,9 @@
 # Estado de implementación
 
-Última actualización: 8 de octubre de 2026
+Última actualización: 9 de octubre de 2026
 Commit de partida: ac7d801 (C01 completada)
 Tarea actual: H00
-Estado: EN_CURSO — inventario ADB obtenido; falta confirmar preparación presencial y One UI visible
+Estado: COMPLETADA — inventario y plan de laboratorio; no certifica control ni autoriza instalación/aprovisionamiento
 Commit de partida de H03: 499b31f.
 Primer commit H03: 80e1cb4. Commit de cierre: «Cerrar H03 con pruebas de mantenimiento y evidencia».
 C02 continúa PENDIENTE_VALIDACION Android/Keystore; no bloquea H03.
@@ -14,11 +14,11 @@ Android Studio/JDK/Gradle/AGP/Kotlin: registrados en BUILD_ENV.md.
 JDK de construcción 21.0.10 / Wrapper 8.13 / AGP 8.11.1 / Kotlin 2.2.21 / SDK 36.
 Node 24.21.0 / Windows 11 amd64.
 Hijo: Samsung SM-A135M / Android 14 / API 34 / parche 2026-02-05 / firmware A135MUBSDDZB3.
-One UI: propiedad 60100 observada; versión visible NO COMPROBADA. `dpm list-owners`: no owners.
+One UI: 6.1 confirmada por el propietario; propiedad 60100 observada. `dpm list-owners`: no owners.
 
 ## Terminado y demostrado
 
-- H00 parcial: equipo autorizado ADB e inventariado sin instalar ni modificar datos. Ficha y plan de laboratorio en pruebas/FICHA_DISPOSITIVO.md; copia, credenciales de recuperación, SIM/PIN y elegibilidad de aprovisionamiento siguen pendientes.
+- H00: equipo autorizado ADB e inventariado sin instalar ni modificar datos. One UI 6.1 y preparación del laboratorio confirmadas por el propietario: teléfono ya formateado, sin datos que conservar. Ficha y plan en pruebas/FICHA_DISPOSITIVO.md. SIM/PIN, emergencia y elegibilidad real de aprovisionamiento siguen NO COMPROBADOS para fases posteriores; no se autoriza otro borrado.
 - H03: cuatro acciones, prioridades locales y reloj monotónico inyectable; no hay importaciones Android ni reloj civil en el motor.
 - H03: cuenta regresiva sin reiniciar por reevaluación/reconexión, bloqueo por boot distinto, márgenes de red/canal y siguiente transición positiva.
 - H03: 57 nuevas pruebas del motor correctas, dentro de 227 pruebas JVM totales; mantenimiento y 1024 combinaciones de condiciones incluidos. Evidencia en pruebas/EVIDENCIA_H03.md.
@@ -105,8 +105,8 @@ La supervivencia del control ante muerte de proceso y suspensión sigue pendient
 
 ## Próxima tarea y lectura mínima
 
-Cerrar H00 tras confirmar One UI visible y preparación de copia/recuperación con el propietario. Coordinar aparte instalación de tests C02 y posterior H01; la autorización de consultas ADB no autoriza instalar ni aprovisionar. H03 completada en lógica pura. H04 depende de H01 y no se adelanta saltando esa dependencia.
-Primer punto físico: H00 — inventario y laboratorio, depende de C00 ya completada. Solicitar conexión y autorización ADB al propietario para identificar SM/Android/API/parche y registrar disponibilidad; sin instalar, aprovisionar ni borrar.
+Siguiente unidad: validar C02 Android tras autorización explícita de instalación de app/test APK y ejecución de sus tres tests Keystore. No solicita Device Owner ni borra el equipo. Después H01, con coordinación independiente de aprovisionamiento. H03 completada en lógica pura; H04 depende de H01 y no se adelanta saltando esa dependencia.
+H00 cerrado: ADB autorizado, inventario obtenido y preparación confirmada. El formateo fue previo y declarado por el propietario, no ejecutado por el agente.
 Lectura mínima H00: hijo/PLAN_HIJO.md H00, hijo/INSTALACION_A13.md §1–3, compartido/02_FUENTES_Y_COMPATIBILIDAD.md.
 C02 queda PENDIENTE_VALIDACION: coordinar después de H00 la instalación de app/test APK y ejecutar sus tres tests en Android desbloqueado. El inventario H00 no instala ni borra nada; no confundir compilar los tests con aprobarlos.
 No proceder al endurecimiento H06 sin comprobar emergencia H02 y recuperación H05 en el equipo real.
