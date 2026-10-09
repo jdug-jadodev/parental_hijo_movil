@@ -2,8 +2,8 @@
 
 Última actualización: 9 de octubre de 2026
 Commit de partida: ac7d801 (C01 completada)
-Tarea actual: H02 — ruta de emergencia del sistema
-Estado: COMPLETADA en laboratorio sin SIM — ruta pública básica, sin internet y tras reinicio confirmadas; G0 completo y variantes SIM/PIN SIM pendientes
+Tarea actual: H04 — estado atómico y contexto de arranque
+Estado: EN_CURSO — núcleo de persistencia probado; faltan adaptador AtomicFile, contexto/receiver de boot y validación Android
 Commit de partida de H03: 499b31f.
 Primer commit H03: 80e1cb4. Commit de cierre: «Cerrar H03 con pruebas de mantenimiento y evidencia».
 C02 comprobada en JVM/Node y Android/Keystore. Commit de esta unidad: «Validar C02 en el A13 y excluir expresamente el A56».
@@ -18,6 +18,8 @@ One UI: 6.1 confirmada por el propietario; propiedad 60100 observada. Device Own
 
 ## Terminado y demostrado
 
+- H04 primera unidad: registro local versionado con checksum sobre bytes del payload, parser estricto, última orden firmada y campos derivados comprobados con pública del vínculo. Sin claves privadas, códigos reales ni historial. Puerto de almacenamiento y transacciones serializadas probados con fake, NO AtomicFile Android aún.
+- H04 primera unidad: 15 tests nuevos JVM aprobados dentro de 252 totales; corrupción no se convierte en ausencia, contador no retrocede, repetición no reinicia inicio y 100 actualizaciones concurrentes no se pierden. No demuestra persistencia física ni bloqueo aplicado.
 - H02 cierre inicial sin SIM: propietario confirma «correcto» al reiniciar manualmente, abrir/salir del marcador antes de PIN Android SIN llamar, desbloquear y comprobar Owner/admin Sí. H-EMG-01 parcial por variantes SIM no disponibles; G0 completo y emergencia bajo quiosco pendientes. No se ejecutó reboot ADB ni se tocó A56.
 - H02: botón de emergencia sin dependencia de red/clave parental, solicitud lockNow pública con precondiciones y error explícito. Seis tests JVM nuevos correctos. APK H02 instalado solo en A13; runner con Owner/credencial exigidos: OK (7 tests). Propietario confirma rutas básica, sin internet y arranque sin SIM, sin marcar/llamar. Confirmación presencial, no observación automatizada; variantes SIM/PIN SIM pendientes.
 - H01: APK actualizados y Device Owner real establecido por ADB únicamente en el A13, sin quiosco/endurecimiento añadido. Tres tests H01 antes de Owner aprobados; seis tests H01+C02 después, exigiendo Owner/admin real, aprobados. Debug testOnly separado de release. El propietario respondió «perfecto» a la comprobación de pantalla de preparación; confirmación presencial comunicada, no captura automatizada. A56 intacto.
@@ -44,6 +46,7 @@ Hay Device Owner de laboratorio en el A13, pero no quiosco, bloqueo parental apl
 
 ## Archivos modificados en la última tarea
 
+- H04: data/ModelosEstado.kt, ValidadorEstado.kt, CodecEstado.kt y ChildStateStore.kt; tests data/PreparacionEstado.kt, CodecEstadoTest.kt y ChildStateStoreTest.kt; app-child/build.gradle.kts (testFixtures solo JVM), ESTADO.md.
 - H02: domain/ModelosEmergencia.kt, emergency/EmergencyAccess.kt, admin/PolicyEnforcer.kt, ui/LockedScreen.kt y LauncherActivity.kt; strings.xml; EmergencyAccessTest.kt y CondicionesEmergenciaAndroidTest.kt; pruebas/EVIDENCIA_H02.md y ESTADO.md.
 - H02 validación Android: CondicionesEmergenciaAndroidTest.kt (credencial exigible), pruebas/EVIDENCIA_H02.md, pruebas/FICHA_DISPOSITIVO.md y ESTADO.md.
 - H01 físico: ESTADO.md, pruebas/EVIDENCIA_H01.md, pruebas/FICHA_DISPOSITIVO.md y BUILD_ENV.md. Sin cambios de código ni contrato.
@@ -61,6 +64,7 @@ android/local.properties es local, está ignorado y no se incluye en commits.
 
 ## Pruebas ejecutadas y resultado
 
+- H04 primera unidad: `.\gradlew.bat :core-protocol:test :app-child:testDebugUnitTest --console=plain`: BUILD SUCCESSFUL; informes 252 tests/0 fallos/0 errores/0 omitidos. Tests del hijo ejecutados; núcleo UP-TO-DATE. Se añadió únicamente soporte de fixtures en testImplementation, no en APK.
 - H02 arranque sin SIM: confirmación presencial del propietario «correcto» a los pasos de reinicio manual, emergencia antes de PIN Android sin llamar y comprobación posterior Owner/admin Sí. No es captura automatizada ni prueba de persistencia del temporizador. Solo actualización documental; no se repitieron tests ni se usó ADB.
 - H-EMG-02 presencial: propietario responde «correcto» a repetir ruta de emergencia en A13 con Wi-Fi/datos apagados, SIN modo avión ni llamadas, y reactivar conectividad. Aprobado en etapa H02 sin quiosco; confirmación comunicada, no medición de red automatizada. No se ejecutó ADB ni se repitieron tests automáticos para este registro.
 - H02 manual básico: propietario confirma «todo correcto» después de las instrucciones de pulsar botón, acceder a emergencia sin marcar/llamar, salir y volver a la app con credencial Android. No comunicó diferencias; no se infiere apagado/deslizamiento exacto. Evidencia H02 y ficha actualizadas. No se repitieron tests automáticos ni se ejecutó ADB en este registro documental.
@@ -130,7 +134,7 @@ La supervivencia del control ante muerte de proceso y suspensión sigue pendient
 
 ## Próxima tarea y lectura mínima
 
-Siguiente tarea H04 — estado atómico y contexto de arranque (depende de H01/H03 completadas). Leer hijo/PLAN_HIJO.md H04, SPEC-H H8, CP/1 §10 y ADR-H-005. Implementar y probar código antes de coordinar sus pruebas físicas. H02 cerrada en alcance inicial sin SIM; variantes SIM/G0 y recuperación siguen bloqueando endurecimiento H06. A56 fuera de alcance: no tocarlo.
+Continuar H04: adaptador AtomicFile en Device Protected, singleton por archivo/proceso y contexto de arranque idempotente; añadir BootReceiver y pruebas puras/instrumentadas. No instalar/reiniciar automáticamente. H02 cerrada en alcance inicial sin SIM; variantes SIM/G0 y recuperación siguen bloqueando endurecimiento H06. A56 fuera de alcance: no tocarlo.
 H00 cerrado: ADB autorizado, inventario obtenido y preparación confirmada. El formateo fue previo y declarado por el propietario, no ejecutado por el agente.
 Lectura mínima H00: hijo/PLAN_HIJO.md H00, hijo/INSTALACION_A13.md §1–3, compartido/02_FUENTES_Y_COMPATIBILIDAD.md.
 C02 cerrada tras ejecución real de tres tests Android. Lectura mínima H01: hijo/PLAN_HIJO.md H01, hijo/SPEC_HIJO.md H2/H4 e hijo/INSTALACION_A13.md §3; consultar fuentes oficiales correspondientes.

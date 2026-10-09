@@ -43,6 +43,7 @@ dependencies {
     implementation(libs.compose.material3)
     implementation(libs.compose.ui)
     testImplementation(libs.junit)
+    testImplementation(testFixtures(project(":core-protocol")))
     androidTestImplementation(libs.android.test.junit)
     androidTestImplementation(libs.android.test.runner)
 }
