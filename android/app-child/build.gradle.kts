@@ -42,6 +42,7 @@ dependencies {
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.material3)
     implementation(libs.compose.ui)
+    implementation(libs.zxing.core)
     testImplementation(libs.junit)
     testImplementation(testFixtures(project(":core-protocol")))
     androidTestImplementation(libs.android.test.junit)

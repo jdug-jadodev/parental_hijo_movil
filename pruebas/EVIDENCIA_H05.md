@@ -312,3 +312,45 @@ herramientas autorizadas operativas pendientes; H06 continúa bloqueada.
 Rutas de este registro: ESTADO.md, pruebas/EVIDENCIA_H05.md y
 pruebas/FICHA_DISPOSITIVO.md. Próxima unidad: presentación/captura QR e integración
 con identidad confiable, sin fabricar vínculo; nueva prueba física requiere coordinación.
+
+## Quinta unidad — transporte óptico QR aislado
+
+Se añadió QrOffline (sin Android/IO): serializa el sobre OFFLINE_CHALLENGE CP/1
+sin envoltorio nuevo, genera módulos QR con corrección M y margen blanco de cuatro
+módulos. Lector exclusivo de OFFLINE_RESPONSE devuelve bytes SIN AUTORIZAR;
+RecoveryController sigue siendo responsable de firma con pública confiable, acción,
+nonce, pairId, bootId, vigencia y consumo. Un QR decodificado nunca es APPLIED,
+sesión o permiso. No agrega códigos, claves ni vínculo de producción.
+
+Lectura desde plano Y compacto copiado defensivamente, dimensiones 64–1280 y
+tamaño exacto antes de reservar memoria; texto ASCII imprimible de hasta 2000
+bytes, sin trim, URI, compresión, normalización o campos adicionales. El límite de
+2000 es de este transporte, no cambio del contrato/schema. Sobres OFFLINE actuales
+caben; exceso se rechaza, no se trunca. Cámara deberá convertir stride/rotación y
+cerrar imágenes; esa integración y la pantalla siguen pendientes. No se añadieron
+permisos de cámara, actividades externas o mecanismos de autorización.
+
+Dependencia fijada com.google.zxing:core:3.5.3 (Apache-2.0), solo motor QR sin app de
+escáner externo ni descarga de modelos. Fuente primaria consultada:
+https://raw.githubusercontent.com/zxing/zxing/zxing-3.5.3/core/src/main/java/com/google/zxing/qrcode/QRCodeWriter.java
+Contrato §9/9.A y schema OfflineChallenge/OfflineResponse consultados, sin cambios.
+
+Ocho tests JVM nuevos: margen, ida óptica/vuelta de respuesta sintética 640×640
+con mismos bytes, firma alterada aún sin verificar, direcciones cruzadas, URI/
+payload desnudo/propósito/campos extra, texto fuera de límites, dimensiones inválidas
+y cuadro blanco. Fixtures solo en tests; no certifica cámara real, enfoque, luz,
+distancia, rotación ni legibilidad en A13. Firmas siguen cubiertas por tests previos.
+
+Comando completo Gradle de esta evidencia: primer intento agotó timeout de 120 s;
+repetición con 240 s BUILD SUCCESSFUL. Núcleo 169 UP-TO-DATE, hijo debug 160
+ejecutados (ocho nuevos), total 329/0 fallos/0 errores/0 omitidos; release 153
+ejecutados (repite casos), también correctos. APK debug/test/release sin firmar
+construidos; lint 0 errores/11 avisos de versiones (nuevo aviso ZXing 3.5.4 disponible,
+sin ocultarlo). Inspectores APK base/H01 OK. No nueva instrumentación Android:
+23 tests aprobados corresponden al APK anterior instalado, no a esta construcción.
+
+Rutas: recovery/QrOffline.kt, test/recovery/QrOfflineTest.kt, build.gradle.kts del
+hijo, gradle/libs.versions.toml, ESTADO.md y esta evidencia. Sin ADB, instalación,
+reinicio, endurecimiento o borrado; A56 y Render fuera de alcance. Próxima unidad:
+presentación/cámara con permisos, cierre de imágenes y cancelación; mantener envío
+cerrado hasta identidad/herramientas autorizadas disponibles. H05 sigue EN_CURSO.

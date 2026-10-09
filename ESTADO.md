@@ -3,7 +3,7 @@
 Última actualización: 9 de octubre de 2026
 Commit de partida: ac7d801 (C01 completada)
 Tarea actual: H05 — recuperación local antes de endurecer
-Estado: EN_CURSO — 321 tests JVM y 23 Android aprobados, incluidos ocho OFFLINE Keystore; recuperación operativa pendiente y consumo UI cerrado
+Estado: EN_CURSO — 329 resultados JVM correctos y 23 Android previos aprobados; transporte QR probado en JVM, pantalla/cámara y recuperación operativa pendientes
 Commit de partida de H03: 499b31f.
 Primer commit H03: 80e1cb4. Commit de cierre: «Cerrar H03 con pruebas de mantenimiento y evidencia».
 C02 comprobada en JVM/Node y Android/Keystore. Commit de esta unidad: «Validar C02 en el A13 y excluir expresamente el A56».
@@ -18,6 +18,7 @@ One UI: 6.1 confirmada por el propietario; propiedad 60100 observada. Device Own
 
 ## Terminado y demostrado
 
+- H05 transporte QR: QrOffline genera matriz de desafío con margen blanco y decodifica respuestas desde plano de luminancia acotado, sin red/archivo/URI ni normalizar bytes. Ocho tests JVM nuevos aprobados, incluida lectura óptica sintética. No verifica firmas ni concede permisos: devuelve bytes aún sin autorizar. ZXing core 3.5.3 fijado; no permisos de cámara o integración UI en esta unidad.
 - H05 OFFLINE Android: actualización autorizada SOLO APK test en A13 Success; runner con Owner/credencial exigidos: OK (23 tests), incluidos los ocho nuevos de Keystore/AtomicFile efímeros. Firmas, replay, caducidad con reloj inyectado, espera y RETIRE limitado comprobados sin vínculo real, borrado ni cambios en app. H05 operativa completa sigue pendiente.
 - H05 OFFLINE Keystore preparado: ocho tests Android nuevos compilados NO EJECUTADOS, dos alias efímeros por test y AtomicFile aislado; total próximo 23 tests. Firmas reales previstas sin exportar privadas; RETIRE no borra y no cambia UI/estado de producción. Sin modificaciones de app o permisos.
 - H05 revisión presencial: propietario confirma «correcto» a SIN_VINCULO/consumo UI deshabilitado, cancelar/volver y ruta de emergencia sin marcar/llamar, desbloquear/regresar. Confirmación comunicada, no captura automática. Sin quiosco/recuperación operativa ni FLAG_SECURE comprobado físicamente.
@@ -58,6 +59,7 @@ Hay Device Owner de laboratorio en el A13, pero no quiosco, bloqueo parental apl
 
 ## Archivos modificados en la última tarea
 
+- H05 transporte QR: android/app-child/src/main/java/dev/controlparental/child/recovery/QrOffline.kt y src/test/java/dev/controlparental/child/recovery/QrOfflineTest.kt; android/app-child/build.gradle.kts, android/gradle/libs.versions.toml, ESTADO.md y pruebas/EVIDENCIA_H05.md.
 - H05 ejecución OFFLINE Android: ESTADO.md, pruebas/EVIDENCIA_H05.md y pruebas/FICHA_DISPOSITIVO.md; registro documental, sin código nuevo.
 - H05 cuarta unidad: androidTest/recovery/OfflineKeystoreAndroidTest.kt, ESTADO.md y pruebas/EVIDENCIA_H05.md. Solo tests/evidencia; no app/contrato/Render.
 - H05 instalación y 15 tests Android: ESTADO.md, pruebas/EVIDENCIA_H05.md y pruebas/FICHA_DISPOSITIVO.md; solo documentación/evidencia, sin código nuevo.
@@ -88,6 +90,7 @@ android/local.properties es local, está ignorado y no se incluye en commits.
 
 ## Pruebas ejecutadas y resultado
 
+- H05 QR: primer comando Gradle agotó 120 s, repetición con 240 s BUILD SUCCESSFUL. Núcleo 169 UP-TO-DATE; hijo debug 160 y release 153 ejecutados sin fallos/errores/omitidos; total núcleo+debug 329. APK debug/test/release sin firmar construidos; lint 0 errores/11 avisos de versiones, inspectores base/H01 OK. No ADB/instalación/pruebas físicas; 23 Android son evidencia anterior del APK instalado, no de esta nueva construcción.
 - H05 OFFLINE físico autorizado: único A13 anunciado SM_A135M y comprobado SM-A135M antes de cada operación, Owner esperado presente; install -r -t SOLO APK test Success y runner exigirDeviceOwner=true/exigirCredencialAndroid=true: OK (23 tests). App no reinstalada, alias/archivos de laboratorio aislados; sin reinicio, endurecimiento, borrado o comandos al A56. Sin nueva construcción/JVM en este registro.
 - H05 tests OFFLINE Keystore: comando completo Gradle BUILD SUCCESSFUL; APK test recompilado, tests JVM/core UP-TO-DATE (321/145 resultados anteriores, no nueva ejecución), app debug/release UP-TO-DATE, lint correcto/10 avisos. Inspectores base/H01 OK. Ocho tests Android nuevos COMPILADOS NO EJECUTADOS; no ADB/instalación en esta unidad.
 - H05 presentación/emergencia: confirmación presencial «correcto» del propietario a los pasos de pantalla, consumo cerrado, cancelación y marcador SIN marcar/llamar. Solo actualización documental; sin ADB, nuevas pruebas automáticas o cambios del teléfono por el agente.
@@ -182,7 +185,7 @@ La supervivencia del control ante muerte de proceso y suspensión sigue pendient
 
 ## Próxima tarea y lectura mínima
 
-Continuar SOLO H05: 23 tests Android aprobados, incluidos OFFLINE Keystore. Próxima unidad: presentación/captura QR e integración de identidad confiable sin inventar vínculo de producción; coordinar aparte cualquier nueva instalación/prueba física. Mantener consumo cerrado hasta herramientas autorizadas disponibles; no avanzar H06 ni inyectar vínculo real como atajo. H05 NO cerrada. A56 fuera de alcance; Render externo en parental_render.
+Continuar SOLO H05: integrar transporte QrOffline con presentación/captura de cámara, manejo de permiso y cierre de imágenes/cancelación; identidad confiable sin inventar vínculo de producción. Probar límites/ciclo de vida y mantener emergencia accesible. Coordinar aparte cualquier instalación/prueba física; 23 Android previos no certifican QR óptico en A13. Mantener consumo cerrado hasta herramientas autorizadas disponibles; no avanzar H06. H05 NO cerrada. A56 fuera de alcance; Render externo en parental_render.
 H00 cerrado: ADB autorizado, inventario obtenido y preparación confirmada. El formateo fue previo y declarado por el propietario, no ejecutado por el agente.
 Lectura mínima H00: hijo/PLAN_HIJO.md H00, hijo/INSTALACION_A13.md §1–3, compartido/02_FUENTES_Y_COMPATIBILIDAD.md.
 C02 cerrada tras ejecución real de tres tests Android. Lectura mínima H01: hijo/PLAN_HIJO.md H01, hijo/SPEC_HIJO.md H2/H4 e hijo/INSTALACION_A13.md §3; consultar fuentes oficiales correspondientes.
