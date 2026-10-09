@@ -1,0 +1,32 @@
+# Archivos locales del equipo y del IDE.
+.idea/
+*.iml
+local.properties
+.gradle/
+.kotlin/
+**/build/
+
+# Secretos, firmas privadas y configuración sensible.
+.env
+.env.*
+*.jks
+*.keystore
+*.p12
+*.pfx
+*.pem
+*.key
+secrets/
+secretos/
+
+# Compilaciones: se generan localmente, no se versionan.
+*.apk
+*.aab
+*.apks
+*.hprof
+
+# Python y sistema operativo.
+__pycache__/
+*.pyc
+.venv/
+Thumbs.db
+.DS_Store

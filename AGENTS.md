@@ -13,3 +13,15 @@
 **Regla de seguridad:** no incorporar secretos, claves privadas ni códigos reales en repositorio; emergencia siempre accesible; no deshabilitar recuperación por un intento de endurecimiento; no indicar que un ACK de relay significa bloqueo aplicado.
 
 **Primer paso:** C00 de `compartido/03_INICIO_TECNICO.md`.
+
+## Acuerdos con el propietario — 8 de octubre de 2026
+
+- Desarrollar y explicar en español: interfaz, documentación, comentarios, pruebas y mensajes de commit. Conservar nombres de APIs, componentes previstos por la SPEC y campos CP/1 cuando sea necesario para compatibilidad.
+- Objetivo: control global del tiempo y bloqueo, sin monitorear actividad, historial, ubicación ni contenido.
+- El tiempo es una cuenta regresiva de tiempo transcurrido; continúa con la pantalla apagada. Cambiar de aplicación no reinicia ni pausa el contador.
+- Permitir aplicaciones aprobadas presencialmente, siempre que no permitan escapar del control. No prometer que cualquier aplicación es segura sin probarla.
+- Diseñar para diferentes celulares Android mediante APIs oficiales y comprobación de capacidades; primero validar el Samsung A13. El código SM, Android y firmware concretos siguen NO COMPROBADOS. iPhone está fuera del alcance actual.
+- El A13 estará disponible como equipo de laboratorio y se entregará al niño solo después de validar la versión final.
+- Avisar al propietario cuando sea necesario conectar y autorizar el dispositivo por ADB. No instalar, aprovisionar, endurecer ni borrar el teléfono sin coordinar la prueba concreta.
+- Hacer un commit aproximadamente cada 500 líneas de código propias añadidas o modificadas. Contar Kotlin, configuración y pruebas; excluir documentación, fixtures congelados, archivos generados y Gradle Wrapper. No añadir código de relleno para alcanzar el umbral. Hacer también un commit al cerrar una tarea pequeña aunque no llegue a 500 líneas.
+- Antes de cada commit revisar los cambios, ejecutar las pruebas disponibles y registrar pendientes en ESTADO.md. Nunca incluir secretos ni resultados de pruebas no realizadas.

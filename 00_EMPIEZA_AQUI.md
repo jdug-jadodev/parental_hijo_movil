@@ -1,6 +1,6 @@
 # Control parental — proyecto Hijo Android (Samsung A13 primero)
 
-**Paquete de especificaciones v1.0. Se desarrolla por separado. Aún NO hay código funcional ni APK.**
+**Especificaciones v1.0 y base de desarrollo independiente. Consultar `ESTADO.md` para conocer lo realmente compilado y probado. Todavía no hay control parental funcional.**
 
 ## Qué se construye aquí
 
@@ -12,7 +12,7 @@ Este repositorio **no contiene el código del otro dispositivo**. El protocolo c
 
 ## Orden de trabajo para una IA pequeña o un desarrollador principiante
 
-1. Copiar estas carpetas como documentación de un nuevo repositorio Git independiente.
+1. Usar este repositorio Git independiente; el proyecto Android está en `android/`.
 2. En OpenCode, abrir **solo este repositorio** y leer `AGENTS.md` y `ESTADO.md`.
 3. Ejecutar C00, C01 y C02 de `compartido/03_INICIO_TECNICO.md` **adaptados a este rol**; actualizar `ESTADO.md`.
 4. Continuar con **una tarea por turno** de `hijo/PLAN_HIJO.md`; revisar la SPEC pertinente y el ADR indicado.
@@ -38,7 +38,7 @@ Este repositorio **no contiene el código del otro dispositivo**. El protocolo c
 - Un WebSocket puede desconectarse y no garantiza entrega instantánea ni permanente. El hijo aplica política local, no confía en recibir siempre una orden.
 - El acceso de emergencia del sistema debe funcionar independientemente del servicio. No iniciar restricciones irreversibles sin recuperación comprobada.
 - Device Owner requiere aprovisionamiento real; A13 es candidato, no compatibilidad universal certificada.
-- Los ejemplos y scripts **solo validan el contrato documental**. Ninguna app ni relay se han implementado aún.
+- Los ejemplos y scripts **solo validan el contrato documental**. La base Android de C00 no aplica políticas; no hay relay real en este repositorio.
 
 ## Comprobación de documentación
 
@@ -46,4 +46,4 @@ Este repositorio **no contiene el código del otro dispositivo**. El protocolo c
 
 Opcional con Python + jsonschema: `python pruebas/verificar_esquema.py`.
 
-**Primera tarea:** C00. No empezar implementando todas las funciones simultáneamente.
+**Inicio y continuación:** consultar `ESTADO.md`; C00 prepara el proyecto y C01 empieza el protocolo. No implementar todas las funciones simultáneamente.

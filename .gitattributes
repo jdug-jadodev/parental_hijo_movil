@@ -1,0 +1,13 @@
+* text=auto
+*.kt text eol=lf
+*.kts text eol=lf
+*.xml text eol=lf
+*.toml text eol=lf
+*.properties text eol=lf
+*.md text eol=lf
+gradlew text eol=lf
+*.bat text eol=crlf
+*.jar binary
+# Mantener los bytes originales del contrato y los fixtures congelados.
+compartido/** -text
+pruebas/vectores_crypto.json -text

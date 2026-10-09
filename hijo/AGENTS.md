@@ -1,6 +1,6 @@
 # Instrucciones para una IA de contexto reducido — hijo
 
-Tu responsabilidad es **DPC, quiosco y ejecución local del hijo**. El repositorio es por crear; este paquete es documentación. No afirmes que el producto funciona hasta ejecutar pruebas apropiadas.
+Tu responsabilidad es **DPC, quiosco y ejecución local del hijo**. El repositorio contiene documentación y la base Android en `android/`; consulta `ESTADO.md` para distinguir lo implementado de lo pendiente. No afirmes que el producto funciona hasta ejecutar pruebas apropiadas.
 
 ## Lectura mínima por tarea
 
@@ -23,7 +23,7 @@ Implementa una tarea pequeña por turno. Propón división antes de modificar mu
 
 Prueba el cambio. Si no hay SDK/dispositivo/permisos, reporta exactamente qué no pudiste verificar y deja la tarea como pendiente de esa prueba. No marques pruebas manuales como aprobadas por inspección del código.
 
-Entrega: breve resultado, rutas cambiadas, pruebas realmente ejecutadas, pendientes y siguiente tarea. Actualiza `ESTADO.md` sin guardar claves, códigos o información personal. Para continuar usa `plantillas/HANDOFF.md`.
+Entrega: breve resultado, rutas cambiadas, pruebas realmente ejecutadas, pendientes y siguiente tarea. Actualiza `ESTADO.md` sin guardar claves, códigos o información personal. Para continuar usa `pruebas/HANDOFF_PLANTILLA.md`.
 
 ## Prompt inicial sugerido
 

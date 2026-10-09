@@ -1,6 +1,6 @@
 # Plan de implementación — hijo
 
-Estado de todas las tareas: **PENDIENTE**. Ninguna aplicación ha sido compilada o probada por este paquete. Cada tarea termina con código, tests y actualización de `ESTADO.md`. Leer únicamente la sección indicada y las dependencias necesarias; no enviar todo el documento completo a una IA pequeña.
+Estado de H00–H12: **PENDIENTE**. El avance de preparación C00–C02 se registra en `ESTADO.md`; compilar un esqueleto no demuestra el control parental. Cada tarea termina con código, tests y actualización de `ESTADO.md`. Leer únicamente la sección indicada y las dependencias necesarias; no enviar todo el documento completo a una IA pequeña.
 
 ## Índice de ejecución
 

@@ -1,39 +1,71 @@
 # Estado de implementación
 
-Última actualización: POR COMPLETAR
-Commit actual: POR COMPLETAR
+Última actualización: 8 de octubre de 2026
+Commit de partida: cd6b74d (documentación existente del propietario)
 Tarea actual: C00
-Estado: PENDIENTE
+Estado: COMPLETADA — C00; controles del producto y pruebas físicas todavía PENDIENTES
+Commit de cierre: identificar por el mensaje «Crear base Android del hijo y registrar acuerdos de desarrollo».
 
 ## Entorno observado
 
-Android Studio/JDK/Gradle/AGP/Kotlin: NO REGISTRADO
-Node / sistema operativo: NO APLICA AL HIJO
+Android Studio/JDK/Gradle/AGP/Kotlin: registrados en BUILD_ENV.md.
+JDK de construcción 21.0.10 / Wrapper 8.13 / AGP 8.11.1 / Kotlin 2.2.21 / SDK 36.
+Node 24.21.0 / Windows 11 amd64.
 SM / Android / One UI / parche del hijo: NO COMPROBADO
 
 ## Terminado y demostrado
 
-Ninguna tarea del producto. La documentación y fixtures no son una implementación.
+- Proyecto Android Kotlin/Compose compilado, núcleo JVM separado y Wrapper reproducible.
+- Siete pruebas JVM correctas: seis del núcleo/simulador y una de dependencia desde Android.
+- Simulador que entrega los bytes de ejemplos congelados, aislado en testFixtures.
+- APK debug mínimo con pantalla «No configurado»; sin clases de pruebas ni fixtures congelados dentro del APK.
+No hay Device Owner, políticas, cuenta regresiva implementada ni validación física.
 
 ## Archivos modificados en la última tarea
 
-POR COMPLETAR
+- AGENTS.md: acuerdos del propietario y reglas de commits.
+- .gitignore y .gitattributes: exclusiones locales y conservación de bytes del contrato.
+- BUILD_ENV.md y android/LEEME.md: herramientas y construcción.
+- android/: Wrapper, catálogo de versiones, configuración de módulos, pantalla Compose, manifest, recursos, núcleo mínimo y pruebas.
+- pruebas/verificar_apk_base.py: inspección del APK sin dispositivo ni dependencias externas.
+- 00_EMPIEZA_AQUI.md, hijo/AGENTS.md y hijo/PLAN_HIJO.md: referencias actualizadas a la base de código; corregida ruta de plantilla de relevo.
+- ESTADO.md: resultados, riesgos y siguiente tarea.
+android/local.properties es local, está ignorado y no se incluye en commits.
 
 ## Pruebas ejecutadas y resultado
 
-POR COMPLETAR con comando, entorno y resultado real. No incluir pruebas imaginadas.
+- `node pruebas/verificar_vectores.mjs`: OK, 10 vectores y 78 comprobaciones, Node 24.21.0.
+- Gradle Wrapper generado con Gradle 8.13 y JDK 21.0.10: OK.
+- Primera construcción con Kotlin 2.2.0: seis tests del núcleo y uno de app correctos, APK generado; lint falló por el separador de unidad sin escapar en local.properties.
+- Corregido local.properties; añadidos icono y reglas de extracción. Kotlin ajustado a 2.2.21 por compatibilidad documentada con AGP 8.11.1.
+- Repetición con JDK 21.0.10, Gradle 8.13, AGP 8.11.1 y Kotlin 2.2.21, desde android/: `.\gradlew.bat :core-protocol:test :app-child:testDebugUnitTest :app-child:assembleDebug :app-child:lintDebug --console=plain`: BUILD SUCCESSFUL, 7 tests, 0 fallos, 0 omitidos.
+- Lint final: 0 errores y 7 avisos por versiones más recientes disponibles; no se ocultaron ni se creó baseline. Se mantienen versiones fijadas con compatibilidad documentada.
+- Aviso de empaquetado: libandroidx.graphics.path.so se incluye sin eliminar símbolos de depuración; no impidió construir el APK debug.
+- Inspección ZIP/DEX con Python estándar: APK sin fixtures congelados ni clases del simulador/tests; se deja script reproducible en pruebas/verificar_apk_base.py.
+- `python -B pruebas/verificar_apk_base.py`: OK, sin fixtures ni clases de prueba en el APK.
+- `aapt dump badging` del APK: paquete dev.controlparental.child, minSdk 31, targetSdk 36, actividad inicial y variante depurable. No se ejecutó la interfaz.
+- SHA-256 de contrato y esquema coinciden con INTEGRACION_FUTURA.md; los archivos compartidos no cambiaron.
+- SHA-256 del JAR del Wrapper coincide con el publicado por Gradle.
+- No se ejecutaron pruebas de dispositivo ni se solicitó conexión ADB.
 
 ## Decisiones locales sin cambiar ADR
 
-POR COMPLETAR
+- Acuerdos del propietario guardados en AGENTS.md: español, commits cada aproximadamente 500 líneas, cuenta regresiva y aviso antes de ADB.
+- Cuenta regresiva basada en tiempo transcurrido, incluso con pantalla apagada; sin cambios a CP/1.
+- Simulador aislado en testFixtures, sin dependencia de producción ni ACK fabricados.
+- Respetado el repositorio Git y sus commits existentes.
 
 ## Bloqueos y riesgos abiertos
 
 G0–G4 pendientes. No hay validación física del A13.
+El validador Python del esquema no se ha repetido con éxito: falta jsonschema.
+La supervivencia del control ante muerte de proceso y suspensión sigue pendiente de pruebas reales.
 
 ## Próxima tarea y lectura mínima
 
-C00 — compartido/03_INICIO_TECNICO.md
+C01 — compartido/03_INICIO_TECNICO.md: modelos, parser estricto y serialización CP/1.
+Lectura mínima: CP/1 §3–4 y límites de §2.3, compartido/protocolo.schema.json y compartido/04_USO_ESQUEMA.md; consultar secciones adicionales solo según los modelos que se implementen.
+H00/H01 requerirán coordinar con el propietario la conexión ADB y el aprovisionamiento físico; todavía no es necesario para C01.
 
 ## Seguridad
 

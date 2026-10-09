@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Control del tiempo</string>
+    <string name="titulo_inicial">No configurado</string>
+    <string name="aviso_inicial">Esta versión prepara la aplicación del hijo. Todavía no controla el tiempo ni bloquea otras aplicaciones.</string>
+    <string name="aviso_laboratorio">La configuración y las pruebas se harán con el adulto. No entregar esta versión como control parental.</string>
+</resources>
