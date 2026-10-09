@@ -10,11 +10,12 @@ Con ADB ya habilitado para pruebas se pueden consultar, sin modificar datos:
 
 ```powershell
 adb devices
-adb shell getprop ro.product.manufacturer
-adb shell getprop ro.product.model
-adb shell getprop ro.build.version.release
-adb shell getprop ro.build.version.sdk
-adb shell getprop ro.build.version.security_patch
+# Tras seleccionar y comprobar el A13 como se indica en §3:
+& $adb -s $serieA13 shell getprop ro.product.manufacturer
+& $adb -s $serieA13 shell getprop ro.product.model
+& $adb -s $serieA13 shell getprop ro.build.version.release
+& $adb -s $serieA13 shell getprop ro.build.version.sdk
+& $adb -s $serieA13 shell getprop ro.build.version.security_patch
 ```
 
 Estos comandos suponen Platform Tools en PATH. En Windows, también puede invocarse `adb.exe` mediante su ruta dentro de `%LOCALAPPDATA%\Android\Sdk\platform-tools`. El número de serie que muestre ADB no se publica ni se envía al relay.
@@ -37,15 +38,50 @@ Los comandos son objetivos de construcción para el repositorio por crear; **no 
 
 Guardar previamente información que el propietario desee conservar. Verificar credenciales Google/Samsung y obligaciones de protección de restablecimiento. Cualquier restablecimiento se hace manualmente y con confirmación del propietario; esta guía no lo ejecuta. Dejar el equipo limpio, sin cuentas añadidas ni otro propietario. Activar opciones de desarrollador/depuración únicamente para laboratorio, autorizar el computador del propietario e instalar la compilación de pruebas.
 
-Ejemplo después de construir un APK debug de laboratorio:
+H01 prepara el receiver y HOME sin activar quiosco, HOME persistente, bloqueo de
+ADB/Wi-Fi ni políticas de endurecimiento. El debug declara `testOnly=true`
+exclusivamente en `src/debug/AndroidManifest.xml`; release no lleva ese atributo.
+La retirada del admin de prueba por ADB deberá comprobarse en laboratorio, no
+se considera recuperación H05 implementada. Android puede aplicar sus valores
+predeterminados al aprovisionar un Device Owner.
+
+**Regla obligatoria: A13 SM-A135M únicamente. No tocar el A56.** Obtener el destino
+sin publicar su serie y detenerse si no hay un único A13 autorizado:
 
 ```powershell
-adb install -t .\app-child\build\outputs\apk\debug\app-child-debug.apk
-adb shell dpm set-device-owner dev.controlparental.child/.admin.ChildAdminReceiver
-adb shell dumpsys device_policy
+$adb = Join-Path $env:LOCALAPPDATA 'Android\Sdk\platform-tools\adb.exe'
+$candidatos = @(& $adb devices -l | Where-Object { $_ -match '^\S+\s+device\s+.*\bmodel:SM_A135M(?:\s|$)' })
+if ($candidatos.Count -ne 1) { throw 'No hay un único A13 autorizado' }
+$serieA13 = ($candidatos[0] -split '\s+')[0]
+if ((& $adb -s $serieA13 shell getprop ro.product.model).Trim() -ne 'SM-A135M') {
+    throw 'Destino incorrecto: no continuar'
+}
+```
+
+Ejemplo después de construir un APK debug de laboratorio, **solo después de
+autorizar por separado actualización y aprovisionamiento H01**. Comprobar de
+nuevo el modelo antes de cada operación. Desde `android/`:
+
+```powershell
+& $adb -s $serieA13 install -r -t .\app-child\build\outputs\apk\debug\app-child-debug.apk
+& $adb -s $serieA13 shell dpm set-device-owner dev.controlparental.child/.admin.ChildAdminReceiver
+& $adb -s $serieA13 shell dpm list-owners
 ```
 
 El comando `dpm` requiere que esa clase exista y esté correctamente declarada. Se comprueba además en la UI de diagnóstico `isDeviceOwnerApp == true`. Ante error de cuentas, usuarios o aprovisionamiento, corregir las precondiciones; no buscar bypasses ni hacer root. El procedimiento ADB está documentado para desarrollo [S17].
+
+No volcar cuentas o `dumpsys device_policy` completo en documentación/logs públicos.
+H-OWNER-01 requiere observar la UI y ejecutar el diagnóstico de Android, no basta
+con compilar el APK. Tras una instalación de tests coordinada, el runner puede
+exigir explícitamente Owner real:
+
+```powershell
+& $adb -s $serieA13 shell am instrument -w -r -e class dev.controlparental.child.admin.ComponentesAdministracionTest -e exigirDeviceOwner true dev.controlparental.child.test/androidx.test.runner.AndroidJUnitRunner
+```
+
+Ese test solo lee diagnóstico y metadata; no aprovisiona ni modifica políticas.
+Mientras no se ejecute después de aprovisionar y se observe la UI, H01 continúa
+PENDIENTE_VALIDACION. La autorización anterior C02 no incluye estas operaciones.
 
 En la fase de laboratorio no activar todavía `DISALLOW_DEBUGGING_FEATURES` ni bloquear la única ruta de mantenimiento. Las variantes debug y release deben separarse de manera que las salidas de laboratorio no estén presentes en release. No dejar `android:testOnly=true` en producción.
 
@@ -70,11 +106,11 @@ Cerrar la app padre después de permitir uso: la política recibida debe continu
 Para laboratorio se pueden usar las pruebas oficiales de Doze [S08]:
 
 ```powershell
-adb shell dumpsys battery unplug
-adb shell dumpsys deviceidle force-idle
+& $adb -s $serieA13 shell dumpsys battery unplug
+& $adb -s $serieA13 shell dumpsys deviceidle force-idle
 # Ejecutar observaciones de red/estado previstas en la matriz.
-adb shell dumpsys deviceidle unforce
-adb shell dumpsys battery reset
+& $adb -s $serieA13 shell dumpsys deviceidle unforce
+& $adb -s $serieA13 shell dumpsys battery reset
 ```
 
 Restaurar siempre el estado simulado de batería al terminar. Estos comandos son solo de pruebas autorizadas antes de cerrar la depuración. Probar también suspensión natural sin cable USB; un equipo cargando y conectado al IDE no reproduce necesariamente el uso real.

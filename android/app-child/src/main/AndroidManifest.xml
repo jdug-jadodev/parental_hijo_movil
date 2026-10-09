@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- C00: no se solicitan permisos ni se aplican restricciones todavía. -->
+    <!-- H01: DPC y HOME declarados; sin permisos de monitoreo ni endurecimiento. -->
     <application
         android:allowBackup="false"
         android:dataExtractionRules="@xml/reglas_extraccion"
@@ -9,12 +9,33 @@
         android:supportsRtl="true"
         android:theme="@style/TemaHijo">
         <activity
-            android:name=".ui.ActividadInicial"
-            android:exported="true">
+            android:name=".ui.LauncherActivity"
+            android:exported="true"
+            android:lockTaskMode="if_whitelisted">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.HOME" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!-- Conserva el componente explícito del APK de preparación anterior. -->
+        <activity-alias
+            android:name=".ui.ActividadInicial"
+            android:targetActivity=".ui.LauncherActivity"
+            android:exported="true" />
+        <receiver
+            android:name=".admin.ChildAdminReceiver"
+            android:description="@string/descripcion_admin"
+            android:exported="true"
+            android:permission="android.permission.BIND_DEVICE_ADMIN">
+            <meta-data android:name="android.app.device_admin" android:resource="@xml/device_admin" />
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>

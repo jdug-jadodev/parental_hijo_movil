@@ -2,6 +2,15 @@
 
 **Especificaciones v1.0 y base de desarrollo independiente. Consultar `ESTADO.md` para conocer lo realmente compilado y probado. Todavía no hay control parental funcional.**
 
+## Regla obligatoria de dispositivos
+
+**El hijo es el Samsung A13 SM-A135M. El A56 NO SE TOCA:** no consultar sus
+datos, instalar aplicaciones, ejecutar pruebas, aprovisionar ni cambiar ajustes.
+Cada operación ADB sobre el teléfono debe apuntar explícitamente al A13 mediante
+`adb -s`, después de identificarlo sin publicar su número de serie. Si hay varios
+candidatos o no puede comprobarse el destino, detenerse. Nunca ejecutar pruebas
+conectadas indiscriminadas con ambos teléfonos presentes.
+
 ## Qué se construye aquí
 
 - App Android Kotlin Device Owner + modo quiosco: bloqueo local, reinicio, desconexión, tiempos y emergencias.

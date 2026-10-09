@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Control del tiempo</string>
+    <string name="app_name">Control parental — dispositivo administrado</string>
     <string name="titulo_inicial">No configurado</string>
     <string name="aviso_inicial">Esta versión prepara la aplicación del hijo. Todavía no controla el tiempo ni bloquea otras aplicaciones.</string>
     <string name="aviso_laboratorio">La configuración y las pruebas se harán con el adulto. No entregar esta versión como control parental.</string>
+    <string name="descripcion_admin">Administración del dispositivo del hijo. En laboratorio todavía no aplica quiosco ni restricciones. El borrado solo corresponde a una retirada presencial futura y autorizada.</string>
+    <string name="diagnostico_no_disponible">No configurado — diagnóstico no disponible</string>
+    <string name="bloqueado_preparacion">Bloqueado — en preparación</string>
+    <string name="diagnostico_owner">Propietario real del dispositivo (Device Owner): %1$s</string>
+    <string name="diagnostico_admin">Administrador activo: %1$s</string>
+    <string name="diagnostico_si">Sí</string>
+    <string name="diagnostico_no">No</string>
+    <string name="diagnostico_desconocido">No comprobado</string>
+    <string name="sin_quiosco">Quiosco y bloqueo de otras aplicaciones: NO APLICADOS. No hay autorización de uso desde esta pantalla.</string>
 </resources>
