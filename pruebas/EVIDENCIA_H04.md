@@ -212,6 +212,30 @@ Esto NO prueba que BootReceiver fallara: falta acceso al destino comprobado.
 Solicitar comprobar cable/conexión del A13 sin introducir aún el PIN; si no
 aparece en ADB, registrar esta fase como no observable y coordinar desbloqueo.
 
+## Lectura después del primer desbloqueo — 9 de octubre de 2026
+
+El propietario informó que ADB se desconecta al reiniciar; se le indicó desbloquear
+solo A13 y avisó «listo». Un único A13 volvió a estar anunciado y se comprobó
+SM-A135M. Owner esperado sigue presente (usuario 0, DeviceOwner/Affiliated).
+Intento `cmd user is-user-unlocked 0` devolvió código no cero; no se usó como
+evidencia. Se consultó `dumpsys user`, mostrando solo State: RUNNING_UNLOCKED.
+Sin APIs privadas/reflexión ni cambio de ajustes.
+
+Lectura de BOOT_COUNT y archivo DP por run-as, sin escribir en el teléfono:
+
+- BOOT_COUNT sistema y registro: **3**, antes **2**.
+- SHA-256 del bootId: `310d32120e63b40e42558460fadd2afacd416c35a3f92b5a5c7d36dbca244f22`,
+  distinto del hash previo.
+- lastObservedElapsed: **230143 ms**; checksum correcto.
+- authorizedBootId=null; binding, policy, lastCommand=null; PREPARACION.
+
+Observado contexto de nuevo arranque persistido y sin autorización, después del
+primer desbloqueo. No puede atribuirse el cambio a un broadcast específico sin
+evidencia adicional; no se capturó el archivo antes del PIN. H-BOOT-02/03 completos
+siguen pendientes. No hubo nuevo reinicio ADB, instalación, muerte de proceso,
+enforcement ni cambios al A56. Próximo paso: abrir app presencialmente y repetir
+lectura para comprobar que el callback del launcher conserva este bootId.
+
 ## Fuentes oficiales consultadas para Android
 
 - https://developer.android.com/reference/android/util/AtomicFile — openRead, startWrite, finishWrite/failWrite y exclusión externa requerida.
