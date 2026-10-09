@@ -347,6 +347,26 @@ tag ArranqueH04 después de desbloquear, sin volcar logs generales ni borrar el
 buffer del teléfono; exigir nuevo BOOT_COUNT para excluir actualización/reinicio
 anterior. A56 fuera de alcance. Emergencia/recuperación no se deshabilitan.
 
+## Instalación autorizada de traza debug y regresión Android
+
+Propietario autoriza actualizar app SOLO A13 y repetir los 12 tests Android.
+Selección de único SM_A135M anunciado y comprobación SM-A135M antes de cada
+operación con el mismo `adb -s`. Owner esperado usuario 0, DeviceOwner/Affiliated.
+
+- APK app actualizado con `install -r -t`: Success.
+- SHA-256 app instalada: `e4f0b6acd776ec80f8b0ebd3cc6283d29f596f05027ca89cefa37c72881eddc9`.
+- APK test corregido anterior conservado; no reinstalado.
+- Runner con exigirDeviceOwner=true/exigirCredencialAndroid=true:
+  **OK (12 tests), Time: 1.886 s**.
+
+Lectura Logcat exclusivamente `ArranqueH04:I *:S` sin limpiar buffer ni mostrar
+logs generales: no se observaron líneas de eventos reconocidos en esa lectura.
+No aprobar ejecución del diagnóstico ni MY_PACKAGE_REPLACED por esta ausencia.
+La siguiente comprobación será un reinicio MANUAL coordinado, esperando antes
+del PIN y leyendo el tag después de desbloquear. No se reinició/endureció/borró,
+no se ejecutó lockNow ni se dirigieron comandos al A56 en esta instalación.
+No hubo nueva construcción o ejecución JVM en esta unidad documental.
+
 ## Fuentes oficiales consultadas para Android
 
 - https://developer.android.com/reference/android/util/AtomicFile — openRead, startWrite, finishWrite/failWrite y exclusión externa requerida.

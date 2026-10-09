@@ -6,7 +6,7 @@ Versión Android / API / parche: 14 / 34 / 2026-02-05 (ADB)
 One UI: 6.1, confirmada por el propietario; propiedad ADB ro.build.version.oneui = 60100
 Firmware incremental: A135MUBSDDZB3 (ADB)
 SIM: ausente, según propietario (9 de octubre de 2026). Operador/PIN SIM: no aplican en esta prueba; variantes con SIM/PIN SIM no verificadas.
-APK instalado por este proyecto: dev.controlparental.child debug H04 0.1.0 / versionCode 1, más dev.controlparental.child.test corregido (12 tests aprobados); actualización ADB autorizada el 9 de octubre de 2026
+APK instalado por este proyecto: dev.controlparental.child debug H04 con traza de laboratorio 0.1.0 / versionCode 1, más dev.controlparental.child.test corregido (12 tests aprobados); actualización ADB autorizada el 9 de octubre de 2026
 Huella SHA-256 del certificado debug: 39f25d28e10a93f18fbdabac0223e917c9668d58a6d7ca28af40227946a9f439 (apksigner local C02; actualización normal con la misma firma). Hash de APK instalados actuales en EVIDENCIA_H04.md.
 Estado de Device Owner: dev.controlparental.child/.admin.ChildAdminReceiver en usuario 0, DeviceOwner/Affiliated según dpm list-owners; confirmado además por isDeviceOwnerApp en test Android. Sin Profile Owner listado.
 Estado de arranque: ro.boot.verifiedbootstate = green; ro.boot.flash.locked = 1. Son propiedades observadas, no una certificación de integridad.
@@ -72,6 +72,7 @@ G4: PENDIENTE
 | H04 primera instrumentación | Actualizar app/test con adb -s solo al A13 y ejecutar runner con Owner/credencial exigidos | 12 tests/4 fallos (1.98 s): ocho aprobados, cuatro de acceso al directorio DP del paquete test fallan | 9 de octubre de 2026; corrección local del aislamiento compilada, no instalada/ejecutada; sin reinicio, endurecimiento ni cambios en A56 |
 | H04 repetición corregida | Actualizar SOLO APK test; runner con Owner/credencial exigidos dirigido al único A13 comprobado | OK (12 tests), 1.892 s; cinco H04 aprobados, incluidos AtomicFile/rollback/corrupción en archivos efímeros DP | 9 de octubre de 2026; no se accedió a control-state.json ni se reinició/endureció; A56 intacto; boot/proceso reales pendientes |
 | H04 contexto tras reinicio y proceso recreado | Reinicio manual del propietario, lectura DP después del PIN; reapertura tras PID ausente | BOOT_COUNT 2→3 con bootId nuevo; mismo bootId tras reanudar y PID 2745→ausente→11819, checksum correcto y PREPARACION sin autorización | 9 de octubre de 2026; consultas de lectura solo A13, sin am kill/force-stop; antes del PIN ADB no disponible; sin política/temporizador reales ni cambios al A56 |
+| H04 actualización de traza debug | Actualizar SOLO app y repetir runner Owner/credencial con APK test corregido anterior | Success; OK (12 tests), 1.886 s; no eventos reconocidos en lectura exclusiva ArranqueH04 | 9 de octubre de 2026; diagnóstico de arranque real pendiente de reinicio manual coordinado; sin reinicio/endurecimiento/borrado ni cambios al A56 |
 
 ## Emergencia
 
