@@ -172,6 +172,35 @@ H04 sigue PENDIENTE_VALIDACION: broadcasts reales, arranque antes del PIN,
 continuidad tras muerte de proceso y emergencia en nueva versión pendientes.
 No se aprueban G0–G4 ni bloqueo efectivo por estos resultados.
 
+## Referencia previa al reinicio manual — 9 de octubre de 2026
+
+Propietario autoriza preparar prueba con consultas ADB de lectura y reinicio
+manual realizado por él. Se seleccionó un único A13 anunciado SM_A135M y se
+comprobó SM-A135M; Owner esperado presente. Sin comandos al A56.
+
+Lecturas con destino explícito: `settings get global boot_count` y
+`run-as dev.controlparental.child cat /data/user_de/0/dev.controlparental.child/files/control-state.json`.
+El contenido completo se procesó en memoria; no se mostró ni guardó. Se comprobó
+SHA-256 del payload contra el checksum y se extrajo solo un resumen público.
+Esta inspección PowerShell no sustituye al validador completo CodecEstado.
+
+- BOOT_COUNT sistema y registro: **2**.
+- SHA-256 del bootId (no identificador del dispositivo):
+  `00f4d01f06acb6e87176c4fbfc322e879ef6e988a10c3ff74caa29045ea8105d`.
+- lastObservedElapsed: **2449109 ms**.
+- authorizedBootId=null; binding, policy y lastCommand=null.
+- provisioningStage=PREPARACION; checksum correcto.
+
+No se escribió ni reparó el archivo de producción. Resumen sin claves/sobres ni
+serie guardado fuera del repositorio, en el temporal aprobado, para comparación.
+No se reinició ni mató el proceso. Se espera reinicio manual y aviso del propietario
+ANTES de introducir el PIN Android para intentar lectura DP en esa fase.
+
+Límite del escenario: no hay vínculo ni política real aceptada. Puede comprobarse
+contexto de preparación y callbacks, no H-BOOT-01 desde ALLOW ni H-STATE-01 entre
+aceptación/enforcement o continuidad de un temporizador real. Esos casos quedan
+pendientes de sus componentes y no se simularán escribiendo órdenes en producción.
+
 ## Fuentes oficiales consultadas para Android
 
 - https://developer.android.com/reference/android/util/AtomicFile — openRead, startWrite, finishWrite/failWrite y exclusión externa requerida.

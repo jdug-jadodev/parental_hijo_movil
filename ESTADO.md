@@ -69,6 +69,7 @@ android/local.properties es local, está ignorado y no se incluye en commits.
 
 ## Pruebas ejecutadas y resultado
 
+- H04 referencia para boot manual autorizada: solo lecturas ADB al único A13 comprobado, Owner esperado presente. BOOT_COUNT sistema/registro=2, checksum correcto, inicio de observación 2449109 ms, autorización/vínculo/política/última orden ausentes y etapa PREPARACION. Hash de bootId y límites en EVIDENCIA_H04.md. No se escribió estado ni se reinició/mató proceso; esperar aviso antes del PIN tras reinicio manual. Sin nuevas pruebas JVM/Android automáticas ni comandos al A56.
 - H04 repetición autorizada: actualizar SOLO APK test corregido mediante adb -s al único A13 comprobado; instalación Success. Owner previo esperado confirmado; runner con exigirDeviceOwner=true/exigirCredencialAndroid=true: OK (12 tests), 1.892 s. No se tocó control-state.json, reinició, endureció ni dirigió comandos al A56. Sin nueva construcción o ejecución JVM en esta repetición.
 - H04 físico autorizado: A13 único seleccionado por modelo anunciado y comprobado con getprop antes de cada operación; Owner esperado confirmado. Ambas actualizaciones Success; runner con exigirDeviceOwner=true/exigirCredencialAndroid=true: 12 tests/4 fallos, 1.98 s. Directorio DP del paquete test inaccesible desde instrumentación: dos ENOENT al escribir y dos ErrorEstadoLocal al leer ausencia con padre inaccesible. No se reinició/endureció/borró ni se tocó A56.
 - H04 corrección local: test usa targetContext y subdirectorio efímero UUID, nunca control-state.json. Construcción completa BUILD SUCCESSFUL, APK test recompilado; 262 resultados JVM anteriores UP-TO-DATE, no nueva ejecución. Corrección física NO EJECUTADA; requiere coordinar actualización del APK test y repetición.
@@ -146,7 +147,7 @@ La supervivencia del control ante muerte de proceso y suspensión sigue pendient
 
 ## Próxima tarea y lectura mínima
 
-Continuar H04: preparar y coordinar prueba de boot/proceso reales con evidencia del contexto antes/después y antes del PIN; no inferirla de los 12 tests aprobados. No reinstalar app sin necesidad ni borrar/reiniciar/cerrar recuperación automáticamente. H02 inicial sin SIM cerrada; variantes SIM/G0 y H05 siguen bloqueando H06. A56 fuera de alcance: no tocarlo.
+Continuar H04: propietario autorizó consultas de lectura y reinicio manual; referencia inicial registrada. Pedir reiniciar SOLO A13 y avisar ANTES del PIN Android, intentar lectura DP sin saltar protecciones; comparar bootId/BOOT_COUNT antes y después del primer desbloqueo. Sin vínculo/política aceptada no se aprueban H-BOOT-01 ni H-STATE-01 completos. Prueba de muerte de proceso aún requiere procedimiento/coordinación propia; no borrar/reiniciar/cerrar recuperación automáticamente. H02 inicial sin SIM cerrada; variantes SIM/G0 y H05 siguen bloqueando H06. A56 fuera de alcance: no tocarlo.
 H00 cerrado: ADB autorizado, inventario obtenido y preparación confirmada. El formateo fue previo y declarado por el propietario, no ejecutado por el agente.
 Lectura mínima H00: hijo/PLAN_HIJO.md H00, hijo/INSTALACION_A13.md §1–3, compartido/02_FUENTES_Y_COMPATIBILIDAD.md.
 C02 cerrada tras ejecución real de tres tests Android. Lectura mínima H01: hijo/PLAN_HIJO.md H01, hijo/SPEC_HIJO.md H2/H4 e hijo/INSTALACION_A13.md §3; consultar fuentes oficiales correspondientes.
