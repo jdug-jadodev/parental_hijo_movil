@@ -24,4 +24,27 @@
     <string name="estado_local_error_detalle">No se pudo comprobar o guardar el estado. No se concede autorización ni se reinicia la configuración. Emergencia sigue accesible por el sistema. Avisar al adulto.</string>
     <string name="estado_local_comprobado">Estado local comprobado. Esto no confirma vinculación, quiosco ni autorización de uso.</string>
     <string name="estado_local_pendiente">Estado local: pendiente de comprobar. No se concede autorización de uso.</string>
+    <string name="recuperacion_abrir">Recuperación local con el adulto</string>
+    <string name="recuperacion_titulo">Recuperación local</string>
+    <string name="recuperacion_comprobando">Comprobando estado y condiciones de recuperación…</string>
+    <string name="recuperacion_sin_vinculo">Recuperación no disponible: aún no hay un vínculo público confirmado. No se crean claves ni códigos de prueba como reemplazo.</string>
+    <string name="recuperacion_no_disponible">Recuperación no disponible. Hace falta Device Owner comprobado, Android desbloqueado y contexto de arranque vigente.</string>
+    <string name="recuperacion_error">Error seguro. No se puede comprobar o guardar la recuperación; no se concede acceso. Emergencia sigue disponible.</string>
+    <string name="recuperacion_limites">Un código solo autoriza su propósito por un máximo de cinco minutos. No permite aplicaciones normales ni autoriza el arranque.</string>
+    <string name="recuperacion_codigo">Código de un solo uso</string>
+    <string name="recuperacion_enviar">Validar y consumir código</string>
+    <string name="recuperacion_mantenimiento">Mantenimiento de red y actualización propia</string>
+    <string name="recuperacion_cambiar_padre">Recuperar el vínculo con el padre</string>
+    <string name="recuperacion_retirada">Autorizar revisión de retirada local</string>
+    <string name="recuperacion_autorizada">Autorización local limitada vigente. Esto no significa bloqueo aplicado ni acceso a aplicaciones normales.</string>
+    <string name="recuperacion_codigo_invalido">Código inválido para este propósito o ya consumido.</string>
+    <string name="recuperacion_espera">Espera de seguridad para códigos. No afecta la emergencia del sistema.</string>
+    <plurals name="recuperacion_segundos">
+        <item quantity="one">Tiempo restante: %1$d segundo</item>
+        <item quantity="other">Tiempo restante: %1$d segundos</item>
+    </plurals>
+    <string name="recuperacion_herramientas_pendientes">Esta versión aún no incluye herramientas de red, revinculación ni retirada. No abre Ajustes, no instala APK y no borra el teléfono. Salir cancela la sesión; el código consumido no vuelve.</string>
+    <string name="recuperacion_qr_pendiente">QR OFFLINE: núcleo firmado probado, captura y presentación en Android pendientes. No hay desbloqueo offline de aplicaciones.</string>
+    <string name="recuperacion_cancelar">Cancelar sesión y volver</string>
+    <string name="recuperacion_consumo_pendiente">Consumo de códigos deshabilitado en esta interfaz hasta completar las herramientas autorizadas. No gastar una vía de recuperación sin poder utilizarla.</string>
 </resources>

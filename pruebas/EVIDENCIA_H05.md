@@ -145,3 +145,61 @@ vínculo confiable y pruebas instrumentadas de recuperación aisladas de producc
 No se cambia la espera de códigos desde la vía OFFLINE ni se modifica emergencia.
 No se usó ADB ni se instaló, reinició, endureció o borró ningún equipo en esta unidad.
 H05 sigue EN_CURSO; H06/puertas siguen pendientes.
+
+## Tercera unidad — presentación y puertos Android seguros
+
+- Pantalla RecoveryScreen accesible desde launcher; emergencia permanece fuera del
+  formulario, sin depender de envío/código/espera. No se abre Ajustes ni otra app.
+- Formulario por propósito, texto en RAM con remember (NO rememberSaveable/Bundle),
+  máscara de contraseña y autocorrección deshabilitada. Texto se quita al enviar,
+  cambiar propósito o cancelar; pausa desmonta la pantalla y descarta callbacks.
+  No se promete borrado físico de memoria ni protección frente a teclado malicioso.
+- FLAG_SECURE se activa en la ventana del launcher al abrir recuperación y se
+  mantiene durante esa instancia. No afecta keyguard/marcador del sistema; su
+  comportamiento y emergencia presencial en A13 aún requieren validación.
+- Trabajo en EjecutorEstado fuera del hilo principal; contador atómico invalida
+  respuestas tardías/operaciones aún no iniciadas al salir o pausar. Cancelación
+  de sesión se serializa detrás de cualquier transacción en curso. Si una operación
+  ya consumió código, cancelarla no restaura ese código ni muestra autorización vieja.
+- RecuperacionAndroid mantiene un controlador por proceso, sin crear/importar claves.
+  FuenteRecuperacionAndroid comprueba Owner, UserManager desbloqueado y continuidad
+  BOOT_COUNT/elapsed contra estado DP; no usa privadas ni concede acceso por error.
+- Proyección de UI sin códigos/hashes/identidad; consulta periódica de sesión/espera
+  cada segundo mientras se muestra, sin reiniciar duración. Expiración elimina
+  autorización mostrada; consulta de espera no elimina marcador durable ni cuenta
+  intentos. No habilita apps normales ni cambia política/contador CP/1.
+
+**Consumo deshabilitado en interfaz Android:** aún faltan herramientas H11 y vínculo
+H08. No permitir quemar una vía real de recuperación sin poder ejecutar su función.
+El botón/puerto de envío está cerrado por defecto, incluso con vínculo, y la pantalla
+lo explica. Núcleos se prueban aisladamente; no hay flag de preferencia, intent o
+botón de bypass para habilitarlo. En el A13 actual debe mostrar SIN_VINCULO.
+No se afirma recuperación funcional por construir esta presentación. QR/cámara,
+alias Keystore confiable y acciones operativas siguen pendientes; H06 bloqueada.
+
+Pruebas locales: mismo comando completo Gradle de esta evidencia, ejecutado y
+repetido tras corregir aviso de plurales del texto de segundos: BUILD SUCCESSFUL.
+Núcleo 169 UP-TO-DATE; hijo debug 152 ejecutados; total **321/0 fallos/0 errores/0
+omitidos**, cuatro tests JVM nuevos. Hijo release 145 ejecutados, sin fallos/errores/
+omitidos (repite casos). APK debug/test/release sin firmar construidos; lint final
+0 errores/10 avisos, vital release correcto. Inspectores base/H01 repetidos OK.
+
+Tres tests Android nuevos COMPILADOS NO EJECUTADOS, total previsto 15 con los 12
+anteriores: lectura de capacidades reales, consumo duradero y recreación de sesión,
+espera duradera recreada. Solo subdirectorio UUID efímero en DP del destino y sus
+tres nombres AtomicFile, con limpieza acotada. Públicos de fixture y código ficticio
+solo en APK test; nunca tocar control-state.json de producción ni Owner/credencial.
+El test de espera usa reloj inyectado, no cambia la hora del teléfono ni demuestra
+60 segundos de suspensión real. No hay test automatizado Compose de UI en esta unidad.
+
+Rutas: recovery/EstadoPantallaRecuperacion.kt, FuenteRecuperacionAndroid.kt,
+RecuperacionAndroid.kt y ampliación RecoveryController.kt; ui/RecoveryScreen.kt,
+LauncherActivity.kt y strings.xml; tests EstadoPantallaRecuperacionTest.kt,
+RecoveryControllerTest.kt y androidTest/RecuperacionArchivoAndroidTest.kt;
+ESTADO.md y esta evidencia. Fuente primaria FLAG_SECURE:
+https://developer.android.com/reference/android/view/WindowManager.LayoutParams#FLAG_SECURE
+
+No ADB ni instalación/reinicio/endurecimiento/borrado en esta unidad. Próximo paso:
+coordinar actualizar app/test SOLO A13 y ejecutar 15 tests con Owner/credencial
+exigidos; después confirmar presentación SIN_VINCULO, cancelar y comprobar ruta
+de emergencia SIN marcar/llamar. No habilitar consumo/inyectar vínculo en producción.

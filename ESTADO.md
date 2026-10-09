@@ -3,7 +3,7 @@
 Última actualización: 9 de octubre de 2026
 Commit de partida: ac7d801 (C01 completada)
 Tarea actual: H05 — recuperación local antes de endurecer
-Estado: EN_CURSO — códigos y OFFLINE firmado probados en JVM; interfaz, Keystore/puertos y pruebas Android de recuperación pendientes
+Estado: EN_CURSO — núcleos y presentación/puertos Android compilados; 321 tests JVM correctos y tres tests Android nuevos pendientes; consumo UI cerrado hasta herramientas operativas
 Commit de partida de H03: 499b31f.
 Primer commit H03: 80e1cb4. Commit de cierre: «Cerrar H03 con pruebas de mantenimiento y evidencia».
 C02 comprobada en JVM/Node y Android/Keystore. Commit de esta unidad: «Validar C02 en el A13 y excluir expresamente el A56».
@@ -18,6 +18,7 @@ One UI: 6.1 confirmada por el propietario; propiedad 60100 observada. Device Own
 
 ## Terminado y demostrado
 
+- H05 tercera unidad: pantalla/puertos Android y controlador único por proceso, checks Owner/desbloqueo/BOOT_COUNT, IO serializada/cancelación de respuestas tardías y código solo RAM. Consumo UI deshabilitado explícitamente hasta herramientas/vínculo operativos; no quemar recuperación real sin función disponible. QR/Keystore operativo pendiente. Cuatro tests JVM nuevos aprobados; tres Android compilados NO EJECUTADOS, solo archivos efímeros aislados.
 - H05 segunda unidad: desafío/respuesta OFFLINE firmados con claves del vínculo, nonce único RAM/vigencia 5 min y consumo antes de sesión; respuesta válida independiente de espera de códigos. No concede ALLOWED ni ejecuta borrado; sin identidad de reemplazo. 24 tests OFFLINE nuevos aprobados con P-256 efímera en memoria, dentro de 317 totales núcleo+debug. Sin QR/cámara/UI ni recuperación Android probados todavía.
 - H05 primera unidad: CodigoRecuperacion y RecoveryController puros, hashes CP/1 por propósito/comparación constante, consumo atómico antes de sesión RAM, contador/espera duraderos y sesiones de 5 minutos. MAINTENANCE no concede ALLOWED ni autoriza boot; RECOVER_PARENT no revoca vínculo anticipadamente; RETIRE no borra. Sin UI ni códigos/identidades inyectados en APK. 24 tests nuevos JVM correctos; no recuperación física aún.
 - H04 cierre inicial: trazas reales del arranque 4 confirman LOCKED_BOOT_COMPLETED con usuario bloqueado al recibir/terminar (NO/NO), y BOOT_COMPLETED SI/SI con idéntico BOOT_COUNT/hash bootId. Archivo DP posterior íntegro y sin autorización. Evidencia solo contexto PREPARACION, no bloqueo efectivo; H-BOOT-02/03 de producto siguen parciales. Próxima tarea H05 antes de endurecer.
@@ -53,6 +54,7 @@ Hay Device Owner de laboratorio en el A13, pero no quiosco, bloqueo parental apl
 
 ## Archivos modificados en la última tarea
 
+- H05 presentación/Android: recovery/EstadoPantallaRecuperacion.kt, FuenteRecuperacionAndroid.kt, RecuperacionAndroid.kt y RecoveryController.kt; ui/RecoveryScreen.kt, LauncherActivity.kt y strings.xml; tests EstadoPantallaRecuperacionTest.kt, RecoveryControllerTest.kt y androidTest/recovery/RecuperacionArchivoAndroidTest.kt; ESTADO.md y EVIDENCIA_H05.md.
 - H05 OFFLINE: recovery/ModelosRecuperacion.kt y RecoveryController.kt; tests recovery/OfflineRecoveryTest.kt; ESTADO.md y pruebas/EVIDENCIA_H05.md. Sin cambios de CP/1 o Render.
 - H05 primera unidad: recovery/CodigoRecuperacion.kt, ModelosRecuperacion.kt y RecoveryController.kt; tests recovery/CodigoRecuperacionTest.kt y RecoveryControllerTest.kt; ESTADO.md y pruebas/EVIDENCIA_H05.md.
 - H04 cierre físico Direct Boot: ESTADO.md, pruebas/EVIDENCIA_H04.md, pruebas/FICHA_DISPOSITIVO.md, pruebas/MATRIZ_ACEPTACION.md y hijo/PLAN_HIJO.md; solo documentación, sin nuevos tests/código.
@@ -79,6 +81,7 @@ android/local.properties es local, está ignorado y no se incluye en commits.
 
 ## Pruebas ejecutadas y resultado
 
+- H05 presentación/Android: comando completo Gradle repetido después de plurales: BUILD SUCCESSFUL. Núcleo 169 UP-TO-DATE, hijo debug 152 ejecutados, total 321/0 fallos/0 errores/0 omitidos; hijo release 145 ejecutados (repite casos). APK debug/test/release sin firmar construidos; lint 0 errores/10 avisos; ambos inspectores repetidos OK. Tres tests Android nuevos compilados, no ejecutados; no ADB ni instalaciones en esta unidad.
 - H05 OFFLINE: comando Gradle completo de evidencia repetido tras tests de carrera: BUILD SUCCESSFUL. Núcleo 169 UP-TO-DATE; hijo debug 148 ejecutados, total 317/0 fallos/0 errores/0 omitidos; hijo release 141 ejecutados (repite casos). APK debug/test/release sin firmar correctos, lint 0 errores/10 avisos; inspectores base/H01 OK. No ADB ni nueva instalación/prueba física; A13 sigue APK H04.
 - H05 primera unidad: comando completo Gradle en EVIDENCIA_H05.md repetido tras corregir referencia de campo en un test (modoSolicitado): BUILD SUCCESSFUL. Núcleo 169 UP-TO-DATE, hijo debug 124 ejecutados (24 nuevos), total 293/0 fallos/0 errores/0 omitidos; hijo release 117 ejecutados (repite casos). APK debug/test/release sin firmar construidos, lint debug 0 errores/10 avisos; inspectores base/H01 OK. Sin ADB/instalación ni nuevas pruebas físicas.
 - H04 Direct Boot real: reinicio MANUAL comunicado por propietario; lectura exclusiva ArranqueH04 después del PIN: LOCKED_BOOT_COMPLETED NO/NO y BOOT_COMPLETED SI/SI, ambos bootCount=4/mismo hash bootId. Lectura DP confirma checksum, contexto=4 y PREPARACION sin autorización/vínculo/política/orden. No broadcasts falsos ni cambios por ADB. No se ejecutaron de nuevo pruebas JVM/Android; 269 resultados JVM/debug y 12 Android previos conservados.
@@ -158,7 +161,7 @@ android/local.properties es local, está ignorado y no se incluye en commits.
 
 ## Bloqueos y riesgos abiertos
 
-H05: núcleos de códigos y OFFLINE firmado probados en JVM con archivo fake, reloj/contexto inyectados y claves efímeras; sin interfaz/Keystore integrado ni recuperación Android/producción disponible. Espera no intercepta respuesta OFFLINE válida, probado. Códigos reales/identidades/vínculo de producción no existen aún; prohibido inyectarlos en APK o estado real como atajo. H06 sigue bloqueada.
+H05: núcleos de códigos/OFFLINE probados en JVM, presentación Android compilada y consumo UI deshabilitado hasta herramientas operativas. No recuperación funcional en producción, QR/cámara/Keystore operativo ni validación presencial de nueva pantalla aún. Tres tests Android aislados pendientes. Espera no intercepta OFFLINE válido (JVM). Códigos/identidades/vínculo de producción no existen aún; prohibido inyectarlos como atajo. H06 sigue bloqueada.
 H01: bloqueo por registros de cuentas resuelto por el propietario; recuento ADB 0 y Owner establecido. Pantalla de preparación confirmada por el propietario. Retirada del admin testOnly, UI previa sin Owner y recuperación completa aún requieren pruebas coordinadas; no se consideran comprobadas por la confirmación de pantalla actual.
 G0–G4 pendientes. Hay inventario físico ADB del A13, no validación del control, emergencia ni recuperación.
 H04: AtomicFile, recreación real de contexto PREPARACION y ambos callbacks reales antes/después del PIN comprobados. No hay temporizador/enforcement Android ni reanudación de servicio de control implementados; no afirmar conservación de políticas reales o bloqueo efectivo por la prueba de contexto vacío. H-BOOT-01/H-STATE-01 integrados, recuperación y regresión presencial de emergencia en APK actual pendientes.
@@ -168,7 +171,7 @@ La supervivencia del control ante muerte de proceso y suspensión sigue pendient
 
 ## Próxima tarea y lectura mínima
 
-Continuar SOLO H05: pantalla de código/recuperación limitada y puertos Android, singleton por proceso, integración de identidad confiable y pruebas instrumentadas aisladas de producción; luego coordinar instalación/prueba A13. Núcleos de código y OFFLINE ya probados en JVM; no prometer QR operativo ni recuperación física. Mantener consumo atómico y sesiones RAM sin ALLOWED/borrado automático. CP/1 §9/9.A y SPEC-H H10/H11 congelados. Revalidar emergencia/recuperación antes de H06; no activar quiosco ni retirar ADB. A56 fuera de alcance; Render externo en parental_render.
+Continuar SOLO H05 físico: solicitar actualizar app/test SOLO A13 y ejecutar 15 tests Android (tres nuevos con archivos efímeros, sin tocar estado real). Confirmar pantalla SIN_VINCULO/consumo cerrado y emergencia presencial SIN marcar/llamar; no activar herramientas/borrado ni inyectar vínculo. Luego completar QR/identidad confiable y herramientas necesarias para recuperación real antes de H06; no saltar dependencias por una presentación compilada. Núcleos JVM probados, H05 NO cerrada. A56 fuera de alcance; Render externo en parental_render.
 H00 cerrado: ADB autorizado, inventario obtenido y preparación confirmada. El formateo fue previo y declarado por el propietario, no ejecutado por el agente.
 Lectura mínima H00: hijo/PLAN_HIJO.md H00, hijo/INSTALACION_A13.md §1–3, compartido/02_FUENTES_Y_COMPATIBILIDAD.md.
 C02 cerrada tras ejecución real de tres tests Android. Lectura mínima H01: hijo/PLAN_HIJO.md H01, hijo/SPEC_HIJO.md H2/H4 e hijo/INSTALACION_A13.md §3; consultar fuentes oficiales correspondientes.

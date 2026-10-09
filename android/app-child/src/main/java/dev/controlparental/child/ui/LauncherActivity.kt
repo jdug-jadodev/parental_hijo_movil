@@ -1,6 +1,7 @@
 package dev.controlparental.child.ui
 
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -14,9 +15,11 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Button
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -35,6 +38,11 @@ import dev.controlparental.child.boot.FuenteArranqueAndroid
 import dev.controlparental.child.data.CargaEstado
 import dev.controlparental.child.data.EjecutorEstado
 import dev.controlparental.child.data.EstadoAndroid
+import dev.controlparental.child.data.PropositoRecuperacionLocal
+import dev.controlparental.child.recovery.EstadoPantallaRecuperacion
+import dev.controlparental.child.recovery.RecuperacionAndroid
+import java.util.concurrent.atomic.AtomicInteger
+import kotlinx.coroutines.delay
 
 /** HOME mínimo; no inicia Lock Task ni registra HOME persistente todavía. */
 class LauncherActivity : ComponentActivity() {
@@ -42,15 +50,28 @@ class LauncherActivity : ComponentActivity() {
     private var resultadoEmergencia by mutableStateOf<ResultadoAccesoEmergencia?>(null)
     private var estadoComprobado by mutableStateOf<Boolean?>(null)
     private var consultaEstado = 0
+    private var recuperacionVisible by mutableStateOf(false)
+    private var recuperacion by mutableStateOf(EstadoPantallaRecuperacion())
+    private val consultaRecuperacion = AtomicInteger()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             MaterialTheme {
-                PantallaInicial(diagnostico, resultadoEmergencia, estadoComprobado) {
-                    resultadoEmergencia = EmergencyAccess(PolicyEnforcer(this)).irAPantallaBloqueo()
-                }
+                PantallaInicial(diagnostico, resultadoEmergencia, estadoComprobado,
+                    recuperacionVisible, recuperacion,
+                    solicitarEmergencia = {
+                        cerrarRecuperacion()
+                        resultadoEmergencia = EmergencyAccess(PolicyEnforcer(this)).irAPantallaBloqueo()
+                    }, abrirRecuperacion = {
+                        window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+                        recuperacionVisible = true
+                        recuperacion = EstadoPantallaRecuperacion()
+                        consultarRecuperacion()
+                    }, actualizarRecuperacion = { if (!recuperacion.ocupado) consultarRecuperacion() },
+                    enviarCodigo = { proposito, texto -> consultarRecuperacion(proposito, texto) },
+                    volver = { cerrarRecuperacion() })
             }
         }
     }
@@ -76,7 +97,31 @@ class LauncherActivity : ComponentActivity() {
 
     override fun onPause() {
         consultaEstado++ // Descartar respuesta de una pantalla que ya dejó primer plano.
+        cerrarRecuperacion()
         super.onPause()
+    }
+
+    private fun consultarRecuperacion(proposito: PropositoRecuperacionLocal? = null, texto: String = "") {
+        if (!recuperacionVisible || recuperacion.ocupado) return
+        val consulta = consultaRecuperacion.incrementAndGet()
+        val anterior = recuperacion.respuesta
+        recuperacion = recuperacion.copy(ocupado = true)
+        val contexto = applicationContext
+        EjecutorEstado.ejecutar {
+            if (consultaRecuperacion.get() != consulta) return@ejecutar
+            val resultado = if (proposito == null) RecuperacionAndroid.resumen(contexto, anterior)
+                else RecuperacionAndroid.usarCodigo(contexto, proposito, texto)
+            runOnUiThread {
+                if (!isDestroyed && recuperacionVisible && consultaRecuperacion.get() == consulta) recuperacion = resultado
+            }
+        }
+    }
+
+    private fun cerrarRecuperacion() {
+        consultaRecuperacion.incrementAndGet()
+        recuperacionVisible = false // Desmonta texto recordado en RAM, nunca guardado en Bundle.
+        recuperacion = EstadoPantallaRecuperacion()
+        EjecutorEstado.ejecutar { RecuperacionAndroid.cancelarSiExiste() }
     }
 }
 
@@ -85,8 +130,17 @@ private fun PantallaInicial(
     diagnostico: DiagnosticoAdministracion,
     resultadoEmergencia: ResultadoAccesoEmergencia?,
     estadoComprobado: Boolean?,
+    recuperacionVisible: Boolean,
+    recuperacion: EstadoPantallaRecuperacion,
     solicitarEmergencia: () -> Unit,
+    abrirRecuperacion: () -> Unit,
+    actualizarRecuperacion: () -> Unit,
+    enviarCodigo: (PropositoRecuperacionLocal, String) -> Unit,
+    volver: () -> Unit,
 ) {
+    LaunchedEffect(recuperacionVisible) {
+        if (recuperacionVisible) while (true) { delay(1000); actualizarRecuperacion() }
+    }
     Surface(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -104,6 +158,11 @@ private fun PantallaInicial(
                 style = MaterialTheme.typography.headlineMedium,
             )
             AccesoEmergenciaSistema(resultadoEmergencia, solicitarEmergencia)
+            if (recuperacionVisible) {
+                RecoveryScreen(recuperacion, enviarCodigo, volver)
+            } else {
+                Button(onClick = abrirRecuperacion) { Text(stringResource(R.string.recuperacion_abrir)) }
+            }
             Text(stringResource(when (estadoComprobado) {
                 true -> R.string.estado_local_comprobado
                 false -> R.string.estado_local_error_detalle

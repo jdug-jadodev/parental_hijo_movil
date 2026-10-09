@@ -207,6 +207,17 @@ class RecoveryController(
         return SesionMantenimiento(actual.bootId, actual.inicioMs)
     }
 
+    /** Consulta para cuenta regresiva de UI; no elimina obligación durable ni gasta intentos. */
+    @Synchronized
+    fun esperaCodigoActual(): Long? = try {
+        val estado = (almacen.cargar() as? CargaEstado.Disponible)?.estado ?: throw ErrorEstadoLocal()
+        val fuente = contexto.leer()
+        val boot = estado.bootContext ?: throw ErrorEstadoLocal()
+        val ahora = ahoraValido()
+        require(fuente.usuarioDesbloqueado && fuente.bootId == boot.bootId && ahora >= boot.ultimoElapsedObservado)
+        restanteEspera(estado, boot.bootId, ahora)
+    } catch (_: RuntimeException) { null }
+
     @Synchronized
     fun cancelar() { sesion = null; desafio = null }
 

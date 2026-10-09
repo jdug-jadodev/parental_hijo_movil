@@ -293,4 +293,30 @@ class RecoveryControllerTest {
         assertNull(c.mantenimientoActual())
         assertEquals(ModoAcceso.LOCKED, PolicyEngine { l.ahora }.evaluar(entrada.copy(mantenimiento = null)).modoSolicitado)
     }
+
+    @Test
+    fun `consultar espera actual no gasta intentos ni elimina obligacion persistida`() {
+        val l = Laboratorio()
+        val c = l.controlador()
+        assertEquals(0L, c.esperaCodigoActual())
+        repeat(5) { l.invalido(c) }
+        l.ahora += 59000
+        assertEquals(1000L, c.esperaCodigoActual())
+        assertEquals(5, l.estado().recoveryFailureCount)
+        l.ahora += 1000
+        assertEquals(0L, c.esperaCodigoActual())
+        assertTrue(l.estado().esperaRecuperacionPendiente)
+        assertEquals(60000L, l.controlador().esperaCodigoActual())
+    }
+
+    @Test
+    fun `consulta de espera con contexto o archivo invalido no finge estar disponible`() {
+        val l = Laboratorio()
+        val c = l.controlador()
+        l.desbloqueado = false
+        assertNull(c.esperaCodigoActual())
+        l.desbloqueado = true
+        l.archivo.falloLectura = true
+        assertNull(c.esperaCodigoActual())
+    }
 }
