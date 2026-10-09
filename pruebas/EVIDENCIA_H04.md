@@ -256,6 +256,20 @@ nuestra app en segundo plano y comprobar cambio de PID al reabrir manualmente.
 No usar force-stop, borrar datos, retirar Owner ni cortar una ruta de emergencia.
 La prueba solo cubre contexto PREPARACION, no aceptación/enforcement de políticas.
 
+## Preparación de prueba de proceso — desaparición observada sin am kill
+
+Propietario autorizó terminar solo nuestra app en segundo plano, sin force-stop.
+Primera consulta dirigida al A13: PID **2745**, app en primer plano según lectura
+filtrada de actividades reanudadas; no se ejecutó am kill. Se pidió pulsar Inicio.
+Después del aviso «listo», el proceso ya no tenía PID. Se confirmó con pidof:
+salida vacía/código 1. La selección y modelo A13 fueron comprobados en cada consulta.
+
+No se ejecutó am kill ni force-stop: ausencia del proceso observada, causa no
+determinada (no atribuir a un mecanismo concreto del sistema). No se inspeccionó
+actividad/contenido de otras apps ni se cambió Owner, archivos, ajustes o A56.
+Pedir reabrir manualmente nuestra app y comparar PID/contexto. Esta desaparición
+no equivale a un crash controlado entre fases de una orden ni prueba de enforcement.
+
 ## Fuentes oficiales consultadas para Android
 
 - https://developer.android.com/reference/android/util/AtomicFile — openRead, startWrite, finishWrite/failWrite y exclusión externa requerida.
