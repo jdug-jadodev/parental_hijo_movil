@@ -2,6 +2,8 @@
 
 Fecha: 9 de octubre de 2026. Estado: PENDIENTE_VALIDACION física; código compilado y pruebas JVM aprobadas.
 
+Actualización de laboratorio: BLOQUEADA_POR_PRECONDICION (3 cuentas en el A13).
+
 ## Alcance
 
 - ChildAdminReceiver estable, exportado y protegido por BIND_DEVICE_ADMIN.
@@ -59,6 +61,25 @@ receivers no exportados, sin permisos de monitoreo ni ejecución solicitados.
 El inspector H01 se ajustó tras detectar el permiso interno AndroidX y las rutas
 XML acortadas por optimización release. Resuelve ahora el XML desde la tabla de
 recursos; la ejecución final pasó para debug y release. No demuestra Owner real.
+
+## Preflight físico autorizado — 9 de octubre de 2026
+
+El propietario autorizó actualizar ambos APK y activar Device Owner de laboratorio
+en el A13. Se seleccionó de forma única SM_A135M de los modelos anunciados por ADB,
+con serie solo en memoria; cada consulta del equipo usó el mismo destino `adb -s`.
+`getprop ro.product.model`: SM-A135M. El A56 no recibió ningún comando.
+
+- `dpm list-owners`: no owners.
+- `pm list users`: un usuario principal; nombres descartados sin publicarlos.
+- `am get-current-user`: 0.
+- `dumpsys account`: un bloque de recuento, **3 cuentas**. Se extrajo solo el número
+  de la salida mantenida en memoria; no se mostraron ni guardaron nombres/detalles.
+
+El chequeo exigía cero cuentas y detuvo el procedimiento. Una segunda consulta
+limitada al recuento confirmó las 3 cuentas. **No se ejecutó instalación, actualización,
+set-device-owner, retirada de admin, reinicio ni borrado.** La app H01 no llegó al
+teléfono; siguen instalados los APK C02 anteriores. No se eliminan cuentas ni se
+buscan bypasses. Esperar al propietario y repetir el preflight después de su preparación.
 
 ## Pruebas físicas NO EJECUTADAS en esta unidad
 

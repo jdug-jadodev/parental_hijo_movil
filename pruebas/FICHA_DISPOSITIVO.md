@@ -37,7 +37,7 @@ Confirmación del propietario — 9 de octubre de 2026:
 Pendientes para las fases posteriores:
 
 - SIM/PIN de SIM y ruta de emergencia: NO COMPROBADOS. No registrar operador ni números si no son necesarios.
-- Cuentas/usuarios, administradores activos y elegibilidad real para Device Owner: NO COMPROBADOS. Ausencia de Owner no basta para aprovisionar.
+- Preflight H01: un usuario principal (actual 0), sin Owner, pero **3 cuentas registradas**. Se comprobó solo el recuento y no se guardaron identidades. Aprovisionamiento detenido sin modificar nada. Administradores activos y elegibilidad final siguen pendientes; ausencia de Owner no basta.
 
 ## Plan de laboratorio posterior
 
@@ -62,6 +62,7 @@ G4: PENDIENTE
 | H00 (inventario ADB parcial) | Consultas getprop de modelo, Android/API, parche, One UI, firmware y arranque; dpm list-owners | SM-A135M, Android 14/API 34, parche 2026-02-05; no owners | ADB 1.0.41 / Platform Tools 37.0.0; valores arriba; pendientes de preparación presencial |
 | H00 (cierre de inventario y plan) | Confirmación presencial comunicada por el propietario | One UI 6.1; equipo ya formateado y sin datos que conservar | 9 de octubre de 2026; inventario no certifica quiosco ni emergencia; campos de fases posteriores siguen NO COMPROBADOS |
 | C02 Android | Instalar ambos APK y ejecutar solo CriptografiaAndroidTest con adb -s dirigido al A13 | OK (3 tests), 1.676 s; verificación de fixtures, Keystore no exportable y alias ausente | 9 de octubre de 2026; SM-A135M / API 34 / A135MUBSDDZB3; A56 excluido, sin Owner ni restricciones nuevas |
+| H01 preflight | Consultas con adb -s al A13: modelo, Owners, recuento de usuarios/cuentas y usuario actual | Sin Owner; usuario principal único; 3 cuentas. Detenido antes de instalar/aprovisionar | 9 de octubre de 2026; cuentas y nombres no guardados; no se modificó A13 ni A56 |
 
 ## Emergencia
 
