@@ -1,0 +1,1023 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CP/1 frame or decoded signed payload",
+  "description": "Structural validation only. Decode SignedEnvelope then validate its payload, purpose binding, signature, ASCII canonical bytes, sizes, sequence bounds and stateful authorization separately.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/SignedEnvelope"
+    },
+    {
+      "$ref": "#/$defs/Challenge"
+    },
+    {
+      "$ref": "#/$defs/AuthProof"
+    },
+    {
+      "$ref": "#/$defs/AuthOk"
+    },
+    {
+      "$ref": "#/$defs/Ping"
+    },
+    {
+      "$ref": "#/$defs/Pong"
+    },
+    {
+      "$ref": "#/$defs/PeerStatus"
+    },
+    {
+      "$ref": "#/$defs/PeerUnavailable"
+    },
+    {
+      "$ref": "#/$defs/Error"
+    },
+    {
+      "$ref": "#/$defs/SyncRequest"
+    },
+    {
+      "$ref": "#/$defs/SetPolicy"
+    },
+    {
+      "$ref": "#/$defs/Ack"
+    },
+    {
+      "$ref": "#/$defs/State"
+    },
+    {
+      "$ref": "#/$defs/ChildOffer"
+    },
+    {
+      "$ref": "#/$defs/PairAccept"
+    },
+    {
+      "$ref": "#/$defs/OfflineChallenge"
+    },
+    {
+      "$ref": "#/$defs/OfflineResponse"
+    }
+  ],
+  "$defs": {
+    "SignedEnvelope": {
+      "type": "object",
+      "properties": {
+        "v": {
+          "const": 1
+        },
+        "kind": {
+          "const": "SIGNED"
+        },
+        "purpose": {
+          "enum": [
+            "AUTH",
+            "MESSAGE",
+            "PAIR",
+            "OFFLINE"
+          ]
+        },
+        "payloadB64": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "maxLength": 10923
+        },
+        "sigB64": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "minLength": 8,
+          "maxLength": 100
+        }
+      },
+      "required": [
+        "v",
+        "kind",
+        "purpose",
+        "payloadB64",
+        "sigB64"
+      ],
+      "additionalProperties": false
+    },
+    "Challenge": {
+      "type": "object",
+      "properties": {
+        "v": {
+          "const": 1
+        },
+        "kind": {
+          "const": "CHALLENGE"
+        },
+        "connectionId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "nonce": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "minLength": 43,
+          "maxLength": 43
+        },
+        "timeoutSec": {
+          "const": 10
+        }
+      },
+      "required": [
+        "v",
+        "kind",
+        "connectionId",
+        "nonce",
+        "timeoutSec"
+      ],
+      "additionalProperties": false
+    },
+    "AuthProof": {
+      "type": "object",
+      "properties": {
+        "v": {
+          "const": 1
+        },
+        "kind": {
+          "const": "AUTH_PROOF"
+        },
+        "pairId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "role": {
+          "enum": [
+            "PARENT",
+            "CHILD"
+          ]
+        },
+        "connectionId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "nonce": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "minLength": 43,
+          "maxLength": 43
+        }
+      },
+      "required": [
+        "v",
+        "kind",
+        "pairId",
+        "role",
+        "connectionId",
+        "nonce"
+      ],
+      "additionalProperties": false
+    },
+    "AuthOk": {
+      "type": "object",
+      "properties": {
+        "v": {
+          "const": 1
+        },
+        "kind": {
+          "const": "AUTH_OK"
+        },
+        "connectionId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        }
+      },
+      "required": [
+        "v",
+        "kind",
+        "connectionId"
+      ],
+      "additionalProperties": false
+    },
+    "Ping": {
+      "type": "object",
+      "properties": {
+        "v": {
+          "const": 1
+        },
+        "kind": {
+          "const": "PING"
+        },
+        "nonce": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "minLength": 43,
+          "maxLength": 43
+        }
+      },
+      "required": [
+        "v",
+        "kind",
+        "nonce"
+      ],
+      "additionalProperties": false
+    },
+    "Pong": {
+      "type": "object",
+      "properties": {
+        "v": {
+          "const": 1
+        },
+        "kind": {
+          "const": "PONG"
+        },
+        "nonce": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "minLength": 43,
+          "maxLength": 43
+        }
+      },
+      "required": [
+        "v",
+        "kind",
+        "nonce"
+      ],
+      "additionalProperties": false
+    },
+    "PeerStatus": {
+      "type": "object",
+      "properties": {
+        "v": {
+          "const": 1
+        },
+        "kind": {
+          "const": "PEER_STATUS"
+        },
+        "peerRole": {
+          "enum": [
+            "PARENT",
+            "CHILD"
+          ]
+        },
+        "online": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "v",
+        "kind",
+        "peerRole",
+        "online"
+      ],
+      "additionalProperties": false
+    },
+    "PeerUnavailable": {
+      "type": "object",
+      "properties": {
+        "v": {
+          "const": 1
+        },
+        "kind": {
+          "const": "PEER_UNAVAILABLE"
+        },
+        "reason": {
+          "const": "PEER_OFFLINE"
+        },
+        "refCommandId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "v",
+        "kind",
+        "reason",
+        "refCommandId"
+      ],
+      "additionalProperties": false
+    },
+    "Error": {
+      "type": "object",
+      "properties": {
+        "v": {
+          "const": 1
+        },
+        "kind": {
+          "const": "ERROR"
+        },
+        "code": {
+          "enum": [
+            "BAD_SCHEMA",
+            "BAD_SIGNATURE",
+            "WRONG_PAIR",
+            "WRONG_ROLE",
+            "STALE_BOOT",
+            "STALE_SESSION",
+            "STALE_NONCE",
+            "STALE_SEQUENCE",
+            "SEQUENCE_CONFLICT",
+            "NOT_DEVICE_OWNER",
+            "NOT_PROVISIONED",
+            "BEFORE_USER_UNLOCK",
+            "BOOT_AUTH_REQUIRED",
+            "NETWORK_LOST",
+            "CHANNEL_EXPIRED",
+            "PARENT_LOCK",
+            "TIMER_EXPIRED",
+            "OK",
+            "MAINTENANCE_ACTIVE",
+            "STATE_CORRUPT",
+            "ENFORCEMENT_ERROR",
+            "KEY_UNAVAILABLE",
+            "PEER_OFFLINE",
+            "RATE_LIMITED",
+            "UNKNOWN_VERSION",
+            "SYSTEM_KEYGUARD",
+            "CALL_IN_PROGRESS"
+          ]
+        }
+      },
+      "required": [
+        "v",
+        "kind",
+        "code"
+      ],
+      "additionalProperties": false
+    },
+    "SyncRequest": {
+      "type": "object",
+      "properties": {
+        "v": {
+          "const": 1
+        },
+        "kind": {
+          "const": "SYNC_REQUEST"
+        },
+        "pairId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "sender": {
+          "const": "PARENT"
+        },
+        "syncNonce": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "minLength": 43,
+          "maxLength": 43
+        }
+      },
+      "required": [
+        "v",
+        "kind",
+        "pairId",
+        "sender",
+        "syncNonce"
+      ],
+      "additionalProperties": false
+    },
+    "SetPolicy": {
+      "type": "object",
+      "properties": {
+        "v": {
+          "const": 1
+        },
+        "kind": {
+          "const": "SET_POLICY"
+        },
+        "pairId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "sender": {
+          "const": "PARENT"
+        },
+        "bootId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "childSessionId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "commandId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "commandNonce": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "minLength": 43,
+          "maxLength": 43
+        },
+        "seq": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "description": "Also require value <= 9223372036854775807 using BigInt/Long."
+        },
+        "action": {
+          "enum": [
+            "LOCK",
+            "LOCK_FOR",
+            "ALLOW",
+            "ALLOW_FOR"
+          ]
+        },
+        "durationSec": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 60,
+              "maximum": 604800
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "v",
+        "kind",
+        "pairId",
+        "sender",
+        "bootId",
+        "childSessionId",
+        "commandId",
+        "commandNonce",
+        "seq",
+        "action",
+        "durationSec"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "enum": [
+                  "LOCK_FOR",
+                  "ALLOW_FOR"
+                ]
+              }
+            },
+            "required": [
+              "action"
+            ]
+          },
+          "then": {
+            "properties": {
+              "durationSec": {
+                "type": "integer",
+                "minimum": 60,
+                "maximum": 604800
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "durationSec": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "Ack": {
+      "type": "object",
+      "properties": {
+        "v": {
+          "const": 1
+        },
+        "kind": {
+          "const": "ACK"
+        },
+        "pairId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "sender": {
+          "const": "CHILD"
+        },
+        "bootId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "childSessionId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "commandId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "seq": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "description": "Also require value <= 9223372036854775807 using BigInt/Long."
+        },
+        "commandPayloadSha256B64": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "minLength": 43,
+          "maxLength": 43
+        },
+        "result": {
+          "enum": [
+            "APPLIED",
+            "ACCEPTED_PENDING_ENFORCEMENT",
+            "ENFORCEMENT_FAILED",
+            "REJECTED"
+          ]
+        },
+        "mode": {
+          "enum": [
+            "LOCKED",
+            "ALLOWED",
+            "MAINTENANCE",
+            "SETUP"
+          ]
+        },
+        "reason": {
+          "enum": [
+            "BAD_SCHEMA",
+            "BAD_SIGNATURE",
+            "WRONG_PAIR",
+            "WRONG_ROLE",
+            "STALE_BOOT",
+            "STALE_SESSION",
+            "STALE_NONCE",
+            "STALE_SEQUENCE",
+            "SEQUENCE_CONFLICT",
+            "NOT_DEVICE_OWNER",
+            "NOT_PROVISIONED",
+            "BEFORE_USER_UNLOCK",
+            "BOOT_AUTH_REQUIRED",
+            "NETWORK_LOST",
+            "CHANNEL_EXPIRED",
+            "PARENT_LOCK",
+            "TIMER_EXPIRED",
+            "OK",
+            "MAINTENANCE_ACTIVE",
+            "STATE_CORRUPT",
+            "ENFORCEMENT_ERROR",
+            "KEY_UNAVAILABLE",
+            "PEER_OFFLINE",
+            "RATE_LIMITED",
+            "UNKNOWN_VERSION",
+            "SYSTEM_KEYGUARD",
+            "CALL_IN_PROGRESS"
+          ]
+        },
+        "remainingSec": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 604800
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "v",
+        "kind",
+        "pairId",
+        "sender",
+        "bootId",
+        "childSessionId",
+        "commandId",
+        "seq",
+        "commandPayloadSha256B64",
+        "result",
+        "mode",
+        "reason",
+        "remainingSec"
+      ],
+      "additionalProperties": false
+    },
+    "State": {
+      "type": "object",
+      "properties": {
+        "v": {
+          "const": 1
+        },
+        "kind": {
+          "const": "STATE"
+        },
+        "pairId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "sender": {
+          "const": "CHILD"
+        },
+        "syncNonce": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "minLength": 43,
+          "maxLength": 43
+        },
+        "bootId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "childSessionId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "stateSeq": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "description": "Also require value <= 9223372036854775807 using BigInt/Long."
+        },
+        "lastAcceptedSeq": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]{0,18})$",
+          "description": "Also require value <= 9223372036854775807 using BigInt/Long."
+        },
+        "lastCommandId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "lastCommandPayloadSha256B64": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 43,
+              "maxLength": 43
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "lastResult": {
+          "enum": [
+            "NONE",
+            "APPLIED",
+            "ACCEPTED_PENDING_ENFORCEMENT",
+            "ENFORCEMENT_FAILED"
+          ]
+        },
+        "mode": {
+          "enum": [
+            "LOCKED",
+            "ALLOWED",
+            "MAINTENANCE",
+            "SETUP"
+          ]
+        },
+        "reason": {
+          "enum": [
+            "BAD_SCHEMA",
+            "BAD_SIGNATURE",
+            "WRONG_PAIR",
+            "WRONG_ROLE",
+            "STALE_BOOT",
+            "STALE_SESSION",
+            "STALE_NONCE",
+            "STALE_SEQUENCE",
+            "SEQUENCE_CONFLICT",
+            "NOT_DEVICE_OWNER",
+            "NOT_PROVISIONED",
+            "BEFORE_USER_UNLOCK",
+            "BOOT_AUTH_REQUIRED",
+            "NETWORK_LOST",
+            "CHANNEL_EXPIRED",
+            "PARENT_LOCK",
+            "TIMER_EXPIRED",
+            "OK",
+            "MAINTENANCE_ACTIVE",
+            "STATE_CORRUPT",
+            "ENFORCEMENT_ERROR",
+            "KEY_UNAVAILABLE",
+            "PEER_OFFLINE",
+            "RATE_LIMITED",
+            "UNKNOWN_VERSION",
+            "SYSTEM_KEYGUARD",
+            "CALL_IN_PROGRESS"
+          ]
+        },
+        "remainingSec": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 604800
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "networkValidated": {
+          "type": "boolean"
+        },
+        "channelHealthy": {
+          "type": "boolean"
+        },
+        "isDeviceOwner": {
+          "type": "boolean"
+        },
+        "lockTaskActive": {
+          "type": "boolean"
+        },
+        "commandNonce": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "minLength": 43,
+          "maxLength": 43
+        }
+      },
+      "required": [
+        "v",
+        "kind",
+        "pairId",
+        "sender",
+        "syncNonce",
+        "bootId",
+        "childSessionId",
+        "stateSeq",
+        "lastAcceptedSeq",
+        "lastCommandId",
+        "lastCommandPayloadSha256B64",
+        "lastResult",
+        "mode",
+        "reason",
+        "remainingSec",
+        "networkValidated",
+        "channelHealthy",
+        "isDeviceOwner",
+        "lockTaskActive",
+        "commandNonce"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "lastAcceptedSeq": {
+                "const": "0"
+              }
+            },
+            "required": [
+              "lastAcceptedSeq"
+            ]
+          },
+          "then": {
+            "properties": {
+              "lastCommandId": {
+                "type": "null"
+              },
+              "lastCommandPayloadSha256B64": {
+                "type": "null"
+              },
+              "lastResult": {
+                "const": "NONE"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "lastCommandId": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+              },
+              "lastCommandPayloadSha256B64": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "minLength": 43,
+                "maxLength": 43
+              },
+              "lastResult": {
+                "enum": [
+                  "APPLIED",
+                  "ACCEPTED_PENDING_ENFORCEMENT",
+                  "ENFORCEMENT_FAILED"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ChildOffer": {
+      "type": "object",
+      "properties": {
+        "v": {
+          "const": 1
+        },
+        "kind": {
+          "const": "CHILD_OFFER"
+        },
+        "childPublicKeyB64": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "minLength": 100,
+          "maxLength": 200,
+          "description": "SPKI DER P-256; decode/re-encode and curve checks are additional required validation."
+        },
+        "enrollId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "enrollNonce": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "minLength": 43,
+          "maxLength": 43
+        }
+      },
+      "required": [
+        "v",
+        "kind",
+        "childPublicKeyB64",
+        "enrollId",
+        "enrollNonce"
+      ],
+      "additionalProperties": false
+    },
+    "PairAccept": {
+      "type": "object",
+      "properties": {
+        "v": {
+          "const": 1
+        },
+        "kind": {
+          "const": "PAIR_ACCEPT"
+        },
+        "pairId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "enrollId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "enrollNonce": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "minLength": 43,
+          "maxLength": 43
+        },
+        "parentPublicKeyB64": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "minLength": 100,
+          "maxLength": 200,
+          "description": "SPKI DER P-256; decode/re-encode and curve checks are additional required validation."
+        },
+        "childPublicKeyB64": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "minLength": 100,
+          "maxLength": 200,
+          "description": "SPKI DER P-256; decode/re-encode and curve checks are additional required validation."
+        },
+        "relayOrigin": {
+          "type": "string",
+          "pattern": "^https://[a-z0-9][a-z0-9.-]*(?::[0-9]{1,5})?$",
+          "maxLength": 200
+        },
+        "recoveryHashes": {
+          "type": "object",
+          "properties": {
+            "MAINTENANCE": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 43,
+              "maxLength": 43
+            },
+            "RECOVER_PARENT": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 43,
+              "maxLength": 43
+            },
+            "RETIRE": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 43,
+              "maxLength": 43
+            }
+          },
+          "required": [
+            "MAINTENANCE",
+            "RECOVER_PARENT",
+            "RETIRE"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "v",
+        "kind",
+        "pairId",
+        "enrollId",
+        "enrollNonce",
+        "parentPublicKeyB64",
+        "childPublicKeyB64",
+        "relayOrigin",
+        "recoveryHashes"
+      ],
+      "additionalProperties": false
+    },
+    "OfflineChallenge": {
+      "type": "object",
+      "properties": {
+        "v": {
+          "const": 1
+        },
+        "kind": {
+          "const": "OFFLINE_CHALLENGE"
+        },
+        "pairId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "sender": {
+          "const": "CHILD"
+        },
+        "bootId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "action": {
+          "enum": [
+            "MAINTENANCE",
+            "RETIRE"
+          ]
+        },
+        "nonce": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "minLength": 43,
+          "maxLength": 43
+        }
+      },
+      "required": [
+        "v",
+        "kind",
+        "pairId",
+        "sender",
+        "bootId",
+        "action",
+        "nonce"
+      ],
+      "additionalProperties": false
+    },
+    "OfflineResponse": {
+      "type": "object",
+      "properties": {
+        "v": {
+          "const": 1
+        },
+        "kind": {
+          "const": "OFFLINE_RESPONSE"
+        },
+        "pairId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "sender": {
+          "const": "PARENT"
+        },
+        "bootId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "action": {
+          "enum": [
+            "MAINTENANCE",
+            "RETIRE"
+          ]
+        },
+        "nonce": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "minLength": 43,
+          "maxLength": 43
+        }
+      },
+      "required": [
+        "v",
+        "kind",
+        "pairId",
+        "sender",
+        "bootId",
+        "action",
+        "nonce"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

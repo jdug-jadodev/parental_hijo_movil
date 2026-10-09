@@ -1,0 +1,22 @@
+{
+  "v": 1,
+  "kind": "STATE",
+  "pairId": "00000000-0000-4000-8000-000000000002",
+  "sender": "CHILD",
+  "syncNonce": "AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM",
+  "bootId": "00000000-0000-4000-8000-000000000003",
+  "childSessionId": "00000000-0000-4000-8000-000000000004",
+  "stateSeq": "1",
+  "lastAcceptedSeq": "0",
+  "lastCommandId": null,
+  "lastCommandPayloadSha256B64": null,
+  "lastResult": "NONE",
+  "mode": "LOCKED",
+  "reason": "BOOT_AUTH_REQUIRED",
+  "remainingSec": null,
+  "networkValidated": true,
+  "channelHealthy": true,
+  "isDeviceOwner": true,
+  "lockTaskActive": true,
+  "commandNonce": "BAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQ"
+}

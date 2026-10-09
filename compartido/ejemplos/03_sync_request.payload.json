@@ -1,0 +1,7 @@
+{
+  "v": 1,
+  "kind": "SYNC_REQUEST",
+  "pairId": "00000000-0000-4000-8000-000000000002",
+  "sender": "PARENT",
+  "syncNonce": "AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM"
+}

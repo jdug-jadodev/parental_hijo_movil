@@ -1,0 +1,22 @@
+{
+  "v": 1,
+  "kind": "STATE",
+  "pairId": "00000000-0000-4000-8000-000000000002",
+  "sender": "CHILD",
+  "syncNonce": "BQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQU",
+  "bootId": "00000000-0000-4000-8000-000000000003",
+  "childSessionId": "00000000-0000-4000-8000-000000000004",
+  "stateSeq": "2",
+  "lastAcceptedSeq": "7",
+  "lastCommandId": "00000000-0000-4000-8000-000000000005",
+  "lastCommandPayloadSha256B64": "5hOEHcUWpsn5fRzxw985jQy2tpXP375Mdrw3m7m6xHc",
+  "lastResult": "APPLIED",
+  "mode": "LOCKED",
+  "reason": "PARENT_LOCK",
+  "remainingSec": 1798,
+  "networkValidated": true,
+  "channelHealthy": true,
+  "isDeviceOwner": true,
+  "lockTaskActive": true,
+  "commandNonce": "BgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgY"
+}

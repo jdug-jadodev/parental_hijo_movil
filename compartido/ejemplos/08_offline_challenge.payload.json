@@ -1,0 +1,9 @@
+{
+  "v": 1,
+  "kind": "OFFLINE_CHALLENGE",
+  "pairId": "00000000-0000-4000-8000-000000000002",
+  "sender": "CHILD",
+  "bootId": "00000000-0000-4000-8000-000000000003",
+  "action": "MAINTENANCE",
+  "nonce": "CAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg"
+}

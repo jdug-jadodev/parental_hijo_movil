@@ -1,0 +1,9 @@
+{
+  "v": 1,
+  "kind": "OFFLINE_RESPONSE",
+  "pairId": "00000000-0000-4000-8000-000000000002",
+  "sender": "PARENT",
+  "bootId": "00000000-0000-4000-8000-000000000003",
+  "action": "MAINTENANCE",
+  "nonce": "CAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg"
+}

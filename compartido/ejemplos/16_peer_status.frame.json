@@ -1,0 +1,6 @@
+{
+  "v": 1,
+  "kind": "PEER_STATUS",
+  "peerRole": "CHILD",
+  "online": true
+}

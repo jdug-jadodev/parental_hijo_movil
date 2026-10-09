@@ -1,0 +1,15 @@
+{
+  "v": 1,
+  "kind": "ACK",
+  "pairId": "00000000-0000-4000-8000-000000000002",
+  "sender": "CHILD",
+  "bootId": "00000000-0000-4000-8000-000000000003",
+  "childSessionId": "00000000-0000-4000-8000-000000000004",
+  "commandId": "00000000-0000-4000-8000-000000000005",
+  "seq": "7",
+  "commandPayloadSha256B64": "5hOEHcUWpsn5fRzxw985jQy2tpXP375Mdrw3m7m6xHc",
+  "result": "APPLIED",
+  "mode": "LOCKED",
+  "reason": "PARENT_LOCK",
+  "remainingSec": 1799
+}

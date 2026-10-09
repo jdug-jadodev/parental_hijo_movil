@@ -1,0 +1,15 @@
+{
+  "v": 1,
+  "kind": "PAIR_ACCEPT",
+  "pairId": "00000000-0000-4000-8000-000000000002",
+  "enrollId": "00000000-0000-4000-8000-000000000012",
+  "enrollNonce": "BwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwc",
+  "parentPublicKeyB64": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE1bHv97xxka6DHRFoZvrw2WCS4O42qB8iX3aP-SAa9f92dRXPEQLMVv1zobC3gu54CWub_qkrLP_ldoHg0MRLDA",
+  "childPublicKeyB64": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE6EEFApHZjbF6slh1BWNsw0nXOW-13Hl97RI626K1IAvH5YTa8RyYuQ9N6zuFm-E70gVPyJThAovbDypJQK1_rg",
+  "relayOrigin": "https://relay-ejemplo.onrender.com",
+  "recoveryHashes": {
+    "MAINTENANCE": "Sry1j-mrWWgPepoMU_5G96wXhEKdOS_8weRm4Oxx9JQ",
+    "RECOVER_PARENT": "94E9sjMd91iBUncmipcXzInyqbbABArZEnHv1If3Qgo",
+    "RETIRE": "MbV36V277flmZJ8YLo0fbOCZJ8rUhpgwM73KNZRtCuw"
+  }
+}

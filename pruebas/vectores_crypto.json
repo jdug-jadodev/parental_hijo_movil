@@ -1,0 +1,258 @@
+{
+  "fixtureVersion": 1,
+  "description": "SOLO PRUEBAS: identidades, nonces, firmas y claves p\u00fablicas ficticias. No contiene claves privadas ni c\u00f3digos de recuperaci\u00f3n. No configura una familia real.",
+  "publicKeys": {
+    "PARENT": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE1bHv97xxka6DHRFoZvrw2WCS4O42qB8iX3aP-SAa9f92dRXPEQLMVv1zobC3gu54CWub_qkrLP_ldoHg0MRLDA",
+    "CHILD": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE6EEFApHZjbF6slh1BWNsw0nXOW-13Hl97RI626K1IAvH5YTa8RyYuQ9N6zuFm-E70gVPyJThAovbDypJQK1_rg"
+  },
+  "vectors": [
+    {
+      "name": "01_auth_padre",
+      "signerRole": "PARENT",
+      "payload": {
+        "v": 1,
+        "kind": "AUTH_PROOF",
+        "pairId": "00000000-0000-4000-8000-000000000002",
+        "role": "PARENT",
+        "connectionId": "00000000-0000-4000-8000-000000000010",
+        "nonce": "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE"
+      },
+      "payloadSha256B64": "W21rotbHqMEdCwpRC9MNR5Nx_p3J0w1ig3G5HpbS0q0",
+      "envelope": {
+        "v": 1,
+        "kind": "SIGNED",
+        "purpose": "AUTH",
+        "payloadB64": "eyJjb25uZWN0aW9uSWQiOiIwMDAwMDAwMC0wMDAwLTQwMDAtODAwMC0wMDAwMDAwMDAwMTAiLCJraW5kIjoiQVVUSF9QUk9PRiIsIm5vbmNlIjoiQVFFQkFRRUJBUUVCQVFFQkFRRUJBUUVCQVFFQkFRRUJBUUVCQVFFQkFRRSIsInBhaXJJZCI6IjAwMDAwMDAwLTAwMDAtNDAwMC04MDAwLTAwMDAwMDAwMDAwMiIsInJvbGUiOiJQQVJFTlQiLCJ2IjoxfQ",
+        "sigB64": "MEYCIQDaY5DBbkD0tmmCtysKrz_5dSqe-F8QYZ0aPSRz1U-gBwIhAIDFb0b60HEeoHMNJDlkf78wfuhyaGlJ227ykznBpiX5"
+      }
+    },
+    {
+      "name": "02_auth_hijo",
+      "signerRole": "CHILD",
+      "payload": {
+        "v": 1,
+        "kind": "AUTH_PROOF",
+        "pairId": "00000000-0000-4000-8000-000000000002",
+        "role": "CHILD",
+        "connectionId": "00000000-0000-4000-8000-000000000011",
+        "nonce": "AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI"
+      },
+      "payloadSha256B64": "HZd7ZfoUgdOs59FN7cXObNeUfezUeYTVeEbuos6n93Y",
+      "envelope": {
+        "v": 1,
+        "kind": "SIGNED",
+        "purpose": "AUTH",
+        "payloadB64": "eyJjb25uZWN0aW9uSWQiOiIwMDAwMDAwMC0wMDAwLTQwMDAtODAwMC0wMDAwMDAwMDAwMTEiLCJraW5kIjoiQVVUSF9QUk9PRiIsIm5vbmNlIjoiQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSSIsInBhaXJJZCI6IjAwMDAwMDAwLTAwMDAtNDAwMC04MDAwLTAwMDAwMDAwMDAwMiIsInJvbGUiOiJDSElMRCIsInYiOjF9",
+        "sigB64": "MEQCIDjQDqZVy2PcxVgbsJeSE7Z3wu7v9OvH1jpMXzbe3wMtAiBh1rPPw4cbB0KCj1ByBfX2NWpoYzM-b0WiKTmFAMP9iA"
+      }
+    },
+    {
+      "name": "03_sync_request",
+      "signerRole": "PARENT",
+      "payload": {
+        "v": 1,
+        "kind": "SYNC_REQUEST",
+        "pairId": "00000000-0000-4000-8000-000000000002",
+        "sender": "PARENT",
+        "syncNonce": "AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM"
+      },
+      "payloadSha256B64": "0-sX_yYsbTngoyboGzUblvOvArZtL6BqnhrsB2l8E68",
+      "envelope": {
+        "v": 1,
+        "kind": "SIGNED",
+        "purpose": "MESSAGE",
+        "payloadB64": "eyJraW5kIjoiU1lOQ19SRVFVRVNUIiwicGFpcklkIjoiMDAwMDAwMDAtMDAwMC00MDAwLTgwMDAtMDAwMDAwMDAwMDAyIiwic2VuZGVyIjoiUEFSRU5UIiwic3luY05vbmNlIjoiQXdNREF3TURBd01EQXdNREF3TURBd01EQXdNREF3TURBd01EQXdNREF3TSIsInYiOjF9",
+        "sigB64": "MEQCIFrg6GNU642uFhhKtyt5ad9TdOwRQWsrVT5VVi5n2LrfAiB7gbAGz27Njxde-pUqdQE5EyuoMbWtmp8ZQwsa7YGnbw"
+      }
+    },
+    {
+      "name": "04_lock_for",
+      "signerRole": "PARENT",
+      "payload": {
+        "v": 1,
+        "kind": "SET_POLICY",
+        "pairId": "00000000-0000-4000-8000-000000000002",
+        "sender": "PARENT",
+        "bootId": "00000000-0000-4000-8000-000000000003",
+        "childSessionId": "00000000-0000-4000-8000-000000000004",
+        "commandId": "00000000-0000-4000-8000-000000000005",
+        "commandNonce": "BAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQ",
+        "seq": "7",
+        "action": "LOCK_FOR",
+        "durationSec": 1800
+      },
+      "payloadSha256B64": "5hOEHcUWpsn5fRzxw985jQy2tpXP375Mdrw3m7m6xHc",
+      "envelope": {
+        "v": 1,
+        "kind": "SIGNED",
+        "purpose": "MESSAGE",
+        "payloadB64": "eyJhY3Rpb24iOiJMT0NLX0ZPUiIsImJvb3RJZCI6IjAwMDAwMDAwLTAwMDAtNDAwMC04MDAwLTAwMDAwMDAwMDAwMyIsImNoaWxkU2Vzc2lvbklkIjoiMDAwMDAwMDAtMDAwMC00MDAwLTgwMDAtMDAwMDAwMDAwMDA0IiwiY29tbWFuZElkIjoiMDAwMDAwMDAtMDAwMC00MDAwLTgwMDAtMDAwMDAwMDAwMDA1IiwiY29tbWFuZE5vbmNlIjoiQkFRRUJBUUVCQVFFQkFRRUJBUUVCQVFFQkFRRUJBUUVCQVFFQkFRRUJBUSIsImR1cmF0aW9uU2VjIjoxODAwLCJraW5kIjoiU0VUX1BPTElDWSIsInBhaXJJZCI6IjAwMDAwMDAwLTAwMDAtNDAwMC04MDAwLTAwMDAwMDAwMDAwMiIsInNlbmRlciI6IlBBUkVOVCIsInNlcSI6IjciLCJ2IjoxfQ",
+        "sigB64": "MEUCIEylaqcGcwIpYSjPfdKqJ_QLkAnh1lje0zOvmRdvNSv0AiEA_J1DETj1rhkIm1IaTsYMyiQwlHiy4ywG_tIEMkELx0I"
+      }
+    },
+    {
+      "name": "05_ack_applied",
+      "signerRole": "CHILD",
+      "payload": {
+        "v": 1,
+        "kind": "ACK",
+        "pairId": "00000000-0000-4000-8000-000000000002",
+        "sender": "CHILD",
+        "bootId": "00000000-0000-4000-8000-000000000003",
+        "childSessionId": "00000000-0000-4000-8000-000000000004",
+        "commandId": "00000000-0000-4000-8000-000000000005",
+        "seq": "7",
+        "commandPayloadSha256B64": "5hOEHcUWpsn5fRzxw985jQy2tpXP375Mdrw3m7m6xHc",
+        "result": "APPLIED",
+        "mode": "LOCKED",
+        "reason": "PARENT_LOCK",
+        "remainingSec": 1799
+      },
+      "payloadSha256B64": "SQ4HAt7vrZjY6sbGjDl4hdo20i41cG4AhlaPysbTcMc",
+      "envelope": {
+        "v": 1,
+        "kind": "SIGNED",
+        "purpose": "MESSAGE",
+        "payloadB64": "eyJib290SWQiOiIwMDAwMDAwMC0wMDAwLTQwMDAtODAwMC0wMDAwMDAwMDAwMDMiLCJjaGlsZFNlc3Npb25JZCI6IjAwMDAwMDAwLTAwMDAtNDAwMC04MDAwLTAwMDAwMDAwMDAwNCIsImNvbW1hbmRJZCI6IjAwMDAwMDAwLTAwMDAtNDAwMC04MDAwLTAwMDAwMDAwMDAwNSIsImNvbW1hbmRQYXlsb2FkU2hhMjU2QjY0IjoiNWhPRUhjVVdwc241ZlJ6eHc5ODVqUXkydHBYUDM3NU1kcnczbTdtNnhIYyIsImtpbmQiOiJBQ0siLCJtb2RlIjoiTE9DS0VEIiwicGFpcklkIjoiMDAwMDAwMDAtMDAwMC00MDAwLTgwMDAtMDAwMDAwMDAwMDAyIiwicmVhc29uIjoiUEFSRU5UX0xPQ0siLCJyZW1haW5pbmdTZWMiOjE3OTksInJlc3VsdCI6IkFQUExJRUQiLCJzZW5kZXIiOiJDSElMRCIsInNlcSI6IjciLCJ2IjoxfQ",
+        "sigB64": "MEUCIA-TB1otu-yW89lPq4wcjHHvMdNBon5WjvRFAFeJg8mZAiEA81_c6Jn-KMzSfc5kMfDjXPh-Wv5DJM5r4RQhpPsnptc"
+      }
+    },
+    {
+      "name": "06_state",
+      "signerRole": "CHILD",
+      "payload": {
+        "v": 1,
+        "kind": "STATE",
+        "pairId": "00000000-0000-4000-8000-000000000002",
+        "sender": "CHILD",
+        "syncNonce": "BQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQU",
+        "bootId": "00000000-0000-4000-8000-000000000003",
+        "childSessionId": "00000000-0000-4000-8000-000000000004",
+        "stateSeq": "2",
+        "lastAcceptedSeq": "7",
+        "lastCommandId": "00000000-0000-4000-8000-000000000005",
+        "lastCommandPayloadSha256B64": "5hOEHcUWpsn5fRzxw985jQy2tpXP375Mdrw3m7m6xHc",
+        "lastResult": "APPLIED",
+        "mode": "LOCKED",
+        "reason": "PARENT_LOCK",
+        "remainingSec": 1798,
+        "networkValidated": true,
+        "channelHealthy": true,
+        "isDeviceOwner": true,
+        "lockTaskActive": true,
+        "commandNonce": "BgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgY"
+      },
+      "payloadSha256B64": "AW_i13x5yBvMD7cbT7i9ZnLihu59KxEe9JSNNcdxf24",
+      "envelope": {
+        "v": 1,
+        "kind": "SIGNED",
+        "purpose": "MESSAGE",
+        "payloadB64": "eyJib290SWQiOiIwMDAwMDAwMC0wMDAwLTQwMDAtODAwMC0wMDAwMDAwMDAwMDMiLCJjaGFubmVsSGVhbHRoeSI6dHJ1ZSwiY2hpbGRTZXNzaW9uSWQiOiIwMDAwMDAwMC0wMDAwLTQwMDAtODAwMC0wMDAwMDAwMDAwMDQiLCJjb21tYW5kTm9uY2UiOiJCZ1lHQmdZR0JnWUdCZ1lHQmdZR0JnWUdCZ1lHQmdZR0JnWUdCZ1lHQmdZIiwiaXNEZXZpY2VPd25lciI6dHJ1ZSwia2luZCI6IlNUQVRFIiwibGFzdEFjY2VwdGVkU2VxIjoiNyIsImxhc3RDb21tYW5kSWQiOiIwMDAwMDAwMC0wMDAwLTQwMDAtODAwMC0wMDAwMDAwMDAwMDUiLCJsYXN0Q29tbWFuZFBheWxvYWRTaGEyNTZCNjQiOiI1aE9FSGNVV3BzbjVmUnp4dzk4NWpReTJ0cFhQMzc1TWRydzNtN202eEhjIiwibGFzdFJlc3VsdCI6IkFQUExJRUQiLCJsb2NrVGFza0FjdGl2ZSI6dHJ1ZSwibW9kZSI6IkxPQ0tFRCIsIm5ldHdvcmtWYWxpZGF0ZWQiOnRydWUsInBhaXJJZCI6IjAwMDAwMDAwLTAwMDAtNDAwMC04MDAwLTAwMDAwMDAwMDAwMiIsInJlYXNvbiI6IlBBUkVOVF9MT0NLIiwicmVtYWluaW5nU2VjIjoxNzk4LCJzZW5kZXIiOiJDSElMRCIsInN0YXRlU2VxIjoiMiIsInN5bmNOb25jZSI6IkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVUiLCJ2IjoxfQ",
+        "sigB64": "MEYCIQD2oEtJmBViugp-fOMgHTJRvhdu1L020vezB6BNLwQfOgIhAIaA3kkLhwo-QzSvVmB9W1g2V0UhaqyazDEN6z_b7e_U"
+      }
+    },
+    {
+      "name": "07_pair_accept",
+      "signerRole": "PARENT",
+      "payload": {
+        "v": 1,
+        "kind": "PAIR_ACCEPT",
+        "pairId": "00000000-0000-4000-8000-000000000002",
+        "enrollId": "00000000-0000-4000-8000-000000000012",
+        "enrollNonce": "BwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwc",
+        "parentPublicKeyB64": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE1bHv97xxka6DHRFoZvrw2WCS4O42qB8iX3aP-SAa9f92dRXPEQLMVv1zobC3gu54CWub_qkrLP_ldoHg0MRLDA",
+        "childPublicKeyB64": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE6EEFApHZjbF6slh1BWNsw0nXOW-13Hl97RI626K1IAvH5YTa8RyYuQ9N6zuFm-E70gVPyJThAovbDypJQK1_rg",
+        "relayOrigin": "https://relay-ejemplo.onrender.com",
+        "recoveryHashes": {
+          "MAINTENANCE": "Sry1j-mrWWgPepoMU_5G96wXhEKdOS_8weRm4Oxx9JQ",
+          "RECOVER_PARENT": "94E9sjMd91iBUncmipcXzInyqbbABArZEnHv1If3Qgo",
+          "RETIRE": "MbV36V277flmZJ8YLo0fbOCZJ8rUhpgwM73KNZRtCuw"
+        }
+      },
+      "payloadSha256B64": "QYXoa_sJyxNCDbRNEhxSQ1wqIjfAb12UwWLsbRFVXkA",
+      "envelope": {
+        "v": 1,
+        "kind": "SIGNED",
+        "purpose": "PAIR",
+        "payloadB64": "eyJjaGlsZFB1YmxpY0tleUI2NCI6Ik1Ga3dFd1lIS29aSXpqMENBUVlJS29aSXpqMERBUWNEUWdBRTZFRUZBcEhaamJGNnNsaDFCV05zdzBuWE9XLTEzSGw5N1JJNjI2SzFJQXZINVlUYThSeVl1UTlONnp1Rm0tRTcwZ1ZQeUpUaEFvdmJEeXBKUUsxX3JnIiwiZW5yb2xsSWQiOiIwMDAwMDAwMC0wMDAwLTQwMDAtODAwMC0wMDAwMDAwMDAwMTIiLCJlbnJvbGxOb25jZSI6IkJ3Y0hCd2NIQndjSEJ3Y0hCd2NIQndjSEJ3Y0hCd2NIQndjSEJ3Y0hCd2MiLCJraW5kIjoiUEFJUl9BQ0NFUFQiLCJwYWlySWQiOiIwMDAwMDAwMC0wMDAwLTQwMDAtODAwMC0wMDAwMDAwMDAwMDIiLCJwYXJlbnRQdWJsaWNLZXlCNjQiOiJNRmt3RXdZSEtvWkl6ajBDQVFZSUtvWkl6ajBEQVFjRFFnQUUxYkh2OTd4eGthNkRIUkZvWnZydzJXQ1M0TzQycUI4aVgzYVAtU0FhOWY5MmRSWFBFUUxNVnYxem9iQzNndTU0Q1d1Yl9xa3JMUF9sZG9IZzBNUkxEQSIsInJlY292ZXJ5SGFzaGVzIjp7Ik1BSU5URU5BTkNFIjoiU3J5MWotbXJXV2dQZXBvTVVfNUc5NndYaEVLZE9TXzh3ZVJtNE94eDlKUSIsIlJFQ09WRVJfUEFSRU5UIjoiOTRFOXNqTWQ5MWlCVW5jbWlwY1h6SW55cWJiQUJBclpFbkh2MUlmM1FnbyIsIlJFVElSRSI6Ik1iVjM2VjI3N2ZsbVpKOFlMbzBmYk9DWko4clVocGd3TTczS05aUnRDdXcifSwicmVsYXlPcmlnaW4iOiJodHRwczovL3JlbGF5LWVqZW1wbG8ub25yZW5kZXIuY29tIiwidiI6MX0",
+        "sigB64": "MEUCIQCgXA-1vvExxWPEaELevaUUz_pi0PiwdAH5jY8jUa07ZwIgTZHMrxmBKrhEF-ey5SYxdr6HfYrejqh1TOyAbno0m5M"
+      }
+    },
+    {
+      "name": "08_offline_challenge",
+      "signerRole": "CHILD",
+      "payload": {
+        "v": 1,
+        "kind": "OFFLINE_CHALLENGE",
+        "pairId": "00000000-0000-4000-8000-000000000002",
+        "sender": "CHILD",
+        "bootId": "00000000-0000-4000-8000-000000000003",
+        "action": "MAINTENANCE",
+        "nonce": "CAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg"
+      },
+      "payloadSha256B64": "eVhk_WNFvOS1ljjCgXMi-KFOsoGLcloixbsrNQd0Gds",
+      "envelope": {
+        "v": 1,
+        "kind": "SIGNED",
+        "purpose": "OFFLINE",
+        "payloadB64": "eyJhY3Rpb24iOiJNQUlOVEVOQU5DRSIsImJvb3RJZCI6IjAwMDAwMDAwLTAwMDAtNDAwMC04MDAwLTAwMDAwMDAwMDAwMyIsImtpbmQiOiJPRkZMSU5FX0NIQUxMRU5HRSIsIm5vbmNlIjoiQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZyIsInBhaXJJZCI6IjAwMDAwMDAwLTAwMDAtNDAwMC04MDAwLTAwMDAwMDAwMDAwMiIsInNlbmRlciI6IkNISUxEIiwidiI6MX0",
+        "sigB64": "MEUCICuPyVBzd6-Af41U_wuT7Oo1PtaRadmEoDYtkJxwfKLnAiEArUqtSaf_IR3ozPyc96QpCdmn4N0qfQ1UvRqeuuB6Nl4"
+      }
+    },
+    {
+      "name": "09_offline_response",
+      "signerRole": "PARENT",
+      "payload": {
+        "v": 1,
+        "kind": "OFFLINE_RESPONSE",
+        "pairId": "00000000-0000-4000-8000-000000000002",
+        "sender": "PARENT",
+        "bootId": "00000000-0000-4000-8000-000000000003",
+        "action": "MAINTENANCE",
+        "nonce": "CAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg"
+      },
+      "payloadSha256B64": "TKsyHEPtUFwGb7QsOclTQy2El9TWXJaNifFL0Is_MuI",
+      "envelope": {
+        "v": 1,
+        "kind": "SIGNED",
+        "purpose": "OFFLINE",
+        "payloadB64": "eyJhY3Rpb24iOiJNQUlOVEVOQU5DRSIsImJvb3RJZCI6IjAwMDAwMDAwLTAwMDAtNDAwMC04MDAwLTAwMDAwMDAwMDAwMyIsImtpbmQiOiJPRkZMSU5FX1JFU1BPTlNFIiwibm9uY2UiOiJDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnIiwicGFpcklkIjoiMDAwMDAwMDAtMDAwMC00MDAwLTgwMDAtMDAwMDAwMDAwMDAyIiwic2VuZGVyIjoiUEFSRU5UIiwidiI6MX0",
+        "sigB64": "MEUCIQDTgwkB76tOIZ0Mec8mvydHo1Kw6cdPhnTQp5izq7T5WQIgGQ4WQaGUUkVsQAYI2hyelcbX2gUOa6pM6rLm2Cg7Nq8"
+      }
+    },
+    {
+      "name": "10_state_inicial",
+      "signerRole": "CHILD",
+      "payload": {
+        "v": 1,
+        "kind": "STATE",
+        "pairId": "00000000-0000-4000-8000-000000000002",
+        "sender": "CHILD",
+        "syncNonce": "AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM",
+        "bootId": "00000000-0000-4000-8000-000000000003",
+        "childSessionId": "00000000-0000-4000-8000-000000000004",
+        "stateSeq": "1",
+        "lastAcceptedSeq": "0",
+        "lastCommandId": null,
+        "lastCommandPayloadSha256B64": null,
+        "lastResult": "NONE",
+        "mode": "LOCKED",
+        "reason": "BOOT_AUTH_REQUIRED",
+        "remainingSec": null,
+        "networkValidated": true,
+        "channelHealthy": true,
+        "isDeviceOwner": true,
+        "lockTaskActive": true,
+        "commandNonce": "BAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQ"
+      },
+      "payloadSha256B64": "Lzj0u0CuWsDcAFDPSkE1QRhOGALCwDk7z3ePnnnomog",
+      "envelope": {
+        "v": 1,
+        "kind": "SIGNED",
+        "purpose": "MESSAGE",
+        "payloadB64": "eyJib290SWQiOiIwMDAwMDAwMC0wMDAwLTQwMDAtODAwMC0wMDAwMDAwMDAwMDMiLCJjaGFubmVsSGVhbHRoeSI6dHJ1ZSwiY2hpbGRTZXNzaW9uSWQiOiIwMDAwMDAwMC0wMDAwLTQwMDAtODAwMC0wMDAwMDAwMDAwMDQiLCJjb21tYW5kTm9uY2UiOiJCQVFFQkFRRUJBUUVCQVFFQkFRRUJBUUVCQVFFQkFRRUJBUUVCQVFFQkFRIiwiaXNEZXZpY2VPd25lciI6dHJ1ZSwia2luZCI6IlNUQVRFIiwibGFzdEFjY2VwdGVkU2VxIjoiMCIsImxhc3RDb21tYW5kSWQiOm51bGwsImxhc3RDb21tYW5kUGF5bG9hZFNoYTI1NkI2NCI6bnVsbCwibGFzdFJlc3VsdCI6Ik5PTkUiLCJsb2NrVGFza0FjdGl2ZSI6dHJ1ZSwibW9kZSI6IkxPQ0tFRCIsIm5ldHdvcmtWYWxpZGF0ZWQiOnRydWUsInBhaXJJZCI6IjAwMDAwMDAwLTAwMDAtNDAwMC04MDAwLTAwMDAwMDAwMDAwMiIsInJlYXNvbiI6IkJPT1RfQVVUSF9SRVFVSVJFRCIsInJlbWFpbmluZ1NlYyI6bnVsbCwic2VuZGVyIjoiQ0hJTEQiLCJzdGF0ZVNlcSI6IjEiLCJzeW5jTm9uY2UiOiJBd01EQXdNREF3TURBd01EQXdNREF3TURBd01EQXdNREF3TURBd01EQXdNIiwidiI6MX0",
+        "sigB64": "MEUCIHvDlznoYjZU-Y4kaDFfHRuM4w0VJWP0VGCCEMPCkcLuAiEA2Yhht39W25cjY_12xu_nDrtdbEfl2klEg-_o0oQaWo0"
+      }
+    }
+  ]
+}
