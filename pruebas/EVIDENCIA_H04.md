@@ -145,6 +145,33 @@ de producción. El receiver de actualización puede preparar contexto local;
 su ejecución y el archivo de producción no se inspeccionaron en este intento.
 H04 sigue PENDIENTE_VALIDACION; boot/proceso reales y emergencia H04 pendientes.
 
+## Repetición corregida autorizada — 9 de octubre de 2026
+
+El propietario autorizó actualizar SOLO el APK test y repetir la instrumentación
+con el aislamiento corregido. Un único A13 anunciado SM_A135M fue seleccionado
+y comprobado como SM-A135M antes de cada operación; todas con el mismo `adb -s`.
+Owner previo esperado confirmado, usuario 0, DeviceOwner/Affiliated.
+Sin comandos al A56 ni registro de series.
+
+- Actualización `install -r -t` SOLO del APK test: Success.
+- SHA-256 APK test instalado: `4c6aa0ba13f4b9dbf791880b699709c21970787fc90f950aabf4fda17772dd33`.
+- App sin reinstalar, hash instalado del primer intento conservado arriba.
+- Mismo runner y opciones exigirDeviceOwner/exigirCredencialAndroid: **OK (12 tests)**,
+  Time: **1.892 s**. Los cinco H04 y los siete anteriores aprobados.
+
+Comprobados AtomicFile real en Device Protected, recreación del lector,
+failWrite conservando registro anterior, corrupción intacta/error seguro,
+resto .new parcial sin convertirlo en ausencia, y declaración/permisos del
+receiver. Los cuatro tests de archivo crearon subdirectorios UUID únicos en DP
+del destino instrumentado y comprobaron su limpieza limitada al finalizar.
+NO accedieron a control-state.json ni probaron muerte del proceso real.
+
+No se reinició, endureció, abrió marcador ni llamó lockNow. No se ejecutó nueva
+construcción/JVM en esta repetición; 262 resultados JVM locales anteriores.
+H04 sigue PENDIENTE_VALIDACION: broadcasts reales, arranque antes del PIN,
+continuidad tras muerte de proceso y emergencia en nueva versión pendientes.
+No se aprueban G0–G4 ni bloqueo efectivo por estos resultados.
+
 ## Fuentes oficiales consultadas para Android
 
 - https://developer.android.com/reference/android/util/AtomicFile — openRead, startWrite, finishWrite/failWrite y exclusión externa requerida.
