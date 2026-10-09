@@ -3,9 +3,9 @@
 Última actualización: 8 de octubre de 2026
 Commit de partida: ac7d801 (C01 completada)
 Tarea actual: H03
-Estado: EN_CURSO — motor puro probado; falta ampliar mantenimiento y finalizar construcción/evidencia
+Estado: COMPLETADA en lógica pura — integración y pruebas físicas Android pendientes
 Commit de partida de H03: 499b31f.
-Commit de esta unidad: «Implementar motor puro de políticas y cuenta regresiva».
+Primer commit H03: 80e1cb4. Commit de cierre: «Cerrar H03 con pruebas de mantenimiento y evidencia».
 C02 continúa PENDIENTE_VALIDACION Android/Keystore; no bloquea H03.
 
 ## Entorno observado
@@ -17,9 +17,9 @@ SM / Android / One UI / parche del hijo: NO COMPROBADO
 
 ## Terminado y demostrado
 
-- H03 parcial: cuatro acciones, prioridades locales y reloj monotónico inyectable; no hay importaciones Android ni reloj civil en domain/.
-- H03 parcial: cuenta regresiva sin reiniciar por reevaluación/reconexión, bloqueo por boot distinto, márgenes de red/canal y siguiente transición positiva.
-- H03 parcial: 46 nuevas pruebas del motor correctas, dentro de 216 pruebas JVM totales. Mantenimiento y validación final aún pendientes.
+- H03: cuatro acciones, prioridades locales y reloj monotónico inyectable; no hay importaciones Android ni reloj civil en el motor.
+- H03: cuenta regresiva sin reiniciar por reevaluación/reconexión, bloqueo por boot distinto, márgenes de red/canal y siguiente transición positiva.
+- H03: 57 nuevas pruebas del motor correctas, dentro de 227 pruebas JVM totales; mantenimiento y 1024 combinaciones de condiciones incluidos. Evidencia en pruebas/EVIDENCIA_H03.md.
 - C02 parcial: firma/verificación SHA256withECDSA sobre prefijo de propósito y bytes originales, SPKI DER y curva P-256 exacta, DER de firma y r/s en rango.
 - C02 parcial: diez vectores originales verificados en JVM; rechazadas firmas, claves, payloads, propósitos y roles alterados; JSON ambiguo firmado no se acepta.
 - C02 parcial: diez sobres nuevos firmados en JVM y verificados en Node 24.21.0, 70 comprobaciones de interoperabilidad.
@@ -41,11 +41,14 @@ No hay Device Owner, aplicación física de políticas, persistencia ni temporiz
 
 - android/app-child/src/main/java/dev/controlparental/child/domain/: PolicyEngine.kt y ModelosEvaluacion.kt.
 - android/app-child/src/test/java/dev/controlparental/child/domain/: PreparacionPoliticas.kt, PoliticasTablaTest.kt, PrioridadesPoliticaTest.kt, RedYArranquePoliticaTest.kt y TiempoYCoherenciaTest.kt.
+- Cierre: domain/LEEME.md, MantenimientoPoliticaTest.kt e InvariantesPoliticaTest.kt; pruebas/EVIDENCIA_H03.md y hijo/PLAN_HIJO.md.
 - ESTADO.md: resultados, riesgos y siguiente tarea.
 android/local.properties es local, está ignorado y no se incluye en commits.
 
 ## Pruebas ejecutadas y resultado
 
+- Cierre H03: `.\gradlew.bat :core-protocol:test :app-child:testDebugUnitTest :app-child:assembleDebug :app-child:assembleDebugAndroidTest :app-child:lintDebug --console=plain`: BUILD SUCCESSFUL, informes con 227 tests/0 fallos/0 errores/0 omitidos; núcleo UP-TO-DATE y nuevos tests de cierre ejecutados. Dos APK compilados; lint 0 errores y 10 avisos de actualización.
+- Cierre H03: `python -B pruebas/verificar_apk_base.py`: OK, APK sin fixtures ni clases declaradas de pruebas.
 - H03 primera unidad: `.\gradlew.bat :core-protocol:test :app-child:testDebugUnitTest --console=plain`: BUILD SUCCESSFUL, 216 tests totales, 0 fallos/errores; 24 de tabla y 22 de prioridades/red/arranque/tiempo, más los 170 anteriores.
 - Cambios de hora y suspensión solo simulados con reloj inyectado; no se cambió la hora de un teléfono ni se probó Doze real.
 - Resultados anteriores C02:
@@ -96,8 +99,7 @@ La supervivencia del control ante muerte de proceso y suspensión sigue pendient
 
 ## Próxima tarea y lectura mínima
 
-Cerrar H03: ampliar tests de mantenimiento/coherencia combinatoria, reconstruir APK, ejecutar lint e inspección y registrar evidencia. No declarar probado el quiosco Android.
-Lectura mínima H03: hijo/PLAN_HIJO.md H03, hijo/SPEC_HIJO.md H6, CP/1 §2–3 y ADR-H-002/005.
+Siguiente tarea: H00 — inventario físico coordinado. Se alcanzó el primer punto que necesita el A13; esperar confirmación «ADB listo». H04 depende de H01 y no se adelanta saltando esa dependencia.
 Primer punto físico: H00 — inventario y laboratorio, depende de C00 ya completada. Solicitar conexión y autorización ADB al propietario para identificar SM/Android/API/parche y registrar disponibilidad; sin instalar, aprovisionar ni borrar.
 Lectura mínima H00: hijo/PLAN_HIJO.md H00, hijo/INSTALACION_A13.md §1–3, compartido/02_FUENTES_Y_COMPATIBILIDAD.md.
 C02 queda PENDIENTE_VALIDACION: coordinar después de H00 la instalación de app/test APK y ejecutar sus tres tests en Android desbloqueado. El inventario H00 no instala ni borra nada; no confundir compilar los tests con aprobarlos.
