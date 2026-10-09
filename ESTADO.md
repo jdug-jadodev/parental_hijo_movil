@@ -59,6 +59,7 @@ Hay Device Owner de laboratorio en el A13, pero no quiosco, bloqueo parental apl
 
 ## Archivos modificados en la última tarea
 
+- Coordinación en lectura de padre/relay: INTEGRACION_FUTURA.md y ESTADO.md. Solo documentación del hijo, ningún cambio externo ni código/identidad/instalación.
 - H05 transporte QR: android/app-child/src/main/java/dev/controlparental/child/recovery/QrOffline.kt y src/test/java/dev/controlparental/child/recovery/QrOfflineTest.kt; android/app-child/build.gradle.kts, android/gradle/libs.versions.toml, ESTADO.md y pruebas/EVIDENCIA_H05.md.
 - H05 ejecución OFFLINE Android: ESTADO.md, pruebas/EVIDENCIA_H05.md y pruebas/FICHA_DISPOSITIVO.md; registro documental, sin código nuevo.
 - H05 cuarta unidad: androidTest/recovery/OfflineKeystoreAndroidTest.kt, ESTADO.md y pruebas/EVIDENCIA_H05.md. Solo tests/evidencia; no app/contrato/Render.
@@ -90,6 +91,7 @@ android/local.properties es local, está ignorado y no se incluye en commits.
 
 ## Pruebas ejecutadas y resultado
 
+- Coordinación CHILD_OFFER: Get-FileHash SHA-256 de contrato y schema en hijo/padre/relay, iguales en los tres y coincidentes con INTEGRACION_FUTURA.md. Lectura de fuentes/estado, sin ejecutar pruebas externas ni builds/ADB en esta unidad documental; no acredita interoperabilidad móvil real.
 - H05 QR: primer comando Gradle agotó 120 s, repetición con 240 s BUILD SUCCESSFUL. Núcleo 169 UP-TO-DATE; hijo debug 160 y release 153 ejecutados sin fallos/errores/omitidos; total núcleo+debug 329. APK debug/test/release sin firmar construidos; lint 0 errores/11 avisos de versiones, inspectores base/H01 OK. No ADB/instalación/pruebas físicas; 23 Android son evidencia anterior del APK instalado, no de esta nueva construcción.
 - H05 OFFLINE físico autorizado: único A13 anunciado SM_A135M y comprobado SM-A135M antes de cada operación, Owner esperado presente; install -r -t SOLO APK test Success y runner exigirDeviceOwner=true/exigirCredencialAndroid=true: OK (23 tests). App no reinstalada, alias/archivos de laboratorio aislados; sin reinicio, endurecimiento, borrado o comandos al A56. Sin nueva construcción/JVM en este registro.
 - H05 tests OFFLINE Keystore: comando completo Gradle BUILD SUCCESSFUL; APK test recompilado, tests JVM/core UP-TO-DATE (321/145 resultados anteriores, no nueva ejecución), app debug/release UP-TO-DATE, lint correcto/10 avisos. Inspectores base/H01 OK. Ocho tests Android nuevos COMPILADOS NO EJECUTADOS; no ADB/instalación en esta unidad.
@@ -166,6 +168,7 @@ android/local.properties es local, está ignorado y no se incluye en commits.
 
 ## Decisiones locales sin cambiar ADR
 
+- Coordinación solicitada para QR inicial CHILD_OFFER (H08), no OFFLINE de H05. Propietario autoriza lectura de parental_padre/parental_render únicamente; revisados flujos y hashes de contrato/schema, idénticos en los tres repositorios. Padre devuelve PAIR_ACCEPT firmado y exportación pública manual; leer oferta no conecta automáticamente. Relay solo validado localmente según su evidencia, sin despliegue público. Detalle en INTEGRACION_FUTURA.md. H05 sigue abierta, dependencias H08/H10 no se declaran cumplidas.
 - Separación confirmada por el propietario: servidor WebSocket/Render exclusivamente en `C:\Users\Usuario\Documents\parental_render`. Revisión local: no hay implementación de servidor, package.json, render.yaml ni fuentes TypeScript; los dos scripts .mjs son verificadores del protocolo. Aquí solo app del niño, futuro cliente WSS y contrato/fixtures congelados. No se consultó ni modificó el repositorio Render.
 - Actualización documental de alcance: AGENTS.md, hijo/AGENTS.md, 00_EMPIEZA_AQUI.md, INTEGRACION_FUTURA.md, hijo/PLAN_HIJO.md y ESTADO.md. Sin cambios de código/CP/1 ni pruebas Android/JVM nuevas; próxima comprobación H04 boot/proceso sigue pendiente de coordinación.
 - Acuerdos del propietario guardados en AGENTS.md: español, commits cada aproximadamente 500 líneas, cuenta regresiva y aviso antes de ADB.
@@ -185,7 +188,7 @@ La supervivencia del control ante muerte de proceso y suspensión sigue pendient
 
 ## Próxima tarea y lectura mínima
 
-Continuar SOLO H05: integrar transporte QrOffline con presentación/captura de cámara, manejo de permiso y cierre de imágenes/cancelación; identidad confiable sin inventar vínculo de producción. Probar límites/ciclo de vida y mantener emergencia accesible. Coordinar aparte cualquier instalación/prueba física; 23 Android previos no certifican QR óptico en A13. Mantener consumo cerrado hasta herramientas autorizadas disponibles; no avanzar H06. H05 NO cerrada. A56 fuera de alcance; Render externo en parental_render.
+Prioridad solicitada: QR inicial CHILD_OFFER compatible con padre (preparación H08), no pantalla QR OFFLINE. Coordinación documental completada, sin iniciar generación de identidad o declarar H05 cerrada. Siguiente unidad: delimitar preparación identidad/oferta y sus pruebas locales respetando dependencia H05; después aceptación física PAIR_ACCEPT/commit y conexión H10 separadas. Mantener recuperación/emergencia y consumo cerrado hasta herramientas disponibles; H06 bloqueada. Toda instalación/prueba física requiere coordinación SOLO A13. Lectura externa autorizada, escritura solo aquí; A56 fuera de alcance.
 H00 cerrado: ADB autorizado, inventario obtenido y preparación confirmada. El formateo fue previo y declarado por el propietario, no ejecutado por el agente.
 Lectura mínima H00: hijo/PLAN_HIJO.md H00, hijo/INSTALACION_A13.md §1–3, compartido/02_FUENTES_Y_COMPATIBILIDAD.md.
 C02 cerrada tras ejecución real de tres tests Android. Lectura mínima H01: hijo/PLAN_HIJO.md H01, hijo/SPEC_HIJO.md H2/H4 e hijo/INSTALACION_A13.md §3; consultar fuentes oficiales correspondientes.

@@ -35,3 +35,54 @@
 - No subir claves privadas, contraseñas, códigos de recuperación ni datos personales a Git o prompts.
 
 **Importante:** este documento describe un procedimiento futuro; no afirma que las aplicaciones estén implementadas ni sincronizadas hoy.
+
+## Coordinación en lectura — 9 de octubre de 2026
+
+El propietario confirmó que el padre espera CHILD_OFFER y autorizó consultar
+parental_padre y parental_render exclusivamente en lectura. No autoriza modificar
+esos proyectos, ejecutar sus herramientas, desplegar ni operar sobre el A56.
+
+Se leyeron estado/instrucciones y fuentes pertinentes. SHA-256 del contrato y
+schema comparados directamente en los tres repositorios: coinciden con los valores
+de este documento. No se ejecutaron sus tests; resultados externos son evidencia
+registrada por sus proyectos, no nuevas comprobaciones de esta sesión.
+
+### Flujo comprobado por lectura
+
+1. Niño muestra documento JSON CHILD_OFFER, no un sobre SIGNED ni un QR OFFLINE:
+   v=1, kind, childPublicKeyB64, enrollId UUID v4 y enrollNonce de 32 bytes base64url.
+   Identidad privada no exportable; oferta RAM visible cinco minutos, sin timestamp
+   añadido a CP/1. Niño debe invalidarla por cancelación, proceso/boot o expiración.
+2. Padre: CodecProtocolo.leerOferta y PairChild.preparar consumen esa oferta;
+   generación de pairId, códigos/hashes, origen HTTPS y comparación de huellas.
+   PairChild.aceptar exige huellas comparadas/códigos guardados y firma PAIR,
+   persiste PREPARADO antes de mostrar el QR de aceptación. Huellas: SHA-256 del
+   SPKI DER completo, hexadecimal mayúsculo agrupado de cuatro caracteres.
+3. Niño necesita leer ese segundo QR SIGNED/PAIR_ACCEPT, comprobar firma y oferta
+   vigente, ambas públicas/nonce/enrollId, comparar huellas y confirmar físicamente
+   antes del commit público atómico. Una oferta visible no es vínculo completado.
+4. Padre exporta solo ACTIVE_PAIR_ID, PARENT_PUBLIC_KEY_B64, CHILD_PUBLIC_KEY_B64
+   y PUBLIC_ORIGIN para configuración externa del relay; no registro automático
+   de la pareja ni envío de privadas/códigos al servidor.
+5. Conexión posterior WSS /ws, subprotocolo cp.v1, reto AUTH firmado y latidos;
+   requiere cliente hijo H10, además de estado/recuperación comprobados. No habilitar
+   controles por haber leído un QR o recibido AUTH_OK/ACK del relay.
+
+Fuentes externas leídas: padre app-parent/.../pairing/PairChild.kt y QrLocal.kt,
+core-protocol/.../CodecProtocolo.kt y ESTADO.md; servidor ESTADO.md,
+src/application/usecase/configurar-servidor.usecase.ts y
+src/infrastructure/config/websocket.config.ts. Padre cuenta con cámara y lector
+de imagen locales; integración óptica con QR emitido por APK hijo aún pendiente.
+Servidor registra integración WSS loopback con cliente padre JVM y niño Node
+simulado, no hijo Android. Conserva loopback, health 503 y producción bloqueada;
+no hay despliegue público certificado. No consultar credenciales/configuración real.
+
+### Orden siguiente en el hijo
+
+H05 conserva núcleos/pruebas, pero recuperación operativa sigue incompleta y H06
+bloqueada. H08 depende de H05: preparar compatibilidad no supone cerrar esa puerta
+ni autoriza endurecer. Separar identidad/oferta inicial de aceptación/commit y de
+conexión WSS. El trabajo futuro debe conservar emergencia, no inventar identidades
+ni presentar vinculación completa sin recuperación y estado firmado del hijo.
+QrOffline es exclusivo de recuperación y no se reutiliza aceptando CHILD_OFFER
+o PAIR_ACCEPT por el mismo puerto; mantener separados propósito y autorización.
