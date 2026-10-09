@@ -299,6 +299,54 @@ crash entre aceptación/enforcement. H-BOOT-01/02/03 y H-STATE-01 no están apro
 completamente; H-STATE-02 tiene evidencia automática con archivos de laboratorio,
 sin inyectar corrupción en producción. No se certifica control parental ni G0–G4.
 
+## Preparación de evidencia Direct Boot sin ADB antes del PIN
+
+Se añadió diagnóstico exclusivamente debug, separado por source sets debug/release.
+BootReceiver toma `UserManager.isUserUnlocked` al recibir el broadcast y al terminar
+la transacción. Solo después del resultado del repositorio escribe en Logcat con
+tag ArranqueH04: evento conocido, dos banderas de desbloqueo, resultado local,
+BOOT_COUNT y hash SHA-256 de bootId. No registra UUID original, claves, vínculo,
+códigos, paquetes, políticas, secuencias, sobres, duración, contenido ni actividad.
+Sin archivo de diagnóstico, endpoint, nuevas APIs de administración o permisos.
+CP/1/control-state.json no cambian. Fallos del diagnóstico no alteran el estado.
+Release usa implementación vacía: no consulta UserManager ni emite estas trazas.
+
+Solo CONTEXTO_PERSISTIDO significa transacción local completada, no APPLIED ni
+bloqueo efectivo. Una traza de LOCKED_BOOT_COMPLETED con ambas banderas NO
+demostraría que ese callback terminó con el usuario aún bloqueado. Compararla
+con BOOT_COMPLETED del mismo BOOT_COUNT/hash comprobaría continuidad de contexto.
+Si el usuario se desbloquea durante IO, aparece NO/SI y no se aprueba persistencia
+antes del PIN. Si el buffer del sistema descarta la traza o faltan callbacks, la
+observación queda pendiente: no se inventa evidencia ni se envían broadcasts falsos.
+Logcat es un buffer técnico acotado de laboratorio; no historial de uso del niño.
+
+Comando local desde android/:
+
+```powershell
+.\gradlew.bat :core-protocol:test :app-child:testDebugUnitTest :app-child:testReleaseUnitTest :app-child:assembleDebug :app-child:assembleDebugAndroidTest :app-child:assembleRelease :app-child:lintDebug --console=plain
+```
+
+BUILD SUCCESSFUL: núcleo 169 tests (UP-TO-DATE), hijo debug 100 tests ejecutados
+(siete nuevos de formato), hijo release 93 tests ejecutados; 0 fallos/errores/omitidos
+en todos los informes. Núcleo+debug: **269 tests**; release repite 93 del hijo,
+no son 93 casos nuevos. APK debug/instrumentado y release sin firmar construidos;
+lint debug 0 errores/10 avisos, lint vital release correcto.
+verificar_apk_base.py y verificar_apk_h01.py OK. Inspector base ahora también revisa
+testDebug/testRelease y comprueba tag/clase del formato presentes en APK debug y
+ausentes de release. Este chequeo requiere construir ambos APK.
+
+Cambios: BootReceiver.kt, debug/boot/FormatoTrazaArranque.kt y TrazaArranque.kt,
+release/boot/TrazaArranque.kt, testDebug/boot/FormatoTrazaArranqueTest.kt,
+pruebas/verificar_apk_base.py, ESTADO.md y esta evidencia.
+Fuente primaria consultada: https://developer.android.com/reference/android/os/UserManager#isUserUnlocked()
+
+NO INSTALADO ni ejecutado en A13 en esta unidad; no se usó ADB. App instalada sigue
+versión H04 anterior sin estas trazas. Próximo paso: coordinar actualizar app debug,
+repetir 12 tests Android y luego reinicio MANUAL separado. Recoger únicamente el
+tag ArranqueH04 después de desbloquear, sin volcar logs generales ni borrar el
+buffer del teléfono; exigir nuevo BOOT_COUNT para excluir actualización/reinicio
+anterior. A56 fuera de alcance. Emergencia/recuperación no se deshabilitan.
+
 ## Fuentes oficiales consultadas para Android
 
 - https://developer.android.com/reference/android/util/AtomicFile — openRead, startWrite, finishWrite/failWrite y exclusión externa requerida.

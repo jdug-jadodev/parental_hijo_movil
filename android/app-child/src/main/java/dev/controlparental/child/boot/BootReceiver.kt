@@ -16,13 +16,17 @@ class BootReceiver : BroadcastReceiver() {
                 Intent.ACTION_MY_PACKAGE_REPLACED)) return
         val protegido = context.applicationContext.createDeviceProtectedStorageContext()
         if (DeviceCapabilities(protegido).leerAdministracion().esDeviceOwner != true) return
+        val accion = intent.action
+        val desbloqueadoAlRecibir = TrazaArranque.leerDesbloqueo(protegido)
         val pendiente = goAsync()
         try {
             EjecutorEstado.ejecutar {
                 try {
                     val carga = BootContextRepository(EstadoAndroid.obtener(protegido), FuenteArranqueAndroid(protegido)).actualizarContexto()
+                    TrazaArranque.registrar(protegido, accion, desbloqueadoAlRecibir, carga)
                     if (carga == CargaEstado.ErrorSeguro) Log.e("EstadoControl", "Contexto local en error seguro; no autorizar uso")
                 } catch (_: RuntimeException) {
+                    TrazaArranque.registrar(protegido, accion, desbloqueadoAlRecibir, CargaEstado.ErrorSeguro)
                     Log.e("EstadoControl", "No se pudo comprobar el estado local; no autorizar uso")
                 } finally {
                     pendiente.finish()

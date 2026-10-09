@@ -60,6 +60,8 @@ No instalarlo aún como controlador: C00 solo prepara una pantalla de «No confi
 La firma debug que genera Android no es la firma final ni la identidad criptográfica CP/1.
 
 Comprobación adicional desde la raíz, sin dispositivo: `python -B pruebas/verificar_apk_base.py`.
+Desde H04, construir también `:app-child:assembleRelease` antes del inspector:
+comprueba que la traza de laboratorio debug no esté en el APK release sin firmar.
 Resultados de construcción y limitaciones: `ESTADO.md`.
 
 ## Pruebas de C02 sin teléfono
