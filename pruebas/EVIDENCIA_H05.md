@@ -233,3 +233,17 @@ endureció el A13. No comandos dirigidos al A56. Sin nueva construcción/JVM en
 esta unidad documental. Presentación SIN_VINCULO, cancelación, FLAG_SECURE y
 regresión presencial de emergencia de este APK siguen pendientes. H05 NO cerrada;
 QR/identidad operativos y herramientas reales no se consideran implementados.
+
+## Revisión presencial de presentación y emergencia
+
+El propietario respondió «correcto» a los pasos: abrir Recuperación local con el
+adulto, comprobar SIN_VINCULO y consumo de códigos deshabilitado, cancelar/volver,
+abrir y salir del marcador de emergencia SIN marcar/llamar, desbloquear y volver
+a nuestra app. Confirmación presencial comunicada, no captura automatizada.
+No se pidieron ni comunicaron códigos o credenciales. No se infiere comprobación
+de FLAG_SECURE por esta respuesta: no se solicitó intentar captura de pantalla.
+
+Presentación/cancelación y ruta básica de emergencia del APK H05 inicial confirmadas
+en A13 sin quiosco. No valida recuperación con código real, QR, herramientas,
+borrado, retorno bajo quiosco o variantes SIM. H05 sigue EN_CURSO y H06 bloqueada.
+En este registro solo se actualizó documentación; no ADB ni nuevas pruebas.

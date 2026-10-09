@@ -75,6 +75,7 @@ G4: PENDIENTE
 | H04 actualización de traza debug | Actualizar SOLO app y repetir runner Owner/credencial con APK test corregido anterior | Success; OK (12 tests), 1.886 s; no eventos reconocidos en lectura exclusiva ArranqueH04 | 9 de octubre de 2026; diagnóstico de arranque real pendiente de reinicio manual coordinado; sin reinicio/endurecimiento/borrado ni cambios al A56 |
 | H04 callbacks reales Direct Boot | Reinicio MANUAL, espera antes del PIN y lectura exclusiva ArranqueH04 después de desbloquear; lectura DP de contexto | LOCKED_BOOT_COMPLETED NO/NO y BOOT_COMPLETED SI/SI con bootCount=4/mismo hash bootId; checksum correcto y sin autorización | 9 de octubre de 2026; contexto PREPARACION probado, no políticas/temporizador/enforcement; H04 inicial cerrada, G0–G4 pendientes y A56 intacto |
 | H05 instalación/pruebas iniciales Android | Actualizar ambos APK SOLO A13 y runner con Owner/credencial exigidos | Success; OK (15 tests), 3.581 s; tres nuevos H05 de consumo/espera/fuente con archivos efímeros aprobados | 9 de octubre de 2026; sin tocar estado de producción desde tests H05, sin reinicio/endurecimiento/borrado; pantalla/emergencia presenciales pendientes, A56 intacto |
+| H05 presentación y regresión de emergencia | Solicitar SIN_VINCULO/consumo cerrado, cancelar/volver, abrir/salir marcador SIN marcar/llamar y desbloquear/regresar | Propietario responde «correcto» | Confirmación presencial comunicada, no captura automática; sin quiosco ni recuperación operativa, FLAG_SECURE físico pendiente |
 
 ## Emergencia
 
