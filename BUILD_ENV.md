@@ -103,7 +103,7 @@ versión visible 6.1 confirmada por el propietario. `dpm list-owners`: `no owner
 Preflight H01 inicialmente detenido por tres registros Samsung. Tras preparación
 presencial del propietario: cero cuentas, un usuario principal actual 0, APK H01
 actualizados y Device Owner de laboratorio establecido únicamente en el A13.
-Tres tests antes de Owner y seis después aprobados; confirmación visual pendiente.
+Tres tests antes de Owner y seis después aprobados; pantalla actual de preparación confirmada por el propietario.
 No se añadieron quiosco ni restricciones desde la app; el A56 no se tocó.
 El propietario confirma equipo ya formateado, sin datos que conservar; no autoriza nuevos borrados.
 Evidencia y plan de laboratorio en `pruebas/FICHA_DISPOSITIVO.md`.

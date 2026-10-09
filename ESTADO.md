@@ -3,7 +3,7 @@
 Última actualización: 9 de octubre de 2026
 Commit de partida: ac7d801 (C01 completada)
 Tarea actual: H01 — DPC y launcher mínimos
-Estado: PENDIENTE_CONFIRMACION_UI — A13 aprovisionado como Device Owner; tests Android aprobados; falta observación presencial de pantalla
+Estado: COMPLETADA en laboratorio mínimo — Owner real y tests Android comprobados; propietario confirma pantalla de preparación
 Commit de partida de H03: 499b31f.
 Primer commit H03: 80e1cb4. Commit de cierre: «Cerrar H03 con pruebas de mantenimiento y evidencia».
 C02 comprobada en JVM/Node y Android/Keystore. Commit de esta unidad: «Validar C02 en el A13 y excluir expresamente el A56».
@@ -18,7 +18,7 @@ One UI: 6.1 confirmada por el propietario; propiedad 60100 observada. Device Own
 
 ## Terminado y demostrado
 
-- H01: APK actualizados y Device Owner real establecido por ADB únicamente en el A13, sin quiosco/endurecimiento añadido. Tres tests H01 antes de Owner aprobados; seis tests H01+C02 después, exigiendo Owner/admin real, aprobados. Debug testOnly separado de release. Falta confirmación visual presencial; A56 intacto.
+- H01: APK actualizados y Device Owner real establecido por ADB únicamente en el A13, sin quiosco/endurecimiento añadido. Tres tests H01 antes de Owner aprobados; seis tests H01+C02 después, exigiendo Owner/admin real, aprobados. Debug testOnly separado de release. El propietario respondió «perfecto» a la comprobación de pantalla de preparación; confirmación presencial comunicada, no captura automatizada. A56 intacto.
 - H00: equipo autorizado ADB e inventariado sin instalar ni modificar datos. One UI 6.1 y preparación del laboratorio confirmadas por el propietario: teléfono ya formateado, sin datos que conservar. Ficha y plan en pruebas/FICHA_DISPOSITIVO.md. SIM/PIN, emergencia y elegibilidad real de aprovisionamiento siguen NO COMPROBADOS para fases posteriores; no se autoriza otro borrado.
 - H03: cuatro acciones, prioridades locales y reloj monotónico inyectable; no hay importaciones Android ni reloj civil en el motor.
 - H03: cuenta regresiva sin reiniciar por reevaluación/reconexión, bloqueo por boot distinto, márgenes de red/canal y siguiente transición positiva.
@@ -113,14 +113,14 @@ android/local.properties es local, está ignorado y no se incluye en commits.
 
 ## Bloqueos y riesgos abiertos
 
-H01: bloqueo por registros de cuentas resuelto por el propietario; recuento ADB actual 0 y Owner ya establecido. Falta confirmar la UI presencial y comprobar retirada de admin testOnly en una prueba coordinada. No eliminar cuentas ni servicios automáticamente.
+H01: bloqueo por registros de cuentas resuelto por el propietario; recuento ADB 0 y Owner establecido. Pantalla de preparación confirmada por el propietario. Retirada del admin testOnly, UI previa sin Owner y recuperación completa aún requieren pruebas coordinadas; no se consideran comprobadas por la confirmación de pantalla actual.
 G0–G4 pendientes. Hay inventario físico ADB del A13, no validación del control, emergencia ni recuperación.
 El validador Python del esquema no se ha repetido con éxito: instalación de jsonschema 4.26.0 en un venv temporal falló por conexión/timeout. No se modificó Python global; ver evidencia C01.
 La supervivencia del control ante muerte de proceso y suspensión sigue pendiente de pruebas reales.
 
 ## Próxima tarea y lectura mínima
 
-Completar confirmación visual presencial H01: abrir launcher y comprobar «Bloqueado — en preparación», Owner Sí/admin Sí y aviso de quiosco NO APLICADO. Owner real ya comprobado por Android/tests. Después H02 — ruta de emergencia del sistema, sin endurecimiento; leer SPEC-H H9 y ADR-H-004. No avanzar de tarea hasta cerrar H01. A56 fuera de alcance: no tocarlo.
+Siguiente tarea H02 — ruta de emergencia del sistema, sin endurecimiento; leer hijo/PLAN_HIJO.md H02, SPEC-H H9 y ADR-H-004. H01 cerrado en su alcance mínimo, con Owner real y pantalla de preparación confirmada por el propietario. Coordinar actualización y prueba física de emergencia sin realizar llamadas reales. A56 fuera de alcance: no tocarlo.
 H00 cerrado: ADB autorizado, inventario obtenido y preparación confirmada. El formateo fue previo y declarado por el propietario, no ejecutado por el agente.
 Lectura mínima H00: hijo/PLAN_HIJO.md H00, hijo/INSTALACION_A13.md §1–3, compartido/02_FUENTES_Y_COMPATIBILIDAD.md.
 C02 cerrada tras ejecución real de tres tests Android. Lectura mínima H01: hijo/PLAN_HIJO.md H01, hijo/SPEC_HIJO.md H2/H4 e hijo/INSTALACION_A13.md §3; consultar fuentes oficiales correspondientes.

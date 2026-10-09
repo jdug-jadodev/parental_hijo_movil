@@ -64,6 +64,7 @@ G4: PENDIENTE
 | C02 Android | Instalar ambos APK y ejecutar solo CriptografiaAndroidTest con adb -s dirigido al A13 | OK (3 tests), 1.676 s; verificación de fixtures, Keystore no exportable y alias ausente | 9 de octubre de 2026; SM-A135M / API 34 / A135MUBSDDZB3; A56 excluido, sin Owner ni restricciones nuevas |
 | H01 preflight | Consultas con adb -s al A13: modelo, Owners, recuento de usuarios/cuentas y usuario actual | Sin Owner; usuario principal único; 3 cuentas. Detenido antes de instalar/aprovisionar | 9 de octubre de 2026; cuentas y nombres no guardados; no se modificó A13 ni A56 |
 | H01 aprovisionamiento y tests | Repetir preflight, actualizar ambos APK, ejecutar 3 tests antes de Owner, set-device-owner y 6 tests con exigirDeviceOwner=true | Cero cuentas; Owner real/admin activo; OK (3 tests) y OK (6 tests). Launcher abierto; confirmación visual pendiente | 9 de octubre de 2026; SM-A135M; todo dirigido con adb -s; A56 intacto; sin quiosco añadido |
+| H01 pantalla actual y cierre mínimo | Solicitar comprobación de pantalla de preparación, Owner Sí/admin Sí y quiosco NO APLICADO | El propietario responde «perfecto»; confirmación presencial comunicada, no captura automatizada | 9 de octubre de 2026; no prueba bloqueo, emergencia ni UI previa sin Owner |
 
 ## Emergencia
 

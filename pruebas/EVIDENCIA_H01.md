@@ -1,6 +1,6 @@
 # Evidencia H01 — DPC y launcher mínimos
 
-Fecha: 9 de octubre de 2026. Estado: Owner real y tests Android comprobados; confirmación visual presencial pendiente.
+Fecha: 9 de octubre de 2026. Estado: H01 completada en laboratorio mínimo; Owner real/tests Android comprobados y pantalla actual confirmada por el propietario.
 
 Antecedente: bloqueada inicialmente por 3 registros de cuentas; precondición resuelta presencialmente por el propietario.
 
@@ -133,7 +133,13 @@ Intentos de observar la UI anterior al Owner con uiautomator hacia /dev/tty:
 el primero no devolvió XML; el segundo con shell -tt devolvió jerarquía pero sin
 textos de nuestra app. No se guardó la jerarquía ni se publicó contenido de otras
 apps. Por tanto NO se considera observada la pantalla «No configurado» ni se
-atribuye una causa no comprobada. Falta confirmación visual presencial del launcher.
+atribuye una causa no comprobada. La UI previa al Owner sigue sin observación directa.
+
+Confirmación de pantalla actual: tras pedir al propietario comprobar «Bloqueado —
+en preparación», Owner Sí/admin Sí y aviso de quiosco NO APLICADO, respondió
+«perfecto». Se registra como confirmación presencial comunicada por el propietario,
+no como captura automatizada ni prueba de bloqueo. Con Owner real comprobado por
+Android y seis tests correctos, se cierra el alcance mínimo H01.
 
 Sin borrado, retirada, cambios de cuentas por el agente ni endurecimiento añadido.
 El A56 no recibió consultas, instalaciones ni pruebas; cada operación usó adb -s
@@ -141,7 +147,7 @@ con destino SM-A135M comprobado y serie solo en memoria.
 
 ## Pruebas físicas pendientes
 
-- Confirmación visual presencial de UI; H-OWNER-01 tiene Owner real comprobado pero falta completar evidencia de pantalla.
+- Observación directa de UI previa sin Owner; cubierta solo por lógica JVM y diagnóstico Android, no por captura de aquella pantalla. La confirmación del propietario corresponde a la pantalla actual con Owner.
 - Comprobación de retirada segura del admin testOnly de laboratorio.
 - HOME persistente, Lock Task, emergencia, PIN/SIM y recuperación.
 
