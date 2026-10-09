@@ -100,9 +100,11 @@ El propietario identifica el teléfono como Samsung A13 y lo ofrece como equipo 
 Inventario ADB H00 del 8 de octubre de 2026: Samsung SM-A135M, Android 14/API 34,
 parche 2026-02-05, firmware A135MUBSDDZB3. One UI devuelve propiedad 60100;
 versión visible 6.1 confirmada por el propietario. `dpm list-owners`: `no owners`.
-Preflight H01: un usuario principal (actual 0) y **3 cuentas registradas**,
-sin guardar sus identidades. Aprovisionamiento detenido: no cumple precondición
-de laboratorio sin cuentas. No se actualizó el APK ni se cambió el teléfono.
+Preflight H01 inicialmente detenido por tres registros Samsung. Tras preparación
+presencial del propietario: cero cuentas, un usuario principal actual 0, APK H01
+actualizados y Device Owner de laboratorio establecido únicamente en el A13.
+Tres tests antes de Owner y seis después aprobados; confirmación visual pendiente.
+No se añadieron quiosco ni restricciones desde la app; el A56 no se tocó.
 El propietario confirma equipo ya formateado, sin datos que conservar; no autoriza nuevos borrados.
 Evidencia y plan de laboratorio en `pruebas/FICHA_DISPOSITIVO.md`.
 

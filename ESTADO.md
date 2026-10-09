@@ -3,7 +3,7 @@
 Última actualización: 9 de octubre de 2026
 Commit de partida: ac7d801 (C01 completada)
 Tarea actual: H01 — DPC y launcher mínimos
-Estado: BLOQUEADA_POR_PRECONDICION — A13 con 3 cuentas; no se actualizó ni aprovisionó H01
+Estado: PENDIENTE_CONFIRMACION_UI — A13 aprovisionado como Device Owner; tests Android aprobados; falta observación presencial de pantalla
 Commit de partida de H03: 499b31f.
 Primer commit H03: 80e1cb4. Commit de cierre: «Cerrar H03 con pruebas de mantenimiento y evidencia».
 C02 comprobada en JVM/Node y Android/Keystore. Commit de esta unidad: «Validar C02 en el A13 y excluir expresamente el A56».
@@ -14,11 +14,11 @@ Android Studio/JDK/Gradle/AGP/Kotlin: registrados en BUILD_ENV.md.
 JDK de construcción 21.0.10 / Wrapper 8.13 / AGP 8.11.1 / Kotlin 2.2.21 / SDK 36.
 Node 24.21.0 / Windows 11 amd64.
 Hijo: Samsung SM-A135M / Android 14 / API 34 / parche 2026-02-05 / firmware A135MUBSDDZB3.
-One UI: 6.1 confirmada por el propietario; propiedad 60100 observada. `dpm list-owners`: no owners.
+One UI: 6.1 confirmada por el propietario; propiedad 60100 observada. Device Owner de laboratorio activo: dev.controlparental.child/.admin.ChildAdminReceiver, usuario 0.
 
 ## Terminado y demostrado
 
-- H01 parcial: DPC protegido, HOME/LAUNCHER mínimos y diagnóstico Owner/admin solo lectura. Debug testOnly separado de release. 231 pruebas JVM totales aprobadas; tres tests Android H01 compilados, NO EJECUTADOS. No se actualizó ni aprovisionó el A13 en esta unidad y no se tocó el A56.
+- H01: APK actualizados y Device Owner real establecido por ADB únicamente en el A13, sin quiosco/endurecimiento añadido. Tres tests H01 antes de Owner aprobados; seis tests H01+C02 después, exigiendo Owner/admin real, aprobados. Debug testOnly separado de release. Falta confirmación visual presencial; A56 intacto.
 - H00: equipo autorizado ADB e inventariado sin instalar ni modificar datos. One UI 6.1 y preparación del laboratorio confirmadas por el propietario: teléfono ya formateado, sin datos que conservar. Ficha y plan en pruebas/FICHA_DISPOSITIVO.md. SIM/PIN, emergencia y elegibilidad real de aprovisionamiento siguen NO COMPROBADOS para fases posteriores; no se autoriza otro borrado.
 - H03: cuatro acciones, prioridades locales y reloj monotónico inyectable; no hay importaciones Android ni reloj civil en el motor.
 - H03: cuenta regresiva sin reiniciar por reevaluación/reconexión, bloqueo por boot distinto, márgenes de red/canal y siguiente transición positiva.
@@ -38,10 +38,11 @@ One UI: 6.1 confirmada por el propietario; propiedad 60100 observada. `dpm list-
 - C00 conserva sus siete pruebas de preparación dentro de las 112 pruebas actuales.
 - Simulador que entrega los bytes de ejemplos congelados, aislado en testFixtures.
 - APK debug mínimo con pantalla «No configurado»; sin clases de pruebas ni fixtures congelados dentro del APK.
-No hay Device Owner, aplicación física de políticas, persistencia ni temporizador Android conectado a la UI. El motor calcula intenciones, no APPLIED. Solo se validó físicamente la unidad criptográfica C02, no bloqueo/emergencia/recuperación.
+Hay Device Owner de laboratorio en el A13, pero no quiosco, bloqueo parental aplicado, persistencia ni temporizador Android conectado a la UI. El motor calcula intenciones, no APPLIED. Emergencia/recuperación/endurecimiento siguen sin validar.
 
 ## Archivos modificados en la última tarea
 
+- H01 físico: ESTADO.md, pruebas/EVIDENCIA_H01.md, pruebas/FICHA_DISPOSITIVO.md y BUILD_ENV.md. Sin cambios de código ni contrato.
 - H01: admin/ChildAdminReceiver.kt y DeviceCapabilities.kt; domain/DiagnosticoAdministracion.kt; ui/LauncherActivity.kt (antes ActividadInicial.kt); manifests main/debug, strings.xml y device_admin.xml; DiagnosticoAdministracionTest.kt y ComponentesAdministracionTest.kt.
 - Documentación H01: 00_EMPIEZA_AQUI.md (A56 prohibido), hijo/INSTALACION_A13.md, pruebas/EVIDENCIA_H01.md y ESTADO.md.
 - pruebas/verificar_apk_h01.py: inspector local de declaraciones debug/release sin usar ADB.
@@ -56,6 +57,8 @@ android/local.properties es local, está ignorado y no se incluye en commits.
 
 ## Pruebas ejecutadas y resultado
 
+- H01 continuación física: preflight con 0 cuentas/un usuario 0/sin Owner; dos actualizaciones APK Success. Tres tests H01 previos al Owner: OK (3 tests), 0.116 s. set-device-owner Success; list-owners confirma nuestro Owner. Runner dirigido al A13 con exigirDeviceOwner=true: OK (6 tests), 1.643 s (H01+C02). Apertura launcher Status ok/COLD; observación visual pendiente. A56 excluido; nada borrado.
+- H01: ayuda DPM muestra remove-active-admin pero devuelve 255; no se ejecutó retirada. Inspector local APK H01 repetido OK. Lectura filtrada de restricciones efectivas observa no_add_managed_profile; globales none, sin afirmar auditoría completa. Intentos UIAutomator sin textos de la app: NO aprobación de UI ni árbol guardado.
 - H01 preflight físico autorizado: A13 SM-A135M seleccionado de forma única y cada consulta dirigida con adb -s. dpm list-owners: no owners; pm list users: un usuario principal; am get-current-user: 0. Recuento de dumpsys account: 3 cuentas, sin mostrar ni guardar nombres/credenciales. Se detuvo ANTES de instalar o ejecutar set-device-owner. No se modificaron cuentas, ajustes ni A56. No se ejecutó el comando de ayuda/retirada posterior porque falló la precondición.
 - H01 construcción final: `.\gradlew.bat :core-protocol:test :app-child:testDebugUnitTest :app-child:assembleDebug :app-child:assembleDebugAndroidTest :app-child:assembleRelease :app-child:lintDebug --console=plain`: BUILD SUCCESSFUL; informes 231 tests/0 fallos/0 errores/0 omitidos, tests del hijo ejecutados y núcleo UP-TO-DATE. Debug, instrumentado y release sin firmar construidos; lint 0 errores/10 avisos.
 - H01 inspección: verificar_apk_base.py OK; verificar_apk_h01.py OK en debug/release, testOnly exclusivo debug y políticas/manifest verificados. Fallos iniciales de compilación de instrumentación e inspector corregidos y registrados en pruebas/EVIDENCIA_H01.md; no se usaron APIs ocultas.
@@ -110,15 +113,14 @@ android/local.properties es local, está ignorado y no se incluye en commits.
 
 ## Bloqueos y riesgos abiertos
 
-H01: tres cuentas registradas en el A13 impiden cumplir la precondición de laboratorio sin cuentas. El formateo previo declarado no acredita ausencia actual de cuentas. El propietario debe preparar las cuentas presencialmente si decide continuar; no borrarlas automáticamente, no restablecer ni buscar bypass.
-Precisión: Ajustes muestra una cuenta según el propietario. La consulta de tipos identifica tres registros de servicios Samsung, no tres cuentas personales necesariamente. Detalles sin identidades en EVIDENCIA_H01.md; no deshabilitar servicios ni eliminar registros internos a ciegas.
+H01: bloqueo por registros de cuentas resuelto por el propietario; recuento ADB actual 0 y Owner ya establecido. Falta confirmar la UI presencial y comprobar retirada de admin testOnly en una prueba coordinada. No eliminar cuentas ni servicios automáticamente.
 G0–G4 pendientes. Hay inventario físico ADB del A13, no validación del control, emergencia ni recuperación.
 El validador Python del esquema no se ha repetido con éxito: instalación de jsonschema 4.26.0 en un venv temporal falló por conexión/timeout. No se modificó Python global; ver evidencia C01.
 La supervivencia del control ante muerte de proceso y suspensión sigue pendiente de pruebas reales.
 
 ## Próxima tarea y lectura mínima
 
-El propietario autorizó actualización/aprovisionamiento H01, pero el preflight se detuvo por 3 cuentas. Esperar preparación presencial del A13 y volver a comprobar recuento 0 y ausencia de otros usuarios/Owner antes de instalar/aprovisionar. Sin borrados automáticos ni bypass. Después demostrar Owner real y UI; registrar políticas predeterminadas Android. H04 depende de H01 y no se adelanta. A56 fuera de alcance: no tocarlo.
+Completar confirmación visual presencial H01: abrir launcher y comprobar «Bloqueado — en preparación», Owner Sí/admin Sí y aviso de quiosco NO APLICADO. Owner real ya comprobado por Android/tests. Después H02 — ruta de emergencia del sistema, sin endurecimiento; leer SPEC-H H9 y ADR-H-004. No avanzar de tarea hasta cerrar H01. A56 fuera de alcance: no tocarlo.
 H00 cerrado: ADB autorizado, inventario obtenido y preparación confirmada. El formateo fue previo y declarado por el propietario, no ejecutado por el agente.
 Lectura mínima H00: hijo/PLAN_HIJO.md H00, hijo/INSTALACION_A13.md §1–3, compartido/02_FUENTES_Y_COMPATIBILIDAD.md.
 C02 cerrada tras ejecución real de tres tests Android. Lectura mínima H01: hijo/PLAN_HIJO.md H01, hijo/SPEC_HIJO.md H2/H4 e hijo/INSTALACION_A13.md §3; consultar fuentes oficiales correspondientes.

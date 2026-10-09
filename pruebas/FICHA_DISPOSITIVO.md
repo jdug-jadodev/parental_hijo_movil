@@ -6,9 +6,9 @@ Versión Android / API / parche: 14 / 34 / 2026-02-05 (ADB)
 One UI: 6.1, confirmada por el propietario; propiedad ADB ro.build.version.oneui = 60100
 Firmware incremental: A135MUBSDDZB3 (ADB)
 Operador / SIM / PIN de SIM: REGISTRAR LOCALMENTE SIN NÚMEROS PERSONALES
-APK instalado por este proyecto: dev.controlparental.child debug 0.1.0 / versionCode 1, más dev.controlparental.child.test; instalación ADB autorizada el 9 de octubre de 2026
-Huella SHA-256 del certificado del APK instalado: 39f25d28e10a93f18fbdabac0223e917c9668d58a6d7ca28af40227946a9f439 (debug, apksigner local). Hash de ambos APK en EVIDENCIA_C02.md.
-Estado de Device Owner / Profile Owner: ninguno según `dpm list-owners`
+APK instalado por este proyecto: dev.controlparental.child debug H01 0.1.0 / versionCode 1, más dev.controlparental.child.test; actualización ADB autorizada el 9 de octubre de 2026
+Huella SHA-256 del certificado debug: 39f25d28e10a93f18fbdabac0223e917c9668d58a6d7ca28af40227946a9f439 (apksigner local C02; actualización normal con la misma firma). Hash de APK actuales en EVIDENCIA_H01.md.
+Estado de Device Owner: dev.controlparental.child/.admin.ChildAdminReceiver en usuario 0, DeviceOwner/Affiliated según dpm list-owners; confirmado además por isDeviceOwnerApp en test Android. Sin Profile Owner listado.
 Estado de arranque: ro.boot.verifiedbootstate = green; ro.boot.flash.locked = 1. Son propiedades observadas, no una certificación de integridad.
 Fecha / responsable autorizado: 8 de octubre de 2026 / propietario del laboratorio, autorización de consultas ADB en esta sesión
 
@@ -37,7 +37,7 @@ Confirmación del propietario — 9 de octubre de 2026:
 Pendientes para las fases posteriores:
 
 - SIM/PIN de SIM y ruta de emergencia: NO COMPROBADOS. No registrar operador ni números si no son necesarios.
-- Preflight H01: un usuario principal (actual 0), sin Owner, pero **3 cuentas registradas**. Se comprobó solo el recuento y no se guardaron identidades. Aprovisionamiento detenido sin modificar nada. Administradores activos y elegibilidad final siguen pendientes; ausencia de Owner no basta.
+- Preflight H01 inicial: 3 registros de servicios Samsung, una cuenta visible según el propietario; procedimiento detenido. Tras preparación presencial: recuento 0, un usuario principal actual 0, y aprovisionamiento realizado. Owner/admin de nuestra app comprobados; ninguna identidad de cuenta guardada.
 
 ## Plan de laboratorio posterior
 
@@ -63,6 +63,7 @@ G4: PENDIENTE
 | H00 (cierre de inventario y plan) | Confirmación presencial comunicada por el propietario | One UI 6.1; equipo ya formateado y sin datos que conservar | 9 de octubre de 2026; inventario no certifica quiosco ni emergencia; campos de fases posteriores siguen NO COMPROBADOS |
 | C02 Android | Instalar ambos APK y ejecutar solo CriptografiaAndroidTest con adb -s dirigido al A13 | OK (3 tests), 1.676 s; verificación de fixtures, Keystore no exportable y alias ausente | 9 de octubre de 2026; SM-A135M / API 34 / A135MUBSDDZB3; A56 excluido, sin Owner ni restricciones nuevas |
 | H01 preflight | Consultas con adb -s al A13: modelo, Owners, recuento de usuarios/cuentas y usuario actual | Sin Owner; usuario principal único; 3 cuentas. Detenido antes de instalar/aprovisionar | 9 de octubre de 2026; cuentas y nombres no guardados; no se modificó A13 ni A56 |
+| H01 aprovisionamiento y tests | Repetir preflight, actualizar ambos APK, ejecutar 3 tests antes de Owner, set-device-owner y 6 tests con exigirDeviceOwner=true | Cero cuentas; Owner real/admin activo; OK (3 tests) y OK (6 tests). Launcher abierto; confirmación visual pendiente | 9 de octubre de 2026; SM-A135M; todo dirigido con adb -s; A56 intacto; sin quiosco añadido |
 
 ## Emergencia
 
