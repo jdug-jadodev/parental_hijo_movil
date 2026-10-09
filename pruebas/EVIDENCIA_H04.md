@@ -201,6 +201,17 @@ contexto de preparación y callbacks, no H-BOOT-01 desde ALLOW ni H-STATE-01 ent
 aceptación/enforcement o continuidad de un temporizador real. Esos casos quedan
 pendientes de sus componentes y no se simularán escribiendo órdenes en producción.
 
+## Intento de observación antes del PIN — detenido
+
+Tras el aviso «listo» del propietario se enumeró ADB para seleccionar el A13.
+La única entrada disponible anuncia SM_A566E (A56); no hay SM_A135M anunciado.
+Se detuvo antes de dirigir cualquier comando a un teléfono. No se consultó ni
+modificó el A56, ni se reinició ADB o intentó eludir la protección USB del A13.
+No se leyó BOOT_COUNT, estado de desbloqueo o archivo DP después del reinicio.
+Esto NO prueba que BootReceiver fallara: falta acceso al destino comprobado.
+Solicitar comprobar cable/conexión del A13 sin introducir aún el PIN; si no
+aparece en ADB, registrar esta fase como no observable y coordinar desbloqueo.
+
 ## Fuentes oficiales consultadas para Android
 
 - https://developer.android.com/reference/android/util/AtomicFile — openRead, startWrite, finishWrite/failWrite y exclusión externa requerida.
