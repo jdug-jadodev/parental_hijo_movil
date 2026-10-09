@@ -86,6 +86,8 @@ Estado: H00 completada en inventario y plan; H01 completada en laboratorio míni
 
 ## H04 — Estado atómico y contexto de arranque
 
+**Avance 9 de octubre de 2026:** completada en alcance inicial de laboratorio SM-A135M; AtomicFile/corrupción, contexto Direct Boot con ambos callbacks reales y recreación de proceso comprobados. Evidencia: `pruebas/EVIDENCIA_H04.md`. Sin política/vínculo físicos aún: continuidad de temporizador y reconciliación/enforcement integrados pendientes; no aprueba G0–G4.
+
 **Depende de:** H01, H03.
 
 **Leer:** SPEC-H H8; CP/1 §10.

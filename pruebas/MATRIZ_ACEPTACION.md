@@ -39,8 +39,8 @@ G0 = administración/quiosco y emergencia en A13. G1 = identidad, protocolo y re
 | ID | Caso y preparación | Resultado esperado | Entorno | Estado |
 |---|---|---|---|---|
 | H-BOOT-01 | **Reinicio desde permitido.** ALLOW, reiniciar y esperar que vuelva internet. | Permanece bloqueado hasta orden fresca para nuevo bootId. | A13 | PENDIENTE |
-| H-BOOT-02 | **Dos broadcasts de un arranque.** Procesar LOCKED_BOOT_COMPLETED y BOOT_COMPLETED del mismo boot. | Un solo bootId, sin reset de seq ni acceso prematuro. | Automática + A13 | PENDIENTE |
-| H-BOOT-03 | **Direct Boot.** Reiniciar sin introducir credencial; observar servicio/pantalla. | No lee Credential Encrypted ni exporta privadas; bloqueo y emergencia se conservan. | A13 | PENDIENTE |
+| H-BOOT-02 | **Dos broadcasts de un arranque.** Procesar LOCKED_BOOT_COMPLETED y BOOT_COMPLETED del mismo boot. | Un solo bootId, sin reset de seq ni acceso prematuro. | Automática + A13 | PARCIAL H04: callbacks reales del arranque 4 conservan mismo bootId/BOOT_COUNT, sin autorización; secuencia/política física y enforcement pendientes. Ver EVIDENCIA_H04.md. |
+| H-BOOT-03 | **Direct Boot.** Reiniciar sin introducir credencial; observar servicio/pantalla. | No lee Credential Encrypted ni exporta privadas; bloqueo y emergencia se conservan. | A13 | PARCIAL H04: contexto DP persistido en callback real con UserManager bloqueado al recibir/terminar; servicio/restricciones y regresión de emergencia actual pendientes. Ver EVIDENCIA_H04.md. |
 | H-TIME-01 | **Cuatro políticas.** Recorrer LOCK, LOCK_FOR, ALLOW y ALLOW_FOR con reloj inyectado. | Prioridades/expiraciones exactas del contrato; política nueva sustituye anterior. | Automática | PENDIENTE |
 | H-TIME-02 | **Cambio de hora y zona.** Cambiar reloj ±24h en laboratorio y repetir en release restringido. | No adelanta autorización ni evita vencimiento; pruebas no dependen de fecha. | Automática + A13 | PENDIENTE |
 | H-TIME-03 | **Expiración sin red.** Vence LOCK_FOR con canal vencido; luego volver a conectar. | Sigue bloqueado offline; reevalúa al recuperar si no hay otro bloqueo. | Automática + A13 | PENDIENTE |

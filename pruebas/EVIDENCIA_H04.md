@@ -367,6 +367,46 @@ del PIN y leyendo el tag después de desbloquear. No se reinició/endureció/bor
 no se ejecutó lockNow ni se dirigieron comandos al A56 en esta instalación.
 No hubo nueva construcción o ejecución JVM en esta unidad documental.
 
+## Direct Boot y ambos callbacks reales — arranque 4
+
+Después de solicitar reinicio MANUAL A13, esperar un minuto antes del PIN,
+desbloquear y avisar sin abrir nuestra app, el propietario respondió «listo».
+Se seleccionó/comprobó un único A13 y todas las lecturas se dirigieron con `adb -s`.
+No se modificó ni consultó el A56. BOOT_COUNT del sistema: **4**, nuevo respecto a 3.
+Se leyó únicamente el tag ArranqueH04, sin limpiar buffer ni volcar logs generales.
+
+Eventos reales observados (se omite PID del prefijo de Logcat):
+
+```text
+evento=LOCKED_BOOT_COMPLETED desbloqueadoAlRecibir=NO desbloqueadoAlTerminar=NO resultado=CONTEXTO_PERSISTIDO bootCount=4 bootHash=2dc052edaf4b6860669681f88e89ceb52089d41e23cb0b7aa013cd98f710527c
+evento=BOOT_COMPLETED desbloqueadoAlRecibir=SI desbloqueadoAlTerminar=SI resultado=CONTEXTO_PERSISTIDO bootCount=4 bootHash=2dc052edaf4b6860669681f88e89ceb52089d41e23cb0b7aa013cd98f710527c
+```
+
+La primera traza se emitió tras completar la transacción con el usuario todavía
+sin desbloquear, según UserManager en recepción y al terminar. La segunda conserva
+BOOT_COUNT/hash de bootId del mismo arranque. No se enviaron broadcasts sintéticos.
+Aunque ADB no estaba disponible antes del PIN, esta evidencia se recogió después
+y distingue ambos momentos. No es una captura de pantalla previa al PIN.
+
+Lectura posterior de archivo DP: checksum correcto, schemaVersion=1,
+systemBootCount=4, mismo hash bootId de ambas trazas, lastObservedElapsed=105092 ms,
+authorizedBootId/binding/policy/lastCommand=null, PREPARACION. Hash distinto al
+arranque 3. Sin escribir archivos del teléfono, ejecutar reinicio ADB, instalar,
+endurecer, borrar o matar proceso en esta comprobación.
+
+**H04 completada en alcance inicial de laboratorio:** persistencia atómica y
+contexto público duradero, recreación de proceso y callbacks reales Direct Boot
+comprobados en SM-A135M. JVM/Android cubren corrupción y conservación de inicio/
+secuencia con snapshots de prueba. El escenario físico sigue sin vínculo/política;
+H-BOOT-01, H-STATE-01 y continuidad de temporizador/enforcement reales quedan para
+integración con componentes posteriores. H-BOOT-02/03 son parciales en aceptación
+de producto: se acredita contexto, no restricciones/servicio aún no implementados.
+La emergencia H02 se confirmó en versiones previas; regresión presencial de la
+versión actual y quiosco/recuperación siguen pendientes. No se aprueban G0–G4.
+
+Próxima tarea: H05 recuperación local antes de endurecer, una tarea nueva por
+sesión/turno. No instalar ni activar recuperación/restricciones nuevas sin coordinar.
+
 ## Fuentes oficiales consultadas para Android
 
 - https://developer.android.com/reference/android/util/AtomicFile — openRead, startWrite, finishWrite/failWrite y exclusión externa requerida.
