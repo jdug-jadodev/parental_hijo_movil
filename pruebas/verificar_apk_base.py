@@ -19,7 +19,7 @@ def verificar() -> None:
     ejemplos.add("vectores_crypto.json")
     clases_de_prueba = set()
     for modulo in ("app-child", "core-protocol"):
-        for carpeta in ("test", "testFixtures"):
+        for carpeta in ("test", "testFixtures", "androidTest"):
             fuentes = RAIZ / "android" / modulo / "src" / carpeta
             for fuente in fuentes.rglob("*.kt"):
                 texto = fuente.read_text(encoding="utf-8")

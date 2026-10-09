@@ -16,6 +16,8 @@ Fecha de registro: 8 de octubre de 2026. Tarea: C00.
 | Compose BOM | 2025.06.01 |
 | Activity Compose | 1.10.1 |
 | JUnit | 4.13.2 |
+| JSON para leer vectores descriptivos en tests JVM | kotlinx-serialization-json 1.9.0, nunca en producción |
+| Pruebas instrumentadas Android | androidx.test.ext:junit 1.2.1 / runner 1.6.2 |
 | compileSdk / targetSdk | 36 / 36 |
 | minSdk del hijo | 31 (Android 12) |
 | Build Tools predeterminados de AGP 8.11 | 35.0.0, disponibles en el SDK local |
@@ -58,6 +60,24 @@ La firma debug que genera Android no es la firma final ni la identidad criptogr�
 
 Comprobación adicional desde la raíz, sin dispositivo: `python -B pruebas/verificar_apk_base.py`.
 Resultados de construcción y limitaciones: `ESTADO.md`.
+
+## Pruebas de C02 sin teléfono
+
+Desde `android/`, con el mismo JDK:
+
+```powershell
+.\gradlew.bat :core-protocol:test :app-child:testDebugUnitTest
+.\gradlew.bat :app-child:assembleDebug :app-child:assembleDebugAndroidTest :app-child:lintDebug
+```
+
+Desde la raíz: `node pruebas/verificar_interoperabilidad_jvm.mjs`.
+Los tests generan únicamente datos públicos de interoperabilidad bajo build/, fuera de Git.
+Compilar el APK de pruebas **no ejecuta** Android Keystore ni acredita que el A13 funcione.
+
+Para ejecutar después, solo con el dispositivo de laboratorio autorizado y desbloqueado:
+`.\gradlew.bat :app-child:connectedDebugAndroidTest`.
+Ese comando instala app/test APK y crea/elimina claves efímeras con alias únicos de test.
+No ejecutarlo hasta coordinar esa instalación con el propietario; no solicita Device Owner ni restablece el equipo.
 
 ## Separación de módulos
 

@@ -61,6 +61,7 @@ class CriptografiaCp1Test {
         val bytes = Base64Cp1.decodificar(valida, 150)
         listOf(valida + "=", Base64Cp1.codificar(bytes.copyOf(bytes.size - 1)),
             Base64Cp1.codificar(bytes + byteArrayOf(0)), FirmanteEfimero("secp384r1").publicaCodificada,
+            Base64Cp1.codificar(KeyPairGenerator.getInstance("RSA").apply { initialize(512) }.generateKeyPair().public.encoded),
             Base64Cp1.codificar(ByteArray(91))).forEach {
             assertThrows(ErrorProtocolo::class.java) { ClavePublicaCp1.leer(it) }
         }

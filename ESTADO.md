@@ -1,11 +1,11 @@
 # Estado de implementación
 
 Última actualización: 8 de octubre de 2026
-Commit de partida: bb70002 (C00 completada)
+Commit de partida: ac7d801 (C01 completada)
 Tarea actual: C02
-Estado: EN_CURSO — criptografía JVM e interoperabilidad Node probadas; adaptador Keystore Android pendiente
-Commit de partida de C02: ac7d801 (C01 completada).
-Commit de esta unidad: «Verificar firmas P-256 y demostrar interoperabilidad JVM con Node».
+Estado: PENDIENTE_VALIDACION — C02 implementada y probada en JVM/Node; faltan tests Android/Keystore
+Commit de núcleo C02: c5805a1.
+Commit de esta unidad: «Preparar firma Android Keystore y pruebas instrumentadas de C02».
 
 ## Entorno observado
 
@@ -19,7 +19,9 @@ SM / Android / One UI / parche del hijo: NO COMPROBADO
 - C02 parcial: firma/verificación SHA256withECDSA sobre prefijo de propósito y bytes originales, SPKI DER y curva P-256 exacta, DER de firma y r/s en rango.
 - C02 parcial: diez vectores originales verificados en JVM; rechazadas firmas, claves, payloads, propósitos y roles alterados; JSON ambiguo firmado no se acepta.
 - C02 parcial: diez sobres nuevos firmados en JVM y verificados en Node 24.21.0, 70 comprobaciones de interoperabilidad.
-- C02 parcial: 170 pruebas JVM totales correctas. Los resultados verificados conservan bytes defensivamente y hash del payload, nunca de la firma.
+- C02: 170 pruebas JVM totales correctas. Los resultados verificados conservan bytes defensivamente y hash del payload, nunca de la firma.
+- C02: adaptador Android Keystore compilado, sin generación/importación/exportación de privadas ni reemplazo automático de identidad; requiere primer desbloqueo.
+- C02: tres tests instrumentados compilados, todavía NO EJECUTADOS en Android. No se considera C02 validada físicamente.
 - C01: JSON con UTF-8 estricto, ASCII imprimible, rechazo de claves duplicadas, números ambiguos y tamaños excesivos; comparación byte a byte del payload canónico.
 - C01: base64url canónico con límites, DTO y codec de todos los tipos del esquema.
 - C01: 28 ejemplos congelados aceptados con ida/vuelta a los mismos bytes canónicos; campos extra y cada campo omitido se rechazan.
@@ -33,11 +35,13 @@ No hay Device Owner, políticas, cuenta regresiva implementada ni validación f�
 
 ## Archivos modificados en la última tarea
 
-- android/core-protocol/src/main/kotlin/dev/controlparental/protocol/: ClavePublicaCp1.kt, CriptografiaCp1.kt y DerEcdsaCp1.kt.
-- android/core-protocol/src/test/kotlin/dev/controlparental/protocol/: VectoresCriptoTest.kt, CriptografiaCp1Test.kt e InteroperabilidadNodeTest.kt.
-- android/core-protocol/build.gradle.kts y android/gradle/libs.versions.toml: fixtures criptográficos y biblioteca JSON solo en tests; salida pública de interoperabilidad declarada como output de test.
-- pruebas/verificar_interoperabilidad_jvm.mjs: verificación de firmas generadas por la implementación JVM, sin relay ni claves privadas.
-- pruebas/verificar_apk_base.py: excluir también vectores_crypto.json del APK.
+- android/app-child/src/main/java/dev/controlparental/child/security/FirmanteAndroidKeystore.kt
+- android/app-child/src/androidTest/java/dev/controlparental/child/security/CriptografiaAndroidTest.kt
+- android/app-child/build.gradle.kts y android/gradle/libs.versions.toml: runner, dependencias y assets únicamente instrumentados.
+- android/core-protocol/src/test/kotlin/dev/controlparental/protocol/CriptografiaCp1Test.kt: rechazo de SPKI de RSA además de EC de otra curva.
+- pruebas/verificar_apk_base.py: inspección ampliada a androidTest además de fixtures y tests JVM.
+- android/core-protocol/LEEME.md, BUILD_ENV.md y pruebas/EVIDENCIA_C02.md: flujo, versiones y evidencia parcial.
+- El núcleo de firma y tests de vectores/interoperabilidad quedaron en c5805a1.
 - ESTADO.md: resultados, riesgos y siguiente tarea.
 android/local.properties es local, está ignorado y no se incluye en commits.
 
@@ -47,7 +51,11 @@ android/local.properties es local, está ignorado y no se incluye en commits.
 - `node pruebas/verificar_interoperabilidad_jvm.mjs`: OK, 10 firmas JVM nuevas y 70 comprobaciones en Node 24.21.0.
 - `node pruebas/verificar_vectores.mjs`: repetido, OK, 10 vectores y 78 comprobaciones en Node 24.21.0.
 - Los archivos de interoperabilidad están bajo build/ e incluyen solo públicas y sobres ficticios; las privadas efímeras no se escriben.
-- No se ejecutó Keystore Android ni se reconstruyó todavía el APK final de C02.
+- C02 Android, construcción: `.\gradlew.bat :core-protocol:test :app-child:testDebugUnitTest :app-child:assembleDebug :app-child:assembleDebugAndroidTest :app-child:lintDebug --console=plain`: BUILD SUCCESSFUL; dos APK compilados, lint 0 errores y 10 avisos de nuevas versiones disponibles.
+- `python -B pruebas/verificar_apk_base.py`: OK, app sin fixtures ni clases de pruebas JVM/instrumentadas.
+- Inspección ZIP/DEX del APK instrumentado: contiene diez sobres de ejemplo y CriptografiaAndroidTest; no se ejecutó el APK.
+- SHA-256 del contrato/esquema repetidos y sin cambios; vectores congelados intactos. Detalles en pruebas/EVIDENCIA_C02.md.
+- No se ejecutó Keystore Android, connectedDebugAndroidTest ni se instaló nada en un teléfono.
 - Resultados anteriores C01:
 - C01, primera unidad: `.\gradlew.bat :core-protocol:test :app-child:testDebugUnitTest --console=plain`, desde android/ con el entorno registrado: BUILD SUCCESSFUL, 17 tests, 0 fallos.
 - C01, segunda unidad: mismo comando, BUILD SUCCESSFUL; 112 tests, 0 fallos, 0 errores: 84 parametrizados de fixtures, 11 codec, 10 parser/base64, 6 preparación y 1 app.
@@ -55,7 +63,7 @@ android/local.properties es local, está ignorado y no se incluye en commits.
 - `python -B pruebas/verificar_apk_base.py`: OK con inspección ampliada de todas las clases declaradas del simulador/tests.
 - `node pruebas/verificar_vectores.mjs`: repetido correctamente en Node 24.21.0, 78 comprobaciones.
 - SHA-256 del contrato y esquema repetidos: sin cambios; coinciden con INTEGRACION_FUTURA.md.
-- No hay verificaciones criptográficas Kotlin, autorización ni pruebas físicas. Detalles en pruebas/EVIDENCIA_C01.md.
+- En el cierre de C01 aún no había verificación criptográfica Kotlin ni pruebas físicas; la criptografía JVM se añadió después en C02. Detalles históricos en pruebas/EVIDENCIA_C01.md.
 - Resultados anteriores de C00, conservados como antecedente:
 - `node pruebas/verificar_vectores.mjs`: OK, 10 vectores y 78 comprobaciones, Node 24.21.0.
 - Gradle Wrapper generado con Gradle 8.13 y JDK 21.0.10: OK.
@@ -86,10 +94,11 @@ La supervivencia del control ante muerte de proceso y suspensión sigue pendient
 
 ## Próxima tarea y lectura mínima
 
-Terminar C02: adaptador de firma con identidad ya existente en Android Keystore, pruebas instrumentadas compilables y reconstrucción del APK/lint. No crear vínculo o identidad de producción anticipando H08.
+Siguiente avance sin ADB: H03 — motor puro de políticas y cuenta regresiva; depende de C01 completada, no de validar físicamente C02.
+Lectura mínima H03: hijo/PLAN_HIJO.md H03, hijo/SPEC_HIJO.md H6, CP/1 §2–3 y ADR-H-002/005.
 Primer punto físico: H00 — inventario y laboratorio, depende de C00 ya completada. Solicitar conexión y autorización ADB al propietario para identificar SM/Android/API/parche y registrar disponibilidad; sin instalar, aprovisionar ni borrar.
 Lectura mínima H00: hijo/PLAN_HIJO.md H00, hijo/INSTALACION_A13.md §1–3, compartido/02_FUENTES_Y_COMPATIBILIDAD.md.
-C02 sigue EN_CURSO y puede prepararse sin teléfono; ejecutar sus pruebas Keystore sí requiere Android real o emulador. El inventario H00 no exige que C02 esté terminada.
+C02 queda PENDIENTE_VALIDACION: coordinar después de H00 la instalación de app/test APK y ejecutar sus tres tests en Android desbloqueado. El inventario H00 no instala ni borra nada; no confundir compilar los tests con aprobarlos.
 No proceder al endurecimiento H06 sin comprobar emergencia H02 y recuperación H05 en el equipo real.
 
 ## Seguridad
