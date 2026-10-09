@@ -2,10 +2,11 @@
 
 Última actualización: 8 de octubre de 2026
 Commit de partida: ac7d801 (C01 completada)
-Tarea actual: C02
-Estado: PENDIENTE_VALIDACION — C02 implementada y probada en JVM/Node; faltan tests Android/Keystore
-Commit de núcleo C02: c5805a1.
-Commit de esta unidad: «Preparar firma Android Keystore y pruebas instrumentadas de C02».
+Tarea actual: H03
+Estado: EN_CURSO — motor puro probado; falta ampliar mantenimiento y finalizar construcción/evidencia
+Commit de partida de H03: 499b31f.
+Commit de esta unidad: «Implementar motor puro de políticas y cuenta regresiva».
+C02 continúa PENDIENTE_VALIDACION Android/Keystore; no bloquea H03.
 
 ## Entorno observado
 
@@ -16,6 +17,9 @@ SM / Android / One UI / parche del hijo: NO COMPROBADO
 
 ## Terminado y demostrado
 
+- H03 parcial: cuatro acciones, prioridades locales y reloj monotónico inyectable; no hay importaciones Android ni reloj civil en domain/.
+- H03 parcial: cuenta regresiva sin reiniciar por reevaluación/reconexión, bloqueo por boot distinto, márgenes de red/canal y siguiente transición positiva.
+- H03 parcial: 46 nuevas pruebas del motor correctas, dentro de 216 pruebas JVM totales. Mantenimiento y validación final aún pendientes.
 - C02 parcial: firma/verificación SHA256withECDSA sobre prefijo de propósito y bytes originales, SPKI DER y curva P-256 exacta, DER de firma y r/s en rango.
 - C02 parcial: diez vectores originales verificados en JVM; rechazadas firmas, claves, payloads, propósitos y roles alterados; JSON ambiguo firmado no se acepta.
 - C02 parcial: diez sobres nuevos firmados en JVM y verificados en Node 24.21.0, 70 comprobaciones de interoperabilidad.
@@ -31,22 +35,20 @@ SM / Android / One UI / parche del hijo: NO COMPROBADO
 - C00 conserva sus siete pruebas de preparación dentro de las 112 pruebas actuales.
 - Simulador que entrega los bytes de ejemplos congelados, aislado en testFixtures.
 - APK debug mínimo con pantalla «No configurado»; sin clases de pruebas ni fixtures congelados dentro del APK.
-No hay Device Owner, políticas, cuenta regresiva implementada ni validación física.
+No hay Device Owner, aplicación física de políticas, persistencia ni temporizador Android conectado a la UI. El motor calcula intenciones, no APPLIED. No hay validación física.
 
 ## Archivos modificados en la última tarea
 
-- android/app-child/src/main/java/dev/controlparental/child/security/FirmanteAndroidKeystore.kt
-- android/app-child/src/androidTest/java/dev/controlparental/child/security/CriptografiaAndroidTest.kt
-- android/app-child/build.gradle.kts y android/gradle/libs.versions.toml: runner, dependencias y assets únicamente instrumentados.
-- android/core-protocol/src/test/kotlin/dev/controlparental/protocol/CriptografiaCp1Test.kt: rechazo de SPKI de RSA además de EC de otra curva.
-- pruebas/verificar_apk_base.py: inspección ampliada a androidTest además de fixtures y tests JVM.
-- android/core-protocol/LEEME.md, BUILD_ENV.md y pruebas/EVIDENCIA_C02.md: flujo, versiones y evidencia parcial.
-- El núcleo de firma y tests de vectores/interoperabilidad quedaron en c5805a1.
+- android/app-child/src/main/java/dev/controlparental/child/domain/: PolicyEngine.kt y ModelosEvaluacion.kt.
+- android/app-child/src/test/java/dev/controlparental/child/domain/: PreparacionPoliticas.kt, PoliticasTablaTest.kt, PrioridadesPoliticaTest.kt, RedYArranquePoliticaTest.kt y TiempoYCoherenciaTest.kt.
 - ESTADO.md: resultados, riesgos y siguiente tarea.
 android/local.properties es local, está ignorado y no se incluye en commits.
 
 ## Pruebas ejecutadas y resultado
 
+- H03 primera unidad: `.\gradlew.bat :core-protocol:test :app-child:testDebugUnitTest --console=plain`: BUILD SUCCESSFUL, 216 tests totales, 0 fallos/errores; 24 de tabla y 22 de prioridades/red/arranque/tiempo, más los 170 anteriores.
+- Cambios de hora y suspensión solo simulados con reloj inyectado; no se cambió la hora de un teléfono ni se probó Doze real.
+- Resultados anteriores C02:
 - C02 JVM: `.\gradlew.bat :core-protocol:test :app-child:testDebugUnitTest --console=plain`: BUILD SUCCESSFUL; 170 tests correctos, 0 fallos y 0 errores.
 - `node pruebas/verificar_interoperabilidad_jvm.mjs`: OK, 10 firmas JVM nuevas y 70 comprobaciones en Node 24.21.0.
 - `node pruebas/verificar_vectores.mjs`: repetido, OK, 10 vectores y 78 comprobaciones en Node 24.21.0.
@@ -94,7 +96,7 @@ La supervivencia del control ante muerte de proceso y suspensión sigue pendient
 
 ## Próxima tarea y lectura mínima
 
-Siguiente avance sin ADB: H03 — motor puro de políticas y cuenta regresiva; depende de C01 completada, no de validar físicamente C02.
+Cerrar H03: ampliar tests de mantenimiento/coherencia combinatoria, reconstruir APK, ejecutar lint e inspección y registrar evidencia. No declarar probado el quiosco Android.
 Lectura mínima H03: hijo/PLAN_HIJO.md H03, hijo/SPEC_HIJO.md H6, CP/1 §2–3 y ADR-H-002/005.
 Primer punto físico: H00 — inventario y laboratorio, depende de C00 ya completada. Solicitar conexión y autorización ADB al propietario para identificar SM/Android/API/parche y registrar disponibilidad; sin instalar, aprovisionar ni borrar.
 Lectura mínima H00: hijo/PLAN_HIJO.md H00, hijo/INSTALACION_A13.md §1–3, compartido/02_FUENTES_Y_COMPATIBILIDAD.md.
