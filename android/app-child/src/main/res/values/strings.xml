@@ -13,4 +13,11 @@
     <string name="diagnostico_no">No</string>
     <string name="diagnostico_desconocido">No comprobado</string>
     <string name="sin_quiosco">Quiosco y bloqueo de otras aplicaciones: NO APLICADOS. No hay autorización de uso desde esta pantalla.</string>
+    <string name="emergencia_ruta">Emergencia: usar Llamada de emergencia de la pantalla de bloqueo de Android. No requiere internet ni clave parental.</string>
+    <string name="emergencia_pantalla_apagada">Si la pantalla se apaga, enciéndela con el botón lateral. Si hace falta, desliza hasta la pantalla del PIN de Android y pulsa Llamada de emergencia.</string>
+    <string name="emergencia_ir_bloqueo">Ir a pantalla de bloqueo</string>
+    <string name="emergencia_solicitada">Solicitud enviada al sistema. La ruta al marcador debe comprobarse presencialmente; esta solicitud no confirma acceso ni una llamada.</string>
+    <string name="emergencia_falta_credencial">Hace falta un PIN, patrón o contraseña de Android para esta ruta. El adulto debe configurarlo presencialmente, sin compartirlo aquí. Mientras tanto, usa la opción de emergencia del sistema si está disponible. No entregar el equipo sin validar la ruta.</string>
+    <string name="emergencia_sin_admin">La app no puede llevarte a la pantalla de bloqueo en esta configuración. Usa el botón lateral y la opción de emergencia del sistema. El adulto debe comprobar la ruta.</string>
+    <string name="emergencia_error">No se pudo comprobar o solicitar la pantalla de bloqueo. Usa el botón lateral y la opción de emergencia del sistema; no esperes al padre ni a internet.</string>
 </resources>

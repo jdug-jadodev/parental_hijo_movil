@@ -25,19 +25,25 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import dev.controlparental.child.R
 import dev.controlparental.child.admin.DeviceCapabilities
+import dev.controlparental.child.admin.PolicyEnforcer
 import dev.controlparental.child.domain.DiagnosticoAdministracion
 import dev.controlparental.child.domain.EstadoPreparacion
+import dev.controlparental.child.domain.ResultadoAccesoEmergencia
+import dev.controlparental.child.emergency.EmergencyAccess
 
 /** HOME mínimo; no inicia Lock Task ni registra HOME persistente todavía. */
 class LauncherActivity : ComponentActivity() {
     private var diagnostico by mutableStateOf(DiagnosticoAdministracion())
+    private var resultadoEmergencia by mutableStateOf<ResultadoAccesoEmergencia?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             MaterialTheme {
-                PantallaInicial(diagnostico)
+                PantallaInicial(diagnostico, resultadoEmergencia) {
+                    resultadoEmergencia = EmergencyAccess(PolicyEnforcer(this)).irAPantallaBloqueo()
+                }
             }
         }
     }
@@ -49,7 +55,11 @@ class LauncherActivity : ComponentActivity() {
 }
 
 @Composable
-private fun PantallaInicial(diagnostico: DiagnosticoAdministracion) {
+private fun PantallaInicial(
+    diagnostico: DiagnosticoAdministracion,
+    resultadoEmergencia: ResultadoAccesoEmergencia?,
+    solicitarEmergencia: () -> Unit,
+) {
     Surface(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -66,6 +76,7 @@ private fun PantallaInicial(diagnostico: DiagnosticoAdministracion) {
                 }),
                 style = MaterialTheme.typography.headlineMedium,
             )
+            AccesoEmergenciaSistema(resultadoEmergencia, solicitarEmergencia)
             Text(text = stringResource(R.string.aviso_inicial))
             Text(text = stringResource(R.string.aviso_laboratorio))
             Text(text = stringResource(R.string.diagnostico_owner, textoDiagnostico(diagnostico.esDeviceOwner)))

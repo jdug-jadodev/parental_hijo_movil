@@ -87,6 +87,13 @@ En la fase de laboratorio no activar todavía `DISALLOW_DEBUGGING_FEATURES` ni b
 
 ## 4. Orden seguro para las primeras pruebas
 
+H02 preparado: seguir el procedimiento de `pruebas/EVIDENCIA_H02.md` tras autorizar
+actualización y prueba concreta. El adulto debe conocer su PIN/patrón/contraseña
+Android, sin compartirlo. Pulsar el botón de la app, encender pantalla con botón
+lateral si se apaga y abrir/salir de Llamada de emergencia **sin marcar ni llamar**.
+No configurar credenciales, reiniciar ni cortar la red automáticamente; esas
+variantes se coordinan aparte. Solicitar lockNow no acredita acceso al marcador.
+
 Primero implementar y comprobar emergencia/keyguard con políticas mínimas. Luego implementar recuperación local. Solo después activar quiosco y endurecimiento progresivo. Registrar el resultado de cada política y la vuelta segura a mantenimiento.
 
 Orden mínimo: diagnóstico → emergencia → persistencia bloqueada/boot → recuperación → quiosco mínimo → apps aprobadas → red/servicio → firma/vínculo → relay → padre → pruebas de proceso y energía. Durante el desarrollo temprano pueden usarse fakes y fixtures, pero no una clave maestra dentro del APK del equipo diario.
