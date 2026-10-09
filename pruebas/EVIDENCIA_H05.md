@@ -283,3 +283,32 @@ Rutas: androidTest/recovery/OfflineKeystoreAndroidTest.kt, ESTADO.md y esta evid
 NO ADB, instalación/reinicio/endurecimiento/borrado en esta unidad. Próxima coordinación:
 actualizar SOLO APK test en A13 y ejecutar 23 tests exigiendo Owner/credencial. No
 reinstalar app ni habilitar consumo UI, QR real o identidades de producción.
+
+## OFFLINE Keystore ejecutado en A13 — 9 de octubre de 2026
+
+Autorización del propietario: «ok, hazlo» para actualizar SOLO APK test y ejecutar
+23 tests. Se seleccionó un único A13 anunciado SM_A135M y se comprobó SM-A135M
+antes de cada operación dirigida mediante `adb -s`, sin registrar serie. Owner
+esperado comprobado: dev.controlparental.child/.admin.ChildAdminReceiver, usuario
+0, DeviceOwner/Affiliated. Ningún comando dirigido al A56.
+
+Actualización `install -r -t` del APK test: **Success**. SHA-256 instalado:
+`e073ec0da03f8b0de6b137834948c9c43c773d23f87ea363bea0c446d5a204ba`.
+La app NO se reinstaló: conserva el APK de presentación H05 registrado arriba.
+
+Runner con `exigirDeviceOwner=true` y `exigirCredencialAndroid=true`, mismo comando
+de la instalación inicial: **OK (23 tests)**. Quince anteriores y ocho OFFLINE
+nuevos aprobados. Keystore y AtomicFile reales, privadas no exportables, alias y
+archivos temporales con limpieza acotada comprobados por los tests. Firma parental
+solo simulada mediante identidad efímera, no vínculo ni códigos de producción.
+
+Reloj/contexto inyectados: caducidad no demuestra cinco minutos de suspensión real
+ni uso antes del PIN. RETIRE solo cambia el estado de laboratorio y autoriza RAM;
+no ejecuta borrado ni retirada de Owner. No se habilitó consumo UI, creó vínculo
+real, reinició, endureció o borró el teléfono. Sin nueva construcción o ejecución
+JVM en este registro. H05 sigue EN_CURSO: QR/cámara, identidad de producción y
+herramientas autorizadas operativas pendientes; H06 continúa bloqueada.
+
+Rutas de este registro: ESTADO.md, pruebas/EVIDENCIA_H05.md y
+pruebas/FICHA_DISPOSITIVO.md. Próxima unidad: presentación/captura QR e integración
+con identidad confiable, sin fabricar vínculo; nueva prueba física requiere coordinación.

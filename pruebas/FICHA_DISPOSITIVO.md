@@ -6,7 +6,7 @@ Versión Android / API / parche: 14 / 34 / 2026-02-05 (ADB)
 One UI: 6.1, confirmada por el propietario; propiedad ADB ro.build.version.oneui = 60100
 Firmware incremental: A135MUBSDDZB3 (ADB)
 SIM: ausente, según propietario (9 de octubre de 2026). Operador/PIN SIM: no aplican en esta prueba; variantes con SIM/PIN SIM no verificadas.
-APK instalado por este proyecto: dev.controlparental.child debug H05 inicial con presentación de recuperación y consumo cerrado 0.1.0 / versionCode 1, más dev.controlparental.child.test (15 tests aprobados); actualización ADB autorizada el 9 de octubre de 2026
+APK instalado por este proyecto: dev.controlparental.child debug H05 inicial con presentación de recuperación y consumo cerrado 0.1.0 / versionCode 1, más dev.controlparental.child.test (23 tests aprobados, incluidos ocho OFFLINE Keystore); actualización ADB autorizada el 9 de octubre de 2026
 Huella SHA-256 del certificado debug: 39f25d28e10a93f18fbdabac0223e917c9668d58a6d7ca28af40227946a9f439 (apksigner local C02; actualización normal con la misma firma). Hash de APK instalados actuales en EVIDENCIA_H05.md.
 Estado de Device Owner: dev.controlparental.child/.admin.ChildAdminReceiver en usuario 0, DeviceOwner/Affiliated según dpm list-owners; confirmado además por isDeviceOwnerApp en test Android. Sin Profile Owner listado.
 Estado de arranque: ro.boot.verifiedbootstate = green; ro.boot.flash.locked = 1. Son propiedades observadas, no una certificación de integridad.
@@ -76,6 +76,7 @@ G4: PENDIENTE
 | H04 callbacks reales Direct Boot | Reinicio MANUAL, espera antes del PIN y lectura exclusiva ArranqueH04 después de desbloquear; lectura DP de contexto | LOCKED_BOOT_COMPLETED NO/NO y BOOT_COMPLETED SI/SI con bootCount=4/mismo hash bootId; checksum correcto y sin autorización | 9 de octubre de 2026; contexto PREPARACION probado, no políticas/temporizador/enforcement; H04 inicial cerrada, G0–G4 pendientes y A56 intacto |
 | H05 instalación/pruebas iniciales Android | Actualizar ambos APK SOLO A13 y runner con Owner/credencial exigidos | Success; OK (15 tests), 3.581 s; tres nuevos H05 de consumo/espera/fuente con archivos efímeros aprobados | 9 de octubre de 2026; sin tocar estado de producción desde tests H05, sin reinicio/endurecimiento/borrado; pantalla/emergencia presenciales pendientes, A56 intacto |
 | H05 presentación y regresión de emergencia | Solicitar SIN_VINCULO/consumo cerrado, cancelar/volver, abrir/salir marcador SIN marcar/llamar y desbloquear/regresar | Propietario responde «correcto» | Confirmación presencial comunicada, no captura automática; sin quiosco ni recuperación operativa, FLAG_SECURE físico pendiente |
+| H05 OFFLINE Keystore | Actualizar SOLO APK test y ejecutar runner con Owner/credencial exigidos, siempre adb -s al A13 comprobado | Success; OK (23 tests), incluidos ocho OFFLINE nuevos con alias/archivos efímeros y limpieza comprobada | 9 de octubre de 2026; app/vínculo real sin cambios, reloj/contexto inyectados, sin reinicio/endurecimiento/borrado; A56 intacto |
 
 ## Emergencia
 

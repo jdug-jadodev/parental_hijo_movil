@@ -3,7 +3,7 @@
 Última actualización: 9 de octubre de 2026
 Commit de partida: ac7d801 (C01 completada)
 Tarea actual: H05 — recuperación local antes de endurecer
-Estado: EN_CURSO — 321 tests JVM/15 Android aprobados; ocho tests OFFLINE Keystore nuevos compilados pendientes de ejecutar; recuperación operativa pendiente y consumo UI cerrado
+Estado: EN_CURSO — 321 tests JVM y 23 Android aprobados, incluidos ocho OFFLINE Keystore; recuperación operativa pendiente y consumo UI cerrado
 Commit de partida de H03: 499b31f.
 Primer commit H03: 80e1cb4. Commit de cierre: «Cerrar H03 con pruebas de mantenimiento y evidencia».
 C02 comprobada en JVM/Node y Android/Keystore. Commit de esta unidad: «Validar C02 en el A13 y excluir expresamente el A56».
@@ -18,6 +18,7 @@ One UI: 6.1 confirmada por el propietario; propiedad 60100 observada. Device Own
 
 ## Terminado y demostrado
 
+- H05 OFFLINE Android: actualización autorizada SOLO APK test en A13 Success; runner con Owner/credencial exigidos: OK (23 tests), incluidos los ocho nuevos de Keystore/AtomicFile efímeros. Firmas, replay, caducidad con reloj inyectado, espera y RETIRE limitado comprobados sin vínculo real, borrado ni cambios en app. H05 operativa completa sigue pendiente.
 - H05 OFFLINE Keystore preparado: ocho tests Android nuevos compilados NO EJECUTADOS, dos alias efímeros por test y AtomicFile aislado; total próximo 23 tests. Firmas reales previstas sin exportar privadas; RETIRE no borra y no cambia UI/estado de producción. Sin modificaciones de app o permisos.
 - H05 revisión presencial: propietario confirma «correcto» a SIN_VINCULO/consumo UI deshabilitado, cancelar/volver y ruta de emergencia sin marcar/llamar, desbloquear/regresar. Confirmación comunicada, no captura automática. Sin quiosco/recuperación operativa ni FLAG_SECURE comprobado físicamente.
 - H05 Android inicial: app/test actualizados SOLO A13, 15 tests aprobados (3.581 s), incluidos tres H05 con archivos efímeros DP y código ficticio del APK test. Consumo duradero, espera conservada y fuente Android comprobados; sin modificar estado/vínculo/códigos de producción. UI y emergencia presenciales pendientes; H05 no operativa completa.
@@ -57,6 +58,7 @@ Hay Device Owner de laboratorio en el A13, pero no quiosco, bloqueo parental apl
 
 ## Archivos modificados en la última tarea
 
+- H05 ejecución OFFLINE Android: ESTADO.md, pruebas/EVIDENCIA_H05.md y pruebas/FICHA_DISPOSITIVO.md; registro documental, sin código nuevo.
 - H05 cuarta unidad: androidTest/recovery/OfflineKeystoreAndroidTest.kt, ESTADO.md y pruebas/EVIDENCIA_H05.md. Solo tests/evidencia; no app/contrato/Render.
 - H05 instalación y 15 tests Android: ESTADO.md, pruebas/EVIDENCIA_H05.md y pruebas/FICHA_DISPOSITIVO.md; solo documentación/evidencia, sin código nuevo.
 - H05 presentación/Android: recovery/EstadoPantallaRecuperacion.kt, FuenteRecuperacionAndroid.kt, RecuperacionAndroid.kt y RecoveryController.kt; ui/RecoveryScreen.kt, LauncherActivity.kt y strings.xml; tests EstadoPantallaRecuperacionTest.kt, RecoveryControllerTest.kt y androidTest/recovery/RecuperacionArchivoAndroidTest.kt; ESTADO.md y EVIDENCIA_H05.md.
@@ -86,6 +88,7 @@ android/local.properties es local, está ignorado y no se incluye en commits.
 
 ## Pruebas ejecutadas y resultado
 
+- H05 OFFLINE físico autorizado: único A13 anunciado SM_A135M y comprobado SM-A135M antes de cada operación, Owner esperado presente; install -r -t SOLO APK test Success y runner exigirDeviceOwner=true/exigirCredencialAndroid=true: OK (23 tests). App no reinstalada, alias/archivos de laboratorio aislados; sin reinicio, endurecimiento, borrado o comandos al A56. Sin nueva construcción/JVM en este registro.
 - H05 tests OFFLINE Keystore: comando completo Gradle BUILD SUCCESSFUL; APK test recompilado, tests JVM/core UP-TO-DATE (321/145 resultados anteriores, no nueva ejecución), app debug/release UP-TO-DATE, lint correcto/10 avisos. Inspectores base/H01 OK. Ocho tests Android nuevos COMPILADOS NO EJECUTADOS; no ADB/instalación en esta unidad.
 - H05 presentación/emergencia: confirmación presencial «correcto» del propietario a los pasos de pantalla, consumo cerrado, cancelación y marcador SIN marcar/llamar. Solo actualización documental; sin ADB, nuevas pruebas automáticas o cambios del teléfono por el agente.
 - H05 físico autorizado: único A13 por modelo anunciado/comprobado, Owner previo esperado; install -r -t de ambos APK Success. Runner exigirDeviceOwner=true/exigirCredencialAndroid=true: OK (15 tests), 3.581 s. Archivos/códigos solo de laboratorio, sin tocar control-state.json desde tests H05. No reinicio/endurecimiento/borrado/lockNow ni cambios en A56. Hashes instalados en evidencia; sin nueva construcción/JVM.
@@ -179,7 +182,7 @@ La supervivencia del control ante muerte de proceso y suspensión sigue pendient
 
 ## Próxima tarea y lectura mínima
 
-Continuar SOLO H05: coordinar actualizar SOLO APK test en A13 y ejecutar 23 tests Android (ocho OFFLINE nuevos con alias Keystore/archivo efímeros). App sin cambios, no reinstalar ni habilitar consumo UI. Después presentación/captura QR e integración de identidad confiable sin inventar vínculo de producción. Mantener consumo cerrado hasta herramientas autorizadas disponibles; no avanzar H06 ni inyectar vínculo real como atajo. H05 NO cerrada. A56 fuera de alcance; Render externo en parental_render.
+Continuar SOLO H05: 23 tests Android aprobados, incluidos OFFLINE Keystore. Próxima unidad: presentación/captura QR e integración de identidad confiable sin inventar vínculo de producción; coordinar aparte cualquier nueva instalación/prueba física. Mantener consumo cerrado hasta herramientas autorizadas disponibles; no avanzar H06 ni inyectar vínculo real como atajo. H05 NO cerrada. A56 fuera de alcance; Render externo en parental_render.
 H00 cerrado: ADB autorizado, inventario obtenido y preparación confirmada. El formateo fue previo y declarado por el propietario, no ejecutado por el agente.
 Lectura mínima H00: hijo/PLAN_HIJO.md H00, hijo/INSTALACION_A13.md §1–3, compartido/02_FUENTES_Y_COMPATIBILIDAD.md.
 C02 cerrada tras ejecución real de tres tests Android. Lectura mínima H01: hijo/PLAN_HIJO.md H01, hijo/SPEC_HIJO.md H2/H4 e hijo/INSTALACION_A13.md §3; consultar fuentes oficiales correspondientes.
