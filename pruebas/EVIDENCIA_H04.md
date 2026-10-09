@@ -236,6 +236,26 @@ siguen pendientes. No hubo nuevo reinicio ADB, instalación, muerte de proceso,
 enforcement ni cambios al A56. Próximo paso: abrir app presencialmente y repetir
 lectura para comprobar que el callback del launcher conserva este bootId.
 
+## Reanudación presencial del launcher en el mismo arranque
+
+El propietario respondió «si» a abrir la app y comprobar «Estado local comprobado»,
+Owner Sí y administrador Sí. Confirmación presencial comunicada, no captura de UI.
+Se repitieron exclusivamente lecturas ADB al único A13 anunciado y comprobado.
+
+- BOOT_COUNT sistema/registro sigue **3**.
+- Hash bootId sigue `310d32120e63b40e42558460fadd2afacd416c35a3f92b5a5c7d36dbca244f22`.
+- lastObservedElapsed avanzó de **230143** a **451173 ms**.
+- Checksum correcto; autorización, vínculo, política y última orden ausentes;
+  etapa PREPARACION conservada.
+
+Observada estabilidad del contexto al reanudar launcher tras desbloqueo, sin
+generar otro bootId. No demuestra dos broadcasts ni muerte de proceso real.
+No se escribió por ADB, reinició, instaló ni modificó el A56.
+Siguiente comprobación requiere permiso específico para intentar `am kill` de
+nuestra app en segundo plano y comprobar cambio de PID al reabrir manualmente.
+No usar force-stop, borrar datos, retirar Owner ni cortar una ruta de emergencia.
+La prueba solo cubre contexto PREPARACION, no aceptación/enforcement de políticas.
+
 ## Fuentes oficiales consultadas para Android
 
 - https://developer.android.com/reference/android/util/AtomicFile — openRead, startWrite, finishWrite/failWrite y exclusión externa requerida.
