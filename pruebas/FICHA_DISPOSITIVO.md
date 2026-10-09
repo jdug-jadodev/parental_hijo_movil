@@ -66,13 +66,15 @@ G4: PENDIENTE
 | H01 aprovisionamiento y tests | Repetir preflight, actualizar ambos APK, ejecutar 3 tests antes de Owner, set-device-owner y 6 tests con exigirDeviceOwner=true | Cero cuentas; Owner real/admin activo; OK (3 tests) y OK (6 tests). Launcher abierto; confirmación visual pendiente | 9 de octubre de 2026; SM-A135M; todo dirigido con adb -s; A56 intacto; sin quiosco añadido |
 | H01 pantalla actual y cierre mínimo | Solicitar comprobación de pantalla de preparación, Owner Sí/admin Sí y quiosco NO APLICADO | El propietario responde «perfecto»; confirmación presencial comunicada, no captura automatizada | 9 de octubre de 2026; no prueba bloqueo, emergencia ni UI previa sin Owner |
 | H02 diagnóstico Android | Actualizar ambos APK H02 solo en A13 y ejecutar runner exigiendo Owner y credencial Android | OK (7 tests), 1.666 s; credencial y Owner comprobados, launcher abierto. Botón/marcador pendientes | 9 de octubre de 2026; SM-A135M; sin lockNow automático, sin llamadas y A56 intacto |
+| H02 ruta básica presencial | Solicitar al propietario botón → keyguard → marcador sin marcar/llamar → salida/desbloqueo → app | Responde «todo correcto»; no comunica diferencias | 9 de octubre de 2026; confirmación presencial comunicada, no captura automática; sin red/arranque/PIN SIM pendientes |
 
 ## Emergencia
 
-Ruta exacta desde pantalla bloqueada y desde boot:
-Prueba de abrir/salir del marcador sin llamada:
+Ruta básica confirmada: botón de la app «Ir a pantalla de bloqueo» → keyguard (encender con botón lateral si se apaga) → «Llamada de emergencia» → salir → desbloquear con credencial Android → volver a app. Propietario no comunicó diferencias ni detalló si hubo apagado/deslizamiento.
+Ruta desde boot: PENDIENTE.
+Prueba de abrir/salir del marcador sin llamada: propietario confirma «todo correcto» en la ruta básica H02.
 Prueba de llamada completa en entorno autorizado, si existe:
-Aspectos NO verificados:
+Aspectos NO verificados: sin internet, reinicio/antes del PIN Android, con/sin PIN SIM, quiosco estricto, curso completo de llamada y devolución.
 
 ## Ejecución y consumo
 

@@ -1,6 +1,6 @@
 # Evidencia H02 — emergencia por keyguard del sistema
 
-Fecha: 9 de octubre de 2026. Estado: PENDIENTE_PRUEBA_PRESENCIAL; APK actualizados y siete tests Android correctos, falta probar el botón y marcador.
+Fecha: 9 de octubre de 2026. Estado: VALIDACION_PARCIAL — ruta básica confirmada presencialmente; variantes sin red, arranque y SIM pendientes.
 
 ## Implementación
 
@@ -101,5 +101,23 @@ APK app SHA-256: `3227dee29d5fd0e1c3af8f5f18c658f5a372a7976fe47665aec4daec4ba19a
 APK tests SHA-256: `66ccf16604e7dfcb20975e811c710d51d94c0ef79a7fb6da6da4ea50f5ab8f16`.
 
 El A13 ya tiene H02 instalado, conservando Device Owner y credencial Android.
-No se bloquearon pantalla/redes automáticamente ni se marcaron números. Falta
-que el adulto pulse el botón, abra/salga del marcador y comunique el resultado.
+No se bloquearon pantalla/redes automáticamente ni se marcaron números desde el agente.
+
+## Confirmación presencial de la ruta básica
+
+Tras indicar al adulto pulsar «Ir a pantalla de bloqueo», encender pantalla con
+botón lateral si se apaga, abrir/salir de «Llamada de emergencia» SIN marcar ni
+llamar y volver al launcher con su credencial Android, respondió «todo correcto».
+Se registra como confirmación presencial comunicada por el propietario, no como
+captura automatizada. No comunicó diferencias en los pasos; no se infiere si la
+pantalla se apagó ni si fue necesario deslizar. No se registró PIN ni información SIM.
+
+Resultado: ruta básica de botón → keyguard → marcador → salida/desbloqueo → app
+confirmada en SM-A135M con el firmware inventariado. Sin llamada real ni quiosco.
+Esto NO aprueba por sí solo H-EMG-01 completo (arranque/PIN SIM), H-EMG-02 sin red,
+G0 completo ni emergencia con endurecimiento H-EMG-03/04.
+
+Siguiente comprobación a coordinar: repetir la ruta básica en A13 con Wi-Fi y
+datos móviles desactivados presencialmente, conservando radio/SIM (NO modo avión),
+sin marcar/llamar. Reactivar conectividad al terminar. No ejecutar desconexiones
+ADB, reinicios ni modificaciones del A56 automáticamente.
