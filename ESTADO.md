@@ -3,8 +3,8 @@
 Última actualización: 8 de octubre de 2026
 Commit de partida: bb70002 (C00 completada)
 Tarea actual: C01
-Estado: EN_CURSO — parser, base64url y DTO compilados y probados; falta codec por tipo de mensaje
-Commit de esta unidad: «Añadir parser estricto y modelos base de CP/1».
+Estado: EN_CURSO — codec completo probado en JVM; falta reconstrucción final del APK y lint
+Commit de esta unidad: «Validar y serializar todos los mensajes de CP/1».
 
 ## Entorno observado
 
@@ -16,8 +16,10 @@ SM / Android / One UI / parche del hijo: NO COMPROBADO
 ## Terminado y demostrado
 
 - C01 parcial: JSON con UTF-8 estricto, ASCII imprimible, rechazo de claves duplicadas, números ambiguos y tamaños excesivos; comparación byte a byte del payload canónico.
-- C01 parcial: base64url canónico con límites y DTO de todos los tipos del esquema; aún no se construyen DTO desde mensajes recibidos.
-- C01 parcial: diez pruebas nuevas del parser/base64 correctas; 17 pruebas JVM totales correctas incluyendo la app.
+- C01: base64url canónico con límites, DTO y codec de todos los tipos del esquema.
+- C01: 28 ejemplos congelados aceptados con ida/vuelta a los mismos bytes canónicos; campos extra y cada campo omitido se rechazan.
+- C01: secuencias positivas de 64 bits, null explícitos, UUID v4, nonces/hashes de 32 bytes, duraciones, coherencia STATE, roles fijos, propósito y transporte comprobados.
+- C01: 112 pruebas JVM totales correctas incluyendo la app. Las firmas y claves todavía solo tienen validación estructural; C02 debe verificar criptografía real.
 - Proyecto Android Kotlin/Compose compilado, núcleo JVM separado y Wrapper reproducible.
 - Siete pruebas JVM correctas: seis del núcleo/simulador y una de dependencia desde Android.
 - Simulador que entrega los bytes de ejemplos congelados, aislado en testFixtures.
@@ -26,17 +28,18 @@ No hay Device Owner, políticas, cuenta regresiva implementada ni validación f�
 
 ## Archivos modificados en la última tarea
 
-- android/core-protocol/src/main/kotlin/dev/controlparental/protocol/JsonCp1.kt
-- android/core-protocol/src/main/kotlin/dev/controlparental/protocol/Base64Cp1.kt
-- android/core-protocol/src/main/kotlin/dev/controlparental/protocol/ErrorProtocolo.kt
-- android/core-protocol/src/main/kotlin/dev/controlparental/protocol/ModelosCp1.kt
-- android/core-protocol/src/test/kotlin/dev/controlparental/protocol/JsonCp1Test.kt
+- android/core-protocol/src/main/kotlin/dev/controlparental/protocol/CodecCp1.kt
+- android/core-protocol/src/main/kotlin/dev/controlparental/protocol/EscritorMensajes.kt
+- android/core-protocol/src/main/kotlin/dev/controlparental/protocol/LectorCampos.kt
+- android/core-protocol/src/test/kotlin/dev/controlparental/protocol/EjemplosCp1Test.kt
+- android/core-protocol/src/test/kotlin/dev/controlparental/protocol/CodecCp1Test.kt
 - ESTADO.md: resultados, riesgos y siguiente tarea.
 android/local.properties es local, está ignorado y no se incluye en commits.
 
 ## Pruebas ejecutadas y resultado
 
 - C01, primera unidad: `.\gradlew.bat :core-protocol:test :app-child:testDebugUnitTest --console=plain`, desde android/ con el entorno registrado: BUILD SUCCESSFUL, 17 tests, 0 fallos.
+- C01, segunda unidad: mismo comando, BUILD SUCCESSFUL; 112 tests, 0 fallos, 0 errores: 84 parametrizados de fixtures, 11 codec, 10 parser/base64, 6 preparación y 1 app.
 - El APK no se ha reconstruido todavía con el codec C01 completo; no hay verificaciones de firmas Kotlin, autorización ni pruebas físicas.
 - Resultados anteriores de C00, conservados como antecedente:
 - `node pruebas/verificar_vectores.mjs`: OK, 10 vectores y 78 comprobaciones, Node 24.21.0.
@@ -68,7 +71,7 @@ La supervivencia del control ante muerte de proceso y suspensión sigue pendient
 
 ## Próxima tarea y lectura mínima
 
-C01, segunda unidad: codec completo por tipo, campos obligatorios/desconocidos, límites de secuencia Long, asociaciones de propósito y tests de fixtures/contraejemplos. No cerrar C01 todavía.
+C01: reconstruir APK y ejecutar lint e inspección de empaquetado antes de cerrar la tarea. La criptografía y las firmas alteradas se comprobarán en C02, no se finge esa verificación en el parser.
 Lectura mínima: CP/1 §3–4 y límites de §2.3, compartido/protocolo.schema.json y compartido/04_USO_ESQUEMA.md; consultar secciones adicionales solo según los modelos que se implementen.
 H00/H01 requerirán coordinar con el propietario la conexión ADB y el aprovisionamiento físico; todavía no es necesario para C01.
 
