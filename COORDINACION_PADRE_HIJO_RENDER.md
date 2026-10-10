@@ -298,3 +298,37 @@ y consultable mediante git log de estas rutas. No editar repos externos/enviar p
 Siguiente paso: coordinador traslada propuesta al padre y solicita decisión del
 propietario sobre puertas/orden y evidencia antes de asignar otra unidad. No
 implementar ninguna puerta/ceremonia ni reducir pruebas físicas por este documento.
+
+## Resultado HIJO-C03 — control local normal del adulto
+
+Fecha 2026-10-10, base `cb62a73`. Requisitos nuevos confirmados según asignación;
+unidad solo documental. Diseño en `hijo/DISENO_CONTROL_LOCAL_ADULTO.md`.
+Fuentes en lectura: propuesta de control local/coordinación central Render y
+diseño de acreditación padre; CP/1 §5/9/9.A y ADR-H-002/005/006 actuales.
+
+Matriz separa sesión administrativa RAM, permiso normal por boot y recuperación
+limitada. Emergencia/Keyguard independientes. Propuesta de credencial aleatoria
+reutilizable por instalación (no universal), verificador protegido/KDF por calibrar,
+espera persistida independiente, rotación atómica y recuperación específica sin
+reciclar MAINTENANCE o códigos CP/1. Nada de claros/logs/QR/WSS del secreto.
+
+Alternativas y recomendaciones pendientes: duración explícita, sesión administrativa
+RAM cinco minutos cerrada al fondo, permiso LOCAL sobrevive offline/proceso del
+mismo boot pero nunca reboot; última acción válida con contexto/revisión fresca
+serializada gana, no vieja orden tras reconexión. Timer/ACK de orden anterior no
+certifican modo vigente local. STATE debe distinguir origen/revisión efectiva y
+última orden remota; solo propuestas de conceptos, ningún campo/schema añadido.
+
+Bloqueo: cambia ALLOW offline y ADR-H-002, exige nueva versión acordada de tres
+roles antes de código. CP/2 provisional; detalles de firma/subprotocolo/estado,
+precedencia/duración/olvido/migración/puertas requieren decisión. H05-L01 no valida
+uso normal. H05 abierta, H08 pendiente, H06 y puertas no se activan. Diseño anterior
+padre requiere revisar suposiciones, no promoción automática o recibos exactos.
+
+Evidencia: lectura y revisión documental con git diff --check, sin pruebas nuevas
+o builds. Rutas modificadas: diseño nuevo, este relevo y ESTADO.md. Ningún cambio
+externo, contrato/fixtures/PLAN_HIJO, UI/Keystore/WSS, ADB/dispositivos/certificados/
+LAN/push/despliegue. Commit de cierre devuelto en respuesta y consultable en git log.
+Siguiente unidad propuesta: revisión padre y decisión explícita de versión/ADR,
+credencial/precedencia/migración y puertas por propietario/coordinador, no código
+o ejecución automática por este cierre. No enviar prompts de vuelta.
