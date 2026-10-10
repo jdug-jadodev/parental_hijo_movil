@@ -3,7 +3,7 @@
 Última actualización: 9 de octubre de 2026
 Commit de partida: ac7d801 (C01 completada)
 Tarea actual: H05 — recuperación local antes de endurecer
-Estado: EN_CURSO — 329 resultados JVM correctos y 23 Android previos aprobados; transporte QR probado en JVM, pantalla/cámara y recuperación operativa pendientes
+Estado: EN_CURSO — H05-L01 aislada terminada, 346 resultados JVM correctos y 23 Android anteriores; recuperación operativa/puertas pendientes
 Commit de partida de H03: 499b31f.
 Primer commit H03: 80e1cb4. Commit de cierre: «Cerrar H03 con pruebas de mantenimiento y evidencia».
 C02 comprobada en JVM/Node y Android/Keystore. Commit de esta unidad: «Validar C02 en el A13 y excluir expresamente el A56».
@@ -18,6 +18,7 @@ One UI: 6.1 confirmada por el propietario; propiedad 60100 observada. Device Own
 
 ## Terminado y demostrado
 
+- H05-L01: CoordinadorOffline RAM con cola serial/identidad/almacén/reloj/contexto inyectados, generación/tickets descartables, cancelación sin esperar firma/IO y limpieza antes de publicar permiso. QrOffline entrega bytes al RecoveryController real; consulta de vigencia retira desafíos inválidos. 17 tests JVM nuevos correctos, sin cableado UI ni producción/Android.
 - H05 transporte QR: QrOffline genera matriz de desafío con margen blanco y decodifica respuestas desde plano de luminancia acotado, sin red/archivo/URI ni normalizar bytes. Ocho tests JVM nuevos aprobados, incluida lectura óptica sintética. No verifica firmas ni concede permisos: devuelve bytes aún sin autorizar. ZXing core 3.5.3 fijado; no permisos de cámara o integración UI en esta unidad.
 - H05 OFFLINE Android: actualización autorizada SOLO APK test en A13 Success; runner con Owner/credencial exigidos: OK (23 tests), incluidos los ocho nuevos de Keystore/AtomicFile efímeros. Firmas, replay, caducidad con reloj inyectado, espera y RETIRE limitado comprobados sin vínculo real, borrado ni cambios en app. H05 operativa completa sigue pendiente.
 - H05 OFFLINE Keystore preparado: ocho tests Android nuevos compilados NO EJECUTADOS, dos alias efímeros por test y AtomicFile aislado; total próximo 23 tests. Firmas reales previstas sin exportar privadas; RETIRE no borra y no cambia UI/estado de producción. Sin modificaciones de app o permisos.
@@ -59,6 +60,7 @@ Hay Device Owner de laboratorio en el A13, pero no quiosco, bloqueo parental apl
 
 ## Archivos modificados en la última tarea
 
+- H05-L01: recovery/CoordinadorOffline.kt y ampliación RecoveryController.kt; test/recovery/CoordinadorOfflineTest.kt y visibilidad de firmante reutilizado en OfflineRecoveryTest.kt; COORDINACION_PADRE_HIJO_RENDER.md y ESTADO.md.
 - HIJO-C01 diseño: COORDINACION_PADRE_HIJO_RENDER.md y ESTADO.md; solo devolución documental propia, sin código productivo, pruebas nuevas o cambios externos.
 - Relevo solicitado para Render: COORDINACION_PADRE_HIJO_RENDER.md y ESTADO.md; solo documentación del hijo, sin cambios externos, builds o ADB.
 - Coordinación en lectura de padre/relay: INTEGRACION_FUTURA.md y ESTADO.md. Solo documentación del hijo, ningún cambio externo ni código/identidad/instalación.
@@ -93,6 +95,7 @@ android/local.properties es local, está ignorado y no se incluye en commits.
 
 ## Pruebas ejecutadas y resultado
 
+- H05-L01: Gradle core-protocol:test, app-child:testDebugUnitTest y testReleaseUnitTest dos veces BUILD SUCCESSFUL. Última: núcleo 169 UP-TO-DATE, hijo debug 177 ejecutados (17 nuevos), total 346/0 fallos/0 errores/0 omitidos; release 170 ejecutados (repite casos), correcto. Solo JVM/compilación necesaria: no assemble, lint, ADB, instrumentación o pruebas externas. Cola/reloj/archivo inyectados, crypto CP/1 y QR reales; carrera de firma entre hilos y hooks IO deterministas.
 - HIJO-C01: lectura de coordinación central e integración local del relay y dependencias H05–H11; ninguna prueba/build/ADB ejecutada. Los 104 tests/seis variantes JVM son evidencia reportada del relay, no resultados de esta sesión. Revisión documental con git diff --check antes de commit; sin datos secretos o identificadores físicos añadidos.
 - Coordinación CHILD_OFFER: Get-FileHash SHA-256 de contrato y schema en hijo/padre/relay, iguales en los tres y coincidentes con INTEGRACION_FUTURA.md. Lectura de fuentes/estado, sin ejecutar pruebas externas ni builds/ADB en esta unidad documental; no acredita interoperabilidad móvil real.
 - H05 QR: primer comando Gradle agotó 120 s, repetición con 240 s BUILD SUCCESSFUL. Núcleo 169 UP-TO-DATE; hijo debug 160 y release 153 ejecutados sin fallos/errores/omitidos; total núcleo+debug 329. APK debug/test/release sin firmar construidos; lint 0 errores/11 avisos de versiones, inspectores base/H01 OK. No ADB/instalación/pruebas físicas; 23 Android son evidencia anterior del APK instalado, no de esta nueva construcción.
@@ -193,7 +196,7 @@ La supervivencia del control ante muerte de proceso y suspensión sigue pendient
 
 ## Próxima tarea y lectura mínima
 
-HIJO-C01 diseño terminado: esperar revisión del coordinador/propietario sobre puertas H05/H08/H11 y asignación de siguiente unidad. Propuesta H05-L01: coordinador OFFLINE RAM con puertos inyectados y pruebas de cancelación/vigencia/consumo, sin activar producción ni iniciar H08. Oferta CHILD_OFFER, aceptación PAIR_ACCEPT y WSS delimitadas como unidades distintas y pendientes. No cambiar plan/CP/1 unilateralmente ni declarar H05 cerrada; H06/H08 productiva/H10 bloqueadas según dependencias. Sin permiso físico nuevo, escritura solo en hijo; A56 fuera de alcance.
+H05-L01 asignada y terminada al alcance aislado con 17 tests JVM nuevos. Esperar revisión del coordinador/propietario: propuesta siguiente, fijar límite y evidencia de cierre H05/puertas H08/H11 antes de asignar integración Android/UI o identidad inicial. No se aprobó dividir puertas ni alterar plan; CHILD_OFFER/PAIR_ACCEPT/WSS siguen pendientes y separados. No declarar H05 cerrada ni iniciar H06/H08/H10/H11 por este resultado. Sin permiso físico nuevo ni wiring/consumo de producción; escritura solo en hijo, A56 fuera de alcance.
 H00 cerrado: ADB autorizado, inventario obtenido y preparación confirmada. El formateo fue previo y declarado por el propietario, no ejecutado por el agente.
 Lectura mínima H00: hijo/PLAN_HIJO.md H00, hijo/INSTALACION_A13.md §1–3, compartido/02_FUENTES_Y_COMPATIBILIDAD.md.
 C02 cerrada tras ejecución real de tres tests Android. Lectura mínima H01: hijo/PLAN_HIJO.md H01, hijo/SPEC_HIJO.md H2/H4 e hijo/INSTALACION_A13.md §3; consultar fuentes oficiales correspondientes.

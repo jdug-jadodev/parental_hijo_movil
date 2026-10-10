@@ -177,3 +177,85 @@ comparación óptica con padre tampoco queda acreditada por JVM.
 decisión de puertas H05/H08/H11. Propuesta H05-L01 y criterios listos para revisión.
 Sin alterar plan/contrato o permisos; resultado en documentos, sin mensajes de vuelta
 entre agentes ni bucles de coordinación.
+
+## Resultado H05-L01 — coordinador OFFLINE aislado
+
+Asignación recibida del coordinador con autorización comunicada del propietario;
+una sola unidad local, sin ADB. Base propia `d350bf6`. Coordinación central leída
+de nuevo solo en lectura. No se aprueba dividir puertas ni cambiar dependencias.
+Commit de esta unidad: consultar `git log -1 -- COORDINACION_PADRE_HIJO_RENDER.md`
+después del cierre; hash también devuelto en respuesta, sin mensajes entre agentes.
+
+### Implementación y archivos
+
+- `android/app-child/src/main/java/dev/controlparental/child/recovery/CoordinadorOffline.kt`:
+  propietario RAM con RecoveryController interno; almacén, firmante, reloj/contexto
+  y ejecutor serial inyectados. Proyección de desafío/matriz/tiempo, respuesta y
+  acceso limitado, sin textos de códigos, públicas, hashes o sobres. No singleton.
+- `.../recovery/RecoveryController.kt`: consulta desafioRestanteMs, que compara
+  estado íntegro, vínculo, boot/contexto y tiempo local; retira desafío inválido
+  sin firma, consumo o escritura. No timestamp nuevo ni cambios CP/1.
+- `android/app-child/src/test/java/dev/controlparental/child/recovery/CoordinadorOfflineTest.kt`:
+  17 tests nuevos. `OfflineRecoveryTest.kt`: reutilizar su firmante JCA efímero
+  mediante visibilidad internal, sin duplicar algoritmos o pruebas existentes.
+- Documentación propia: ESTADO.md y este archivo. No repos externos modificados.
+
+### Comportamiento comprobado en JVM
+
+Generar retira desafío/sesión previos. Ticket por identidad de objeto y generación
+interna invalidan respuestas/trabajos viejos; una cola serial debe ejecutar una
+sola vez/en orden/sin solapamientos. Cancelar/pausar limpia la proyección de inmediato
+sin esperar firma/IO; limpieza del núcleo al finalizar/por cola impide permiso tardío.
+Si se rechaza un trabajo de limpieza, la siguiente tarea aceptada limpia primero;
+no reconstruye autorización antigua. No restaura código ya consumido.
+
+QrOffline solo devuelve bytes sin autorizar; RecoveryController verifica firma
+con pública vinculada y contexto antes de conceder sesión limitada. Espera impresa
+no intercepta OFFLINE válido ni se elimina por él. Código conserva transacción
+duradera anterior a sesión/publicación. Error de escritura no concede acceso.
+Proyección no es permiso de enforcement: no incluye ALLOWED/APPLIED/wipe/Ajustes.
+
+El dueño debe pedir actualizar periódicamente: sin timers/hilos ocultos ni wiring
+de lifecycle Android. Consulta no rejuvenece duración. Frontera exacta 300000 ms,
+reloj anterior al inicio/observación durable y boot/contexto distintos invalidan
+desafío/sesión según el núcleo existente. Una proyección leída sin actualizar no
+es autoridad vigente; respuesta siempre se vuelve a comprobar en el controlador.
+Emergencia Android no se modifica ni depende de esta proyección; no se añade
+una afirmación de nueva validación física.
+
+### Pruebas y comandos realmente ejecutados
+
+Desde android/ con JAVA_HOME de BUILD_ENV:
+
+```powershell
+.\gradlew.bat :core-protocol:test :app-child:testDebugUnitTest :app-child:testReleaseUnitTest --console=plain
+```
+
+Ejecutado dos veces: BUILD SUCCESSFUL. Primera con 14 tests nuevos; última con
+17 tras añadir carrera entre hilos, QR óptico sintético y rechazo de cola. Últimos
+informes: núcleo 169 UP-TO-DATE; hijo debug 177 EJECUTADOS; total núcleo+debug
+**346 resultados/0 fallos/0 errores/0 omitidos**. Release 170 EJECUTADOS (repite
+casos), también correctos. No sumar release como pruebas independientes nuevas.
+
+Casos nuevos: generación serial/firma impostora; cancelación antes de ejecutar y
+durante firma; generación durante firma; referencia/nonce viejos; recreación RAM;
+299999/300000 ms en desafío y sesión; respuesta vencida; boot/reloj inválidos;
+espera impresa con OFFLINE válido; cancelación durante IO de respuesta y código;
+consumo confirmado antes de proyección; fallo de escritura; cancelación real en
+otro hilo mientras firma detenida con latch; QR sintético decodificado; cola que
+rechaza limpieza sin recuperar permiso. Crypto CP/1 y QrOffline reales; archivo,
+contexto y tiempo simulados. IO cancelada mediante hook determinista en commit.
+
+No assemble/APK, lint, instrumentación, cámara, Android Keystore o dispositivos
+en esta unidad. No alias/vínculo reales, herramientas, WSS/TLS/LAN ni certificados.
+Las 23 pruebas Android anteriores no validan este coordinador. git diff --check
+antes del commit; sin privadas, credenciales, códigos reales o series registrados.
+
+### Devolución y siguiente unidad propuesta
+
+H05-L01 terminada al alcance aislado. H05 sigue abierta; no se inicia H06/H08/H10/
+H11 y no se considera resuelta la decisión de puertas funcionales HIJO-C01.
+Propuesta para revisión: fijar el límite de cierre H05 y su evidencia requerida
+antes de asignar integración Android/UI o identidad inicial; todavía faltan
+cámara/lifecycle reales y herramientas/recuperación operativa. No ejecutar otra
+unidad por este cierre ni cablear consumo de producción como atajo.

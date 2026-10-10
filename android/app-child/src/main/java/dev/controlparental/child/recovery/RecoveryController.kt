@@ -221,6 +221,24 @@ class RecoveryController(
     @Synchronized
     fun cancelar() { sesion = null; desafio = null }
 
+    /** Lectura para proyección RAM; no firma, consume ni modifica el archivo. */
+    @Synchronized
+    fun desafioRestanteMs(): Long? = try {
+        val actual = desafio
+        if (actual == null) null else {
+            val estado = (almacen.cargar() as? CargaEstado.Disponible)?.estado ?: throw ErrorEstadoLocal()
+            val fuente = contexto.leer()
+            val ahora = ahoraValido()
+            val boot = estado.bootContext
+            if (!fuente.usuarioDesbloqueado || fuente.bootId != actual.bootId || boot?.bootId != actual.bootId ||
+                estado.vinculo != actual.vinculo || ahora < actual.inicioMs || ahora < boot.ultimoElapsedObservado ||
+                ahora - actual.inicioMs >= SESION_MS) {
+                desafio = null
+                null
+            } else SESION_MS - (ahora - actual.inicioMs)
+        }
+    } catch (_: RuntimeException) { desafio = null; null }
+
     private fun cancelarYSalir(): AccesoRecuperacionLimitado? { sesion = null; return null }
     private fun ahoraValido() = reloj.ahoraMs().also { require(it >= 0) }
 

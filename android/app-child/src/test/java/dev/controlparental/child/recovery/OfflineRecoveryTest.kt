@@ -349,7 +349,7 @@ class OfflineRecoveryTest {
     }
 
     companion object {
-        private fun identidadEfimera(): FirmanteCp1 {
+        internal fun identidadEfimera(): FirmanteCp1 {
             val par = KeyPairGenerator.getInstance("EC").apply { initialize(ECGenParameterSpec("secp256r1")) }.generateKeyPair()
             return object : FirmanteCp1 {
                 override val clavePublica = ClavePublicaCp1.leer(Base64Cp1.codificar(par.public.encoded))
