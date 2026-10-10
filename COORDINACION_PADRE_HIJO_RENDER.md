@@ -259,3 +259,42 @@ Propuesta para revisión: fijar el límite de cierre H05 y su evidencia requerid
 antes de asignar integración Android/UI o identidad inicial; todavía faltan
 cámara/lifecycle reales y herramientas/recuperación operativa. No ejecutar otra
 unidad por este cierre ni cablear consumo de producción como atajo.
+
+## Resultado HIJO-C02 — propuesta de puertas y resumen público
+
+Unidad exclusivamente documental sobre base `c7fb842`, reutilizando HIJO-C01 y
+H05-L01. Entregable: `hijo/DISENO_PUERTAS_Y_RESUMEN_PUBLICO.md`.
+Leídos CP/1 §5/9/9.A, PLAN_HIJO H05–H11, ModelosEstado.kt y, solo en lectura,
+padre/DISENO_ACREDITACION_VINCULO.md y coordinación central del relay.
+
+Matriz: garantías aisladas A, puerta local propuesta B, recuperación real C1 antes
+de endurecer y acreditación integral C2 con WSS/STATE/ceremonia. Separar C1 de C2
+evita exigir H10 para comprobar la salida local anterior a H06. Ninguna etiqueta
+parcial/JVM habilita H06. B tampoco habilita H08 con dependencias actuales.
+Definidas unidades mínimas de lifecycle/capacidades/Android aislado y evidencia
+física necesarias para presentar revisión del orden H05/H08/H11 al propietario.
+No se altera PLAN_HIJO ni se declara H05 cerrada; ciclo funcional sigue bloqueante.
+
+Resumen post-commit H08 propuesto: pairId, SHA-256 SPKI DER de ambas públicas
+(hexadecimal mayúsculo completo agrupado de cuatro), origen HTTPS exacto desde
+un snapshot persistido íntegro, nunca desde QR/formulario previo. Oferta, captura,
+commit/readback y acreditación se distinguen; reapertura no revincula. Error/crash/
+corrupción/identidad perdida no generan claves o datos confirmados ficticios.
+Sin privadas/códigos/hashes de recuperación/historial ni recibos/frames nuevos.
+EstadoControl actual no acredita H08; procedencia/migración futura por diseñar.
+
+Acuerdo propuesto para padre: comparación presencial de esos cuatro datos,
+declaración de commit observado y mantenimiento real separadas de criptografía.
+STATE no acredita PAIR_ACCEPT exacto ni consumo OFFLINE. Acreditación automática
+remota exacta exigiría propuesta CP/2; esa vía queda detenida, no implementada.
+PADRE-C02 espera revisión/asignación independiente; ni promoción ni órdenes aquí.
+
+Evidencia propia: lectura y revisión documental; git diff --check antes del commit.
+NO tests/builds/ADB/código/UI/cámara/Keystore/WSS/certificados/LAN/despliegue;
+resultados H05-L01/Android/relay son históricos, no reejecutados. Rutas modificadas:
+este relevo, ESTADO.md y el nuevo diseño. Commit de cierre devuelto en respuesta
+y consultable mediante git log de estas rutas. No editar repos externos/enviar prompts.
+
+Siguiente paso: coordinador traslada propuesta al padre y solicita decisión del
+propietario sobre puertas/orden y evidencia antes de asignar otra unidad. No
+implementar ninguna puerta/ceremonia ni reducir pruebas físicas por este documento.
