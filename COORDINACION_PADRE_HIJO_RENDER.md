@@ -469,3 +469,39 @@ en respuesta/git log. Siguiente unidad mínima propuesta para revisión: modelo 
 aislado de acumulador/snapshot/calidad/marcador con fakes, sin iniciar implementación;
 prototipo Android/pruebas negativas posteriores necesitan recuperación previa y
 autorizaciones independientes. Sin sesiones/subagentes/prompts u otra tarea automática.
+
+## Resultado HIJO-L02 — acumulador puro solo FICTICIAS_JVM
+
+2026-10-12, base `ae1c7eb`, unidad aislada asignada. Modelo/test exclusivamente
+`android/app-child/src/test/java/dev/controlparental/child/laboratorio/`:
+AgregadoFicticio.kt y AgregadoFicticioTest.kt. Sin configuración/dependencias nuevas,
+main/androidTest/productivo o protocolo. Evidencia/política/comandos detallados en
+`pruebas/EVIDENCIA_HIJO_L02.md`; este relevo y ESTADO.md actualizados.
+
+Entradas sintéticas clasificadas y límites de ventana/boot/elapsed/época explícitos,
+sin permiso como observación. Registro mínimo subtotal/cobertura/cursor/calidad y
+snapshot absoluto diagnóstico; CAS/readback fake, reentrada explícita, O(1).
+Duplicado/prefijo solapado no se suma; atrasados no reparan huecos sin historial,
+calidad parcial/no disponible, null en vez de cero sin evidencia. Ventanas 23/25h
+inyectadas y cruces recortados, no día/zona elegidos para producto. Sin detector,
+fuente Android/UsageStats/firma/DTO CP1, marcador o retención de vencimientos.
+
+Pruebas reales: focalizado offline primero FAILED (19/1 fallo de expectativa de
+test al perder registro conocido: RECHAZADO vs INCIERTO); corrección explícita de
+expectativa, test de overflow ejercitado y tres casos añadidos. Regresión offline
+después SUCCESSFUL: hijo debug 199 ejecutados, 22 L02+177 previos, cero fallos/
+errores/omitidos; núcleo 169 UP-TO-DATE, no ejecutados de nuevo. No ocultar primera
+ejecución ni presentar 368 resultados como Android/nueva ejecución completa.
+
+Exclusión: 12 clases laboratorio debugUnitTest, cero en directorio kotlin debug
+y ambos JAR principales debug compile/runtime; no referencias al componente en
+main/androidTest. Solo inspección/config/clases, no APK ensamblado nuevo. 467 líneas
+Kotlin propias; commit de cierre entregado en respuesta/git log.
+
+Pendientes del propietario intactos: significado uso/total y acceso especial,
+retención/marcador/zona y avisos con padre cerrado, versión/contrato/puertas. Toda
+app/instalación libre/código/pregunta/offline/reboot confirmados, no aceptación de
+fallos finales. H05 abierta/H06 no autorizada, CP2 no aprobado, QR padre no corregido/
+QR02 no asignado. Sin Android/persistencia real/Keystore/KDF/enforcement/WSS/avisos,
+dispositivos/ADB/permisos/CA/LAN/push/despliegue, repos ajenos o subagentes/sesiones/
+prompts de vuelta. Esperar revisión; no siguiente unidad/prototipo automático.
