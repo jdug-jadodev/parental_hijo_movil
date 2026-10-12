@@ -4,6 +4,13 @@ Fecha de evaluación/consulta: **2026-10-12**. Base: HIJO-C04 `4636d30`.
 Unidad exclusivamente documental. No arquitectura aprobada, prototipo, permiso
 físico, implementación CP/2 ni cierre de H05/H06. Fuentes oficiales [R1–R12].
 
+**Actualización HIJO-C06:** HOME propio aceptado; instalación/actualización libre
+durante permiso confirmada, no mantenimiento obligatorio. Propietario NO acepta
+ventanas/fallos conocidos como entrega final: máxima resistencia y corrección
+iterativa, sin nueva autorización física. Alternativas/elecciones §8 quedan como
+historia C05, no acuerdos; consolidación incremental en
+`ARQUITECTURA_BLOQUEO_Y_SENALES_MINIMAS.md`.
+
 ## 1. Resumen para el propietario
 
 **Viabilidad condicionada, no compatibilidad certificada.** Android ofrece piezas

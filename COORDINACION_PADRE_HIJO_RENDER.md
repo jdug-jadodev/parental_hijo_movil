@@ -423,3 +423,49 @@ y git diff --check; sin código/config/contratos/fixtures/planes/ADR modificados
 tests/builds/APK/ADB/dispositivos/KDF/Keystore/WSS/certificados/LAN/push/despliegue.
 Commit de cierre se entrega en respuesta/git log; siguiente paso solo revisión,
 no nueva especificación/prototipo/implementación automática ni prompts de vuelta.
+
+## Resultado HIJO-C06 — arquitectura e indicadores mínimos
+
+2026-10-12, bases C04 `4636d30`/C05 `94b1bbe`. Una unidad exclusivamente documental;
+nuevo `hijo/ARQUITECTURA_BLOQUEO_Y_SENALES_MINIMAS.md`, con advertencia incremental
+en C05. Solo contexto local/mensaje íntegro del coordinador, sin repos ajenos.
+
+**Corrección expresa:** HOME propio aceptado, instalar/actualizar libre durante uso
+obligatorio, no mantenimiento/lista parental. «Evaluar» NO implica aceptar ventanas/
+fallos como entrega final; propietario exige máxima resistencia y corregirlos
+iterativamente. Eso no garantiza lo imposible ni autoriza acceso físico/H06.
+Arquitectura candidata Lock Task/catálogo dinámico/escritor único/deadline/readback;
+carreras de instalación/actualización/vencimiento, admin inseparable en Settings,
+PiP/intents/boot/Doze/crash requieren negativas y corrección antes de certificar.
+
+Avisos mínimos diseñados, no monitorización por app: isInteractive/Keyguard son
+proxy, USER_INTERACTION evento con acceso especial, no detector humano continuo ni
+tiempo humano; PONG/foreground/permiso no significan usando. Propuesta de indicador
+uso posible o interacción reciente/desconocido a elegir; acceso de uso no concedido,
+API34 entrega amplia que necesita minimización/aprobación (filtros API35 no aplican).
+Agregado diario estimado por intervalos monotónicos/cursor atómico y calidad, sin
+rellenar proceso muerto/corrupción con duración autorizada/cero. Día/zona/ancla y
+huecos explícitos, snapshot absoluto fresco firmado, sin sumar deltas duplicados.
+
+Recomendación pendiente: snapshot vigente/agregado del día y un único marcador del
+último vencimiento del día, no cola/historial. Deadline agotado separado de bloqueo
+aplicado/modo actual, detección tardía visible. Internet validado Android separado
+de WSS/presencia. Padre sin reporte muestra causa desconocida/último reporte, no
+deduce hijo sin internet. Notificación requiere permisos/canal/lifecycle revisión
+padre: no socket/push inmediato garantizado con app muerta/red ausente/relay caído,
+sin añadir FCM/cron/autoping o almacenamiento de uso en relay.
+
+Tres decisiones §7: semántica de indicador/total y acceso especial; día/calidad/
+retención marcador e incertidumbre temporal; resolver flujos admin inseparables y
+avisos con padre cerrado sin imponer restricciones funcionales nuevas. Mínimos por
+rol requieren acuerdo de versión/compatibilidad, no schema aprobado. CP/1 intacto,
+CP/2 provisional, H05 abierta/H06 no autorizada. QR padre no corregido, QR02 intacto.
+
+Fuentes oficiales HTTP200 con URL/fecha 2026-10-12; min31/target36 versus A13 API34
+diferenciados. Sin datos reales/código/tests/builds/APK/Keystore/KDF/WSS/dispositivos/
+ADB/políticas/permisos reales/CA/LAN/push/despliegue. Revisión documental y diff
+únicamente. Rutas: informe nuevo, nota C05, este relevo y ESTADO.md. Hash de cierre
+en respuesta/git log. Siguiente unidad mínima propuesta para revisión: modelo puro
+aislado de acumulador/snapshot/calidad/marcador con fakes, sin iniciar implementación;
+prototipo Android/pruebas negativas posteriores necesitan recuperación previa y
+autorizaciones independientes. Sin sesiones/subagentes/prompts u otra tarea automática.
