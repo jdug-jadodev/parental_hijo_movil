@@ -380,3 +380,46 @@ Siguiente subunidad mínima **propuesta, no asignada**: especificación conjunta
 de revisión/ticket/timers LOCK_FOR y espera/ventana de reset, para revisión padre y
 acuerdo del propietario de detalles/versión/puertas antes de modelos/tests/código.
 No otra tarea automática, prompts de vuelta o cambio de permisos por esta devolución.
+
+## Resultado HIJO-C05 — viabilidad Android de todas las apps normales
+
+2026-10-12, base C04 `4636d30`; única unidad documental asignada. Informe técnico
+y resumen apto propietario: `hijo/VIABILIDAD_ANDROID_TODAS_APPS.md`. Consultas
+oficiales Android actuales con fecha/URLs [R1–R12], todas HTTP 200; configuración,
+manifest/adaptadores propios solo leídos. No repos ajenos ni dispositivos consultados.
+
+Conclusión: **viabilidad condicionada, no certificación**. Candidato preferido para
+investigar es Lock Task persistente/HOME propio con catálogo técnico dinámico de
+TODAS las apps normales, no lista parental. Retirar paquetes finaliza tareas
+bloqueadas, no garantiza parar servicios. Suspensión excluye admins/launcher activo/
+instaladores esenciales/marcador/permission controller; lockNow no es bloqueo
+parental continuo. Ajustes/launchers con administración dentro del mismo paquete,
+intents/intra-task, PiP/ventanas/notificaciones y perfiles tienen límites propios.
+
+No hay lease de política con fecha aplicado autónomamente por Android: alarma/FGS
+requieren ejecución, resultado y relectura; no garantía oficial de cierre instantáneo
+ante crash/Doze ni ausencia de ventana al primer unlock tras reboot. Guía BAL actual
+no acredita excepción DO universal; ejemplo Lock Task no prueba retorno desde fondo.
+Direct Boot aporta almacenamiento/receiver, no convierte lista previa en bloqueo
+automático. Emergencia/Keyguard se conservan, no PIN parental constante ni acceso
+amplio a Settings como arreglo. Root/recovery/firmware/antirollback fuera de garantías.
+
+Tres elecciones imprescindibles antes de prototipo: alcance de superficies de
+administración y HOME propio; instalación libre con carreras frente a mantenimiento
+acotado (todas las instaladas siguen incluidas); aceptar investigar límites medidos
+temporales/boot o exigir garantía estricta que aquí queda sin solución demostrada.
+No se cambian requisitos confirmados ni se impone alternativa. Rangos/LOCK_FOR/
+caducidades/normalización/intentos/olvido/versión quedan a coordinación separada.
+
+Informe distingue minSdk31/targetSdk36/compileSdk36 del A13 API34 registrado;
+detalles Samsung no comprobados por esta lectura. Mapa futuro mínimo y negativas
+Q1–Q9 por escapes/paquetes/proceso/timer/boot/emergencia, sin ejecución ni permiso:
+recuperación previa, reversibilidad y autorización física específica del A13/selector
+único independientes. H05 abierta/H06 no autorizada, CP/2 provisional, CP/1 intacto.
+QR padre reproducido no corregido, QR02 no asignado ni trabajado aquí.
+
+Rutas de cierre: informe nuevo, este relevo y ESTADO.md. Solo revisión documental
+y git diff --check; sin código/config/contratos/fixtures/planes/ADR modificados,
+tests/builds/APK/ADB/dispositivos/KDF/Keystore/WSS/certificados/LAN/push/despliegue.
+Commit de cierre se entrega en respuesta/git log; siguiente paso solo revisión,
+no nueva especificación/prototipo/implementación automática ni prompts de vuelta.
