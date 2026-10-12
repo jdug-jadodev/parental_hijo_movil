@@ -1,6 +1,6 @@
 # Estado de implementación
 
-Última actualización: 10 de octubre de 2026
+Última actualización: 12 de octubre de 2026
 Commit de partida: ac7d801 (C01 completada)
 Tarea actual: H05 — recuperación local antes de endurecer
 Estado: EN_CURSO — H05-L01 aislada terminada, 346 resultados JVM correctos y 23 Android anteriores; recuperación operativa/puertas pendientes
@@ -60,6 +60,7 @@ Hay Device Owner de laboratorio en el A13, pero no quiosco, bloqueo parental apl
 
 ## Archivos modificados en la última tarea
 
+- HIJO-C04 reanudada: consolidación hijo/DISENO_CONTROL_LOCAL_ADULTO.md, COORDINACION_PADRE_HIJO_RENDER.md y ESTADO.md. Solo documentación; decisiones de código numérico/pregunta/tiempo elegido/todas apps/ambas fuentes offline, sin cambios CP/1/plan/código.
 - HIJO-C03 documental: hijo/DISENO_CONTROL_LOCAL_ADULTO.md, COORDINACION_PADRE_HIJO_RENDER.md y ESTADO.md. Nuevos requisitos de control normal local/offline/reboot propuestos para versión futura; no cambios de plan, CP/1, fixtures o código.
 - HIJO-C02 documental: hijo/DISENO_PUERTAS_Y_RESUMEN_PUBLICO.md, COORDINACION_PADRE_HIJO_RENDER.md y ESTADO.md. Solo propuestas propias; plan/CP/1 y repos externos intactos.
 - H05-L01: recovery/CoordinadorOffline.kt y ampliación RecoveryController.kt; test/recovery/CoordinadorOfflineTest.kt y visibilidad de firmante reutilizado en OfflineRecoveryTest.kt; COORDINACION_PADRE_HIJO_RENDER.md y ESTADO.md.
@@ -97,6 +98,7 @@ android/local.properties es local, está ignorado y no se incluye en commits.
 
 ## Pruebas ejecutadas y resultado
 
+- HIJO-C04: revisión local/documental y git diff --check; ninguna prueba/build/KDF/Android/dispositivo. Tres lecturas externas previas interrumpidas; reanudación usa resumen completo del coordinador, sin ampliar acceso o inferir causa. Revisión padre 984693c/defecto QR a8e4ffc comunicados, no reejecutados/verificados aquí.
 - HIJO-C03: lectura CP/1 §5/9/9.A, diseños hijo/padre y propuesta/coord. central Render; consulta ADR-H-002/005/006; git diff --check documental. Sin tests/builds, UI, dispositivos, ADB o cambios externos. 346 resultados JVM y 23 Android anteriores no acreditan control normal local.
 - HIJO-C02: lectura de plan/CP/1 §5/9 y diseño de acreditación padre/coordinación central en lectura; revisión documental con git diff --check. Ningún test/build/ADB o prueba física ejecutados. 346 resultados JVM/23 Android anteriores siguen evidencia histórica, no validan puertas o resumen implementado.
 - H05-L01: Gradle core-protocol:test, app-child:testDebugUnitTest y testReleaseUnitTest dos veces BUILD SUCCESSFUL. Última: núcleo 169 UP-TO-DATE, hijo debug 177 ejecutados (17 nuevos), total 346/0 fallos/0 errores/0 omitidos; release 170 ejecutados (repite casos), correcto. Solo JVM/compilación necesaria: no assemble, lint, ADB, instrumentación o pruebas externas. Cola/reloj/archivo inyectados, crypto CP/1 y QR reales; carrera de firma entre hilos y hooks IO deterministas.
@@ -189,6 +191,7 @@ android/local.properties es local, está ignorado y no se incluye en commits.
 
 ## Bloqueos y riesgos abiertos
 
+HIJO-C04: consolida decisiones del propietario: código 5–10 dígitos cadena, pregunta personalizada para establecer código nuevo offline, tiempo LOCAL elegido sin default, todas apps normales, LOCAL/REMOTO mantienen permiso offline y reboot bloquea; administración cierra al salir/fondo. Detalles técnicos/versión/puertas no aprobados. Riesgos de cinco dígitos/respuesta deducible y viabilidad de enforcement global sin lista parental pendientes; H05 abierta/H06 bloqueada. QR padre reproducido NO corregido, QR02 no asignado.
 HIJO-C03: propietario pide uso normal local con credencial propia y sin internet, reboot bloqueado y controles protegidos. Diseño en hijo/DISENO_CONTROL_LOCAL_ADULTO.md; cambia prohibición ALLOW offline/ADR-H-002. CP/2 solo nombre provisional, nueva versión y detalles/puertas pendientes de acuerdo con padre/relay antes de implementación. No introducir bypass bajo CP/1, convertir MAINTENANCE o declarar H05 cerrada/H08 realizada.
 HIJO-C02: matriz A/B/C1/C2 y resumen público post-commit H08 propuestos, NO aprobados/implementados. H06 exige recuperación real previa y emergencia; acreditación CP/1 posterior con H10 no es atajo. Revisión del orden H05/H08/H11 y acuerdo de comparación padre pendientes. EstadoControl actual no acredita procedencia de commit H08; no promocionar por etiqueta/fixture/STATE ni inventar recibo remoto.
 HIJO-C01: ciclo funcional si se exige recuperación de producción H05 antes de H08/H11, mientras H08/H11 dependen H05. Plan explícito sigue intacto. Propuesta de puertas de autorización aislada frente a validación operativa integral pendiente de acuerdo; detenida identidad/oferta productiva, H05 no cerrada/H06 bloqueada. Diseño y propuesta local H05-L01 en COORDINACION_PADRE_HIJO_RENDER.md.
@@ -202,7 +205,7 @@ La supervivencia del control ante muerte de proceso y suspensión sigue pendient
 
 ## Próxima tarea y lectura mínima
 
-HIJO-C03 documental terminada: esperar revisión padre y acuerdo explícito del propietario/coordinador sobre versión/ADR, credencial/olvido, duración, precedencia local/remota, STATE/ACK/migración y puertas. Diseño hijo/DISENO_CONTROL_LOCAL_ADULTO.md. CP/1 congelado sigue vigente en código; no implementar nueva semántica ni iniciar otra unidad automáticamente. H05-L01 aislada no acredita uso local normal; H05 abierta/H08 pendiente/H06 bloqueada. Sin permisos físicos nuevos; escritura solo en hijo, A56 fuera de alcance.
+HIJO-C04 consolidada, misma unidad reanudada el 12: esperar revisión/asignación de especificación exacta de revisión global/tickets/timers LOCK_FOR y espera/reset antes de implementación. Propietario/coordinador deben acordar rango de tiempo, caducidad, normalización/esperas, salida por olvido doble, versión/ADR/migración y puertas. Diseño hijo/DISENO_CONTROL_LOCAL_ADULTO.md. No tareas automáticas/código/nueva semántica CP/1; H05-L01 no acredita uso normal, H05 abierta/H08 pendiente/H06 bloqueada. Viabilidad todas apps y defecto QR padre pendientes. Sin nuevos permisos físicos, escritura solo aquí; A56 fuera de alcance.
 H00 cerrado: ADB autorizado, inventario obtenido y preparación confirmada. El formateo fue previo y declarado por el propietario, no ejecutado por el agente.
 Lectura mínima H00: hijo/PLAN_HIJO.md H00, hijo/INSTALACION_A13.md §1–3, compartido/02_FUENTES_Y_COMPATIBILIDAD.md.
 C02 cerrada tras ejecución real de tres tests Android. Lectura mínima H01: hijo/PLAN_HIJO.md H01, hijo/SPEC_HIJO.md H2/H4 e hijo/INSTALACION_A13.md §3; consultar fuentes oficiales correspondientes.

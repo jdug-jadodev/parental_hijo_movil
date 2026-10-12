@@ -332,3 +332,51 @@ LAN/push/despliegue. Commit de cierre devuelto en respuesta y consultable en git
 Siguiente unidad propuesta: revisión padre y decisión explícita de versión/ADR,
 credencial/precedencia/migración y puertas por propietario/coordinador, no código
 o ejecución automática por este cierre. No enviar prompts de vuelta.
+
+## Resultado HIJO-C04 — consolidación reanudada el 2026-10-12
+
+Misma unidad sobre `9ae6c99`, no una nueva asignación. Primera ejecución quedó
+interrumpida: tres lecturas externas sin completar, sin causa adicional inferida.
+Al reanudar, árbol propio limpio; se usa resumen íntegro del coordinador sin
+ampliar acceso/permisos, nuevas sesiones o subagentes. PADRE-C03 `984693c` se toma
+como contexto comunicado, no como lectura externa nueva acreditada.
+
+`hijo/DISENO_CONTROL_LOCAL_ADULTO.md` consolida decisiones expresas que sustituyen
+recomendaciones anteriores: código elegido de 5–10 dígitos cadena/ceros iniciales,
+pregunta personalizada local offline para establecer código nuevo (no revelar
+anterior), duración LOCAL elegida cada vez sin default, todas apps normales,
+permisos LOCAL/REMOTO independientes de desconexión hasta plazo/bloqueo nuevo/reboot.
+Administración RAM separada, cierre salir/fondo/proceso y emergencia/Keyguard intactos.
+
+Matriz y propuestas precisan revisión global distinta seq remoto/escritor único,
+invalidación de referencias/timers incluso apertura LOCK_FOR, segunda acción
+conflictiva con confirmación nueva. Resultado de orden remota distinto de modo
+efectivo; ACK viejo no reemplaza STATE posterior ni reconexión renueva permiso.
+Código/respuesta/salts/verificadores no salen a padre/relay/QR/logs/exportación/STATE.
+Pregunta visible localmente no prueba identidad; cinco dígitos y respuesta deducible
+son riesgos, sin promesa de entropía o antirollback físico.
+
+Reset propuesto solo capacidad RAM de cambiar código, con readback/commit atómico,
+revocación de autoridad/revisión/timers/permiso previo por acordar; no apps/admin
+automáticos ni reset de consumos/esperas CP/1. Normalización/límites, espera agregada
+código+respuesta resistente a alternancia/boot, KDF/protección versionados sin
+medición inventada, alta/migración presencial y olvido doble documentados. No código
+extra obligatorio. Todas apps sigue requisito; límites oficiales/escapes Android
+deben validarse, no volver a lista parental para fingir cumplimiento.
+
+Pendientes imprescindibles: rango/granularidad/LOCK_FOR, caducidad admin/reset y
+revocación tras cambio, normalización/cupos, salida ante olvido doble, versión/ADR/
+migración/contextos y puertas/orden. CP/2 provisional; H05 abierta/H08 pendiente,
+H06 no activada. Defecto QR padre `a8e4ffc` comunicado reproducido NO corregido,
+QR02 no asignado; no se repara ni acredita ceremonia óptica aquí.
+
+Evidencia: solo lectura local/resumen suministrado, revisión documental y
+git diff --check antes de commit. Sin tests/builds/KDF medido/Android/código/APK,
+dispositivos/ADB/CA/LAN/WSS/enforcement/push/despliegue o cambios externos. Rutas:
+diseño consolidado, este relevo y ESTADO.md. Contrato/fixtures/PLAN_HIJO/ADR aceptados
+intactos. Hash de commit de cierre en respuesta y git log de estas rutas.
+
+Siguiente subunidad mínima **propuesta, no asignada**: especificación conjunta exacta
+de revisión/ticket/timers LOCK_FOR y espera/ventana de reset, para revisión padre y
+acuerdo del propietario de detalles/versión/puertas antes de modelos/tests/código.
+No otra tarea automática, prompts de vuelta o cambio de permisos por esta devolución.
