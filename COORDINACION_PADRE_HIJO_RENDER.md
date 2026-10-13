@@ -599,3 +599,36 @@ KDF/WSS/APK/dispositivos/ADB/políticas/CA/LAN/push/despliegue/repos ajenos/QR02
 subagentes/sesiones/prompts de vuelta. QR padre reproducido no corregido; L02 no
 promovida. Git diff --check y commit propio de cierre; hash en respuesta/git log.
 Detenerse; etiqueta APTO solo gate de especificación/formato, no prueba operacional.
+
+## HIJO-PROT01 — prototipo reversible debug, PARCIAL
+
+2026-10-13. Nueva autorización explícita del dueño: instalación/actualización debug
+y prueba reversible solo A13 SM-A135M. A56 excluido aun estando conectado.
+Evidencia: `pruebas/EVIDENCIA_HIJO_PROT01.md`.
+
+Implementado en sourceSets debug/testDebug/androidTestDebug: actividad independiente,
+tickets RAM con reloj inyectado, BiometricPrompt DEVICE_CREDENTIAL, adaptador DPM
+limitado a whitelist/features, snapshot previo y rollback solo debug protegido por
+DUMP para shell. No HOME/restricciones/código parental/CP1/temporizador/red.
+PIN Android autoridad temporal de laboratorio, no credencial parental final.
+
+Builds APK debug e instrumentado correctos; 205 JVM debug/0 fallos (6 nuevos),
+núcleo UP-TO-DATE. Compile release UP-TO-DATE; exclusión del paquete/componentes
+prototype verificada en clases/manifest release, sin APK release instalado.
+Instalaciones A13 Success; prueba instrumentada focalizada 1 test OK antes y después.
+Selección modelo y toda operación con `adb -s` al mismo A13, sin serie en repo.
+
+Adulto confirmó presencialmente baseline de credencial y acceso Emergencia en
+Keyguard sin llamar. Avisado antes de aplicar. Intento de entrada: informó «no hizo
+nada, todo siguio igual»; no LOCKED acreditado ni causa demostrada. Se detuvo la
+prueba sin repetir/endurecer. Rollback ADB result=1, modo NONE/sin snapshot
+verificados; adulto confirma uso normal. No demostrar restauración desde LOCKED
+si no se alcanzó ni afirmar políticas cambiadas. Inicio/Atrás/Recientes, cancelación,
+emergencia/salida autenticada/reentrada bajo LOCKED no realizados/acreditados.
+
+Bloqueo concreto: entrada sin cambio observado; diagnóstico genérico no distingue
+precondición/caducidad/Android/readback. Próxima asignación, si coordinador decide:
+diagnosticar y coordinar nueva prueba, no tarea automática. H05/H06/puertas/producto
+no cerrados; C08 APTO contrato separado sigue sin implementar. Sin otros repos/
+CP1/CP2 compartido/planes/ADR/credenciales/servicio/push/QR02/gitpush/despliegue.
+APK/ruta/hash local en evidencia, no subida. Commit propio de cierre en respuesta.
