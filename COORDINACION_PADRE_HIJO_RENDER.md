@@ -505,3 +505,54 @@ fallos finales. H05 abierta/H06 no autorizada, CP2 no aprobado, QR padre no corr
 QR02 no asignado. Sin Android/persistencia real/Keystore/KDF/enforcement/WSS/avisos,
 dispositivos/ADB/permisos/CA/LAN/push/despliegue, repos ajenos o subagentes/sesiones/
 prompts de vuelta. Esperar revisión; no siguiente unidad/prototipo automático.
+
+## Resultado HIJO-C07 — revisión PADRE-C04 con decisiones del 13 de octubre
+
+2026-10-13, base hijo `c6e8d5d`; misma unidad reanudada, no nueva ejecución C08.
+Lecturas externas padre/Render interrumpidas inicialmente, sin causa inferida ni
+reintento/ampliación permisos. Fuente **texto suministrado íntegro** PADRE-C04
+`1582e66` §§1–13 en cinco partes y §17 central al reanudar; no lectura externa
+acreditada ni equivalencia verificada con archivos actuales. Árbol limpio al retomar.
+
+`hijo/REVISION_PADRE_C04_DELTAS_CP2.md`: tabla compatible/corregir/pendiente, deltas
+exactos de acciones/mensajes/combinaciones/trazas y revisión contra boot/writer/
+crypto propios. Retirar LOCK_FOR/deferredAllowSec/WAITING_ALLOW/apertura y trazas
+de dos temporizadores, mantener expiración ALLOW_FOR; LOCK y ALLOW libre requeridos. Rango1min–7d
+NO aprobado, alcance ALLOW local/remoto pendiente. No botones/codec/fixtures CP1
+editados. Sin aceptar APPLIED por aceptación/callback de revisión sustituida/ACK.
+
+Contador autorizado desde aceptación durable, apagado/Keyguard incluidos,
+sin humano/UsageStats/duration futura ni promoción L02. Unión/cursor/durabilidad,
+reconstrucción mismo boot condicionada a evidencia de continuidad, nuevo boot
+parcial sin inventar gap. Guardas/recuperación/emergencia intactas, revisión
+exhaustiva escapes pospuesta sin garantía inviolable ni permiso físico.
+
+Propuesta semanal exacta: permittedTime sustituye day único por days array<=8
+fechas (domingo21→domingo21 toca dos domingos parciales), epoch de retención,
+retentionSeq/historyRevision/cutoff/calidad/snapshots absolutos. Borrar buckets/
+total retenido/aviso expiración anterior sin cancelar permiso activo/deadline/seq/
+credenciales; mantener cursor mínimo para no reconstruir prefijo purgado. Cleanup
+local/catch-up hijo/padre antes de lectura/publicación, tombstone padre contra
+sync viejo/caché/restauración/push tardío. No total vitalicio fuera de limpieza,
+no histórico apps/intervalos ni almacenamiento de uso en relay. DST/cambio hora/
+zona y pérdida conservadora necesitan ratificación; documento no promete borrado
+físico exacto a21 con proceso muerto. Fallo purge no publica datos antiguos.
+
+Push sí a evaluar, solo hint mínimo autenticado/verificado por STATE fresco;
+no órdenes desde push, totales/secretos/proveedor/SDK/cuenta/token/servicio autorizado
+ni endpoints en relay. Ausencia de comunicación sigue causa desconocida. PAIR/
+OFFLINE/migración pendientes por acuerdo seguro de tres roles, no bypass/downgrade/
+generación libre/corte de recuperación ni aprobación de puertas/H05/H06.
+
+Decisiones breves pendientes: rango/alcance libre local; zona/DST/purga incierta y
+límite físico de eliminación; lastExpiry y evaluación push/consentimiento aparte.
+KDF/cupos/normalización/admin/reset/olvido doble no elegidos por este contrato.
+Siguiente unidad mínima propuesta: revisar/ajustar draft cliente/relay antes de
+versionado; eventual modelo puro nuevo de autorización/retención solo tras asignación.
+
+Rutas: documento incremental nuevo, este relevo, ESTADO.md. Verificación solo
+lecturas locales/texto/Git/diff; sin código/tests/builds/L02 productivo/Android/UI/
+Keystore/WSS/CP1/schema/fixtures/planes/ADR aceptados, dispositivos/ADB/CA/LAN/push/
+despliegue/repos ajenos/QR02. QR padre reproducido no corregido. Sin subagentes/
+sesiones/prompts de vuelta o siguiente tarea automática. Commit propio en respuesta/
+git log; detenerse para revisión conjunta. CP/2 sigue provisional.
