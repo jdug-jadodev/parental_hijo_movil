@@ -4,6 +4,27 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class TicketsPrototipoTest {
+    @Test fun `diagnosticos distinguen falta caducidad fondo y cancelacion`() {
+        tickets.reanudar()
+        assertEquals(Causa.TICKET_FALTA, tickets.comprobar())
+        val t = tickets.solicitar(FinAutenticacion.COMPROBAR)!!
+        tickets.completar(t, true)
+        assertEquals(Causa.NINGUNA, tickets.comprobar())
+        ahora += 120_000
+        assertEquals(Causa.TICKET_CADUCADO, tickets.comprobar())
+        tickets.fondo(); tickets.reanudar()
+        assertEquals(Causa.FONDO, tickets.comprobar())
+        tickets.cancelar()
+        assertEquals(Causa.CANCELADO, tickets.comprobar())
+    }
+    @Test fun `validar gates sin consumir preserva credencial si ADB falta`() {
+        tickets.reanudar()
+        tickets.completar(tickets.solicitar(FinAutenticacion.COMPROBAR)!!, true)
+        assertEquals(Causa.NINGUNA, tickets.comprobar())
+        assertEquals(Causa.NINGUNA, tickets.comprobar())
+        assertTrue(tickets.consumirComprobacion())
+        assertEquals(Causa.TICKET_FALTA, tickets.comprobar())
+    }
     private var ahora = 100L
     private val tickets = TicketsPrototipo { ahora }
     @Test fun `sin primer plano ni credencial no autoriza`() {

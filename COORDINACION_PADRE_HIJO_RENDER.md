@@ -632,3 +632,35 @@ diagnosticar y coordinar nueva prueba, no tarea automática. H05/H06/puertas/pro
 no cerrados; C08 APTO contrato separado sigue sin implementar. Sin otros repos/
 CP1/CP2 compartido/planes/ADR/credenciales/servicio/push/QR02/gitpush/despliegue.
 APK/ruta/hash local en evidencia, no subida. Commit propio de cierre en respuesta.
+
+## HIJO-PROT01-R1 — bloqueo debug real reversible logrado
+
+2026-10-13, base `d38d3ad`. Evidencia: `pruebas/EVIDENCIA_HIJO_PROT01_R1.md`.
+**BLOQUEO_REAL_DEBUG_LOGRADO, RESTAURADO**. Nuevas autorizaciones concretas en
+sesión para instalar y, separadamente, un intento de Lock Task. Solo A13 SM-A135M,
+selector ADB único explícito en toda operación; A56 excluido, sin serie en repo.
+
+Modelo puro debug/PuertoEntrada: fases/causas cerradas, readbacks y una solicitud
+por generación; NONE inicial espera hasta3s, fallo restaura con readback hasta2s.
+Sin reescrituras/poll infinito/relajar tickets/lifecycle/Keyguard/snapshot/política ajena.
+UI y log sanitizados, gate ADB comprobado antes de consumir credencial previa,
+rollback goAsync acotado. Solo paquetes/features propios, sin main/manifest release.
+
+221 JVM debug/0 fallos (16 nuevos), fallo intermedio de secuencia del test corregido,
+no guarda relajada; núcleo y compileReleaseKotlin UP-TO-DATE. APKs construidos,
+instrumentación focalizada 1 test OK antes/después; exclusión clases/manifest release
+comprobada, no APK release. No declarar UP-TO-DATE como pruebas ejecutadas.
+
+Un intento: primer readback ESPERAR_LOCKED,113ms después LOCKED_VERIFICADO;
+ADB corroboró LOCKED. Confirma que espera era necesaria en recorrido actual,
+no prueba causa histórica de «no hizo nada». Adulto confirmó Inicio/Atrás/Recientes
+contenidos, cancelación sin salida, Emergencia/Keyguard sin llamadas y vuelta aún
+LOCKED. Salida autenticada del sistema: RESTAURADO/NINGUNA, readback de políticas
+previas; ADB NONE, test sin snapshot pendiente y uso normal confirmado. Rollback
+externo verificado sin snapshot al inicio/final, no ejercitado desde LOCKED.
+
+Estado final restaurado, APK debug permanece instalado. PIN solo autoridad temporal
+laboratorio; no H05/H06/puertas/tiempo/remoto/reboot/proceso muerto/producto aprobados.
+No segunda entrada, auditoría exhaustiva, planes/ADR/CP1/CP2/proveedor/servidor/push/
+QR02/repos ajenos/gitpush/despliegue ni siguiente tarea automática. APK/hash local
+en evidencia; commit propio de cierre en respuesta. Esperar revisión.

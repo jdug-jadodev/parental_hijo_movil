@@ -11,7 +11,7 @@ import android.hardware.biometrics.BiometricManager
 import dev.controlparental.child.admin.ChildAdminReceiver
 
 /** Solo dos políticas DPM. No HOME, suspensión, restricciones, claves ni estado CP/1. */
-internal class PoliticasPrototipo(contexto: Context) {
+internal class PoliticasPrototipo(contexto: Context, private val actividad: Activity? = null) : PuertoEntrada {
     private val contexto = contexto.applicationContext
     private val dpm = contexto.getSystemService(DevicePolicyManager::class.java)
     private val am = contexto.getSystemService(ActivityManager::class.java)
@@ -23,51 +23,73 @@ internal class PoliticasPrototipo(contexto: Context) {
 
     fun modo(): Int = am.lockTaskModeState
     fun pendiente(): Boolean = archivo.getBoolean("pendiente", false)
-    fun capacidad(): Boolean =
-        contexto.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0 &&
-            dpm.isDeviceOwnerApp(paquete) && dpm.isAdminActive(admin) &&
-            contexto.getSystemService(KeyguardManager::class.java).isDeviceSecure &&
-            contexto.getSystemService(BiometricManager::class.java).canAuthenticate(
-                BiometricManager.Authenticators.DEVICE_CREDENTIAL) == BiometricManager.BIOMETRIC_SUCCESS
+    fun validarCapacidad() {
+        exigir(contexto.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0, Causa.NO_DEBUG)
+        exigir(dpm.isDeviceOwnerApp(paquete), Causa.NO_OWNER)
+        exigir(dpm.isAdminActive(admin), Causa.ADMIN_INACTIVO)
+        exigir(contexto.getSystemService(KeyguardManager::class.java).isDeviceSecure, Causa.SIN_CREDENCIAL)
+        exigir(contexto.getSystemService(BiometricManager::class.java).canAuthenticate(
+            BiometricManager.Authenticators.DEVICE_CREDENTIAL) == BiometricManager.BIOMETRIC_SUCCESS,
+            Causa.CAPACIDAD_NO_DISPONIBLE)
+    }
+    fun capacidad(): Boolean = try { validarCapacidad(); true } catch (_: RuntimeException) { false }
 
-    fun entrar(actividad: Activity) {
-        check(capacidad() && !pendiente() && modo() == ActivityManager.LOCK_TASK_MODE_NONE)
+    override fun preparar() {
+        validarCapacidad()
+        exigir(!pendiente(), Causa.SNAPSHOT_PENDIENTE)
+        exigir(modo() == ActivityManager.LOCK_TASK_MODE_NONE, Causa.BASELINE_INCOMPATIBLE)
         val keyguard = contexto.getSystemService(KeyguardManager::class.java)
-        check(!keyguard.isKeyguardLocked && !keyguard.isDeviceLocked)
+        exigir(!keyguard.isKeyguardLocked && !keyguard.isDeviceLocked, Causa.KEYGUARD_ACTIVO)
         val paquetes = dpm.getLockTaskPackages(admin).toSet()
         val flags = dpm.getLockTaskFeatures(admin)
         // Retirar el hijo al restaurar debe parar el task; no tomar un quiosco previo.
-        check(paquete !in paquetes && paquetes.size <= 128 && paquetes.all { it.length <= 255 })
-        check(archivo.edit().putStringSet("paquetes", paquetes).putInt("flags", flags)
-            .putBoolean("pendiente", true).commit())
-        try {
-            dpm.setLockTaskPackages(admin, arrayOf(paquete))
-            dpm.setLockTaskFeatures(admin, flagsPrueba)
-            check(dpm.getLockTaskPackages(admin).toSet() == setOf(paquete))
-            check(dpm.getLockTaskFeatures(admin) == flagsPrueba && dpm.isLockTaskPermitted(paquete))
-            actividad.startLockTask()
-            check(modo() == ActivityManager.LOCK_TASK_MODE_LOCKED)
-        } catch (error: RuntimeException) {
-            // Si falta readback se conserva snapshot para rollback externo, no fingir restauración.
-            restaurar()
-            throw error
-        }
+        exigir(paquete !in paquetes && paquetes.size <= 128 && paquetes.all { it.length <= 255 },
+            Causa.BASELINE_INCOMPATIBLE)
+        exigir(archivo.edit().putStringSet("paquetes", paquetes).putInt("flags", flags)
+            .putBoolean("pendiente", true).commit(), Causa.SNAPSHOT_NO_GUARDADO)
+    }
+    override fun escribirPaquetes() { dpm.setLockTaskPackages(admin, arrayOf(paquete)) }
+    override fun escribirFeatures() { dpm.setLockTaskFeatures(admin, flagsPrueba) }
+    override fun paquetesListos(): Boolean {
+        exigir(pendiente(), Causa.CONTEXTO_OBSOLETO)
+        return dpm.getLockTaskPackages(admin).toSet() == setOf(paquete) && dpm.isLockTaskPermitted(paquete)
+    }
+    override fun featuresListos() = dpm.getLockTaskFeatures(admin) == flagsPrueba
+    override fun iniciar() {
+        validarCapacidad()
+        exigir(pendiente() && paquetesListos() && featuresListos(), Causa.CONTEXTO_OBSOLETO)
+        val keyguard = contexto.getSystemService(KeyguardManager::class.java)
+        exigir(!keyguard.isKeyguardLocked && !keyguard.isDeviceLocked, Causa.KEYGUARD_ACTIVO)
+        (actividad ?: throw FalloPrototipo(Causa.CONTEXTO_OBSOLETO)).startLockTask()
+    }
+    override fun modoObservado() = when (modo()) {
+        ActivityManager.LOCK_TASK_MODE_NONE -> ModoPrototipo.NONE
+        ActivityManager.LOCK_TASK_MODE_LOCKED -> ModoPrototipo.LOCKED
+        else -> ModoPrototipo.PINNED
     }
 
     /** Solo baseline persistido de esta prueba y estados que pudo escribir este adaptador. */
-    fun restaurar(): Boolean {
-        if (!pendiente()) return modo() == ActivityManager.LOCK_TASK_MODE_NONE
+    override fun iniciarRestauracion() {
+        if (!pendiente()) return
         check(contexto.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0)
         check(dpm.isDeviceOwnerApp(paquete) && dpm.isAdminActive(admin))
-        val paquetes = archivo.getStringSet("paquetes", null)?.toSet() ?: return false
-        if (!archivo.contains("flags") || paquete in paquetes || paquetes.size > 128) return false
+        val paquetes = archivo.getStringSet("paquetes", null)?.toSet()
+            ?: throw FalloPrototipo(Causa.RESTAURACION_NO_CONFIRMADA)
+        exigir(archivo.contains("flags") && paquete !in paquetes && paquetes.size <= 128,
+            Causa.RESTAURACION_NO_CONFIRMADA)
         val flags = archivo.getInt("flags", 0)
         val actuales = dpm.getLockTaskPackages(admin).toSet()
         val flagsActuales = dpm.getLockTaskFeatures(admin)
-        if (actuales != paquetes && actuales != setOf(paquete)) return false
-        if (flagsActuales != flags && flagsActuales != flagsPrueba) return false
+        exigir(actuales == paquetes || actuales == setOf(paquete), Causa.RESTAURACION_AJENA)
+        exigir(flagsActuales == flags || flagsActuales == flagsPrueba, Causa.RESTAURACION_AJENA)
         dpm.setLockTaskPackages(admin, paquetes.toTypedArray())
         dpm.setLockTaskFeatures(admin, flags)
+    }
+    override fun restauracionConfirmada(): Boolean {
+        if (!pendiente()) return modo() == ActivityManager.LOCK_TASK_MODE_NONE
+        val paquetes = archivo.getStringSet("paquetes", null)?.toSet() ?: return false
+        if (!archivo.contains("flags")) return false
+        val flags = archivo.getInt("flags", 0)
         if (dpm.getLockTaskPackages(admin).toSet() != paquetes || dpm.getLockTaskFeatures(admin) != flags ||
             modo() != ActivityManager.LOCK_TASK_MODE_NONE) return false
         return archivo.edit().clear().commit()
