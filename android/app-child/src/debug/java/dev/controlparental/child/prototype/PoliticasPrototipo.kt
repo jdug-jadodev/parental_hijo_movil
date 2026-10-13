@@ -34,6 +34,19 @@ internal class PoliticasPrototipo(contexto: Context, private val actividad: Acti
             Causa.CAPACIDAD_NO_DISPONIBLE)
     }
     fun capacidad(): Boolean = try { validarCapacidad(); true } catch (_: RuntimeException) { false }
+    fun validarComprobacionAdb(): ModoPrototipo {
+        validarCapacidad()
+        val modo = modoObservado()
+        val snapshot = pendiente()
+        val paquetes = archivo.getStringSet("paquetes", null)?.toSet()
+        val integro = paquetes != null && paquete !in paquetes && paquetes.size <= 128 &&
+            paquetes.all { it.length <= 255 } && archivo.contains("flags")
+        val causa = gateAdbPrototipo(modo, snapshot, integro,
+            dpm.getLockTaskPackages(admin).toSet() == setOf(paquete) && dpm.isLockTaskPermitted(paquete),
+            dpm.getLockTaskFeatures(admin) == flagsPrueba)
+        exigir(causa == Causa.NINGUNA, causa)
+        return modo // No writes, no consumo/borrado del snapshot, no salida de Lock Task.
+    }
 
     override fun preparar() {
         validarCapacidad()

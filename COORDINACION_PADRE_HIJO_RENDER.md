@@ -701,3 +701,39 @@ LOCKED/reemplazo/bloquearahora físicos acreditados ni persistencia/crash/reboot
 Doze/apagado, no H05/H06/puertas/producto/remoto/contador/historial aprobados.
 Sin servidor/repos ajenos/push/QR02/gitpush/despliegue/subagentes u otra unidad
 automática. Esperar revisión tras commit de cierre.
+
+## HIJO-PROT03 — recorrido desde LOCKED probado y restaurado
+
+2026-10-13, base `5dbfa3f`. **RECORRIDO_LOGRADO_Y_RESTAURADO**, uno solo.
+Evidencia `pruebas/EVIDENCIA_HIJO_PROT03.md`. A13 único SM-A135M/API34, todos
+comandos adb -s fijos; A56 excluido, sin serie en repo. APK instalado previo
+finalPROT02 hash22b896… comprobado. Presencia/autorización específica del adulto,
+baseline credencial/emergencia/notificación/Owner/rollback antes de restringir.
+
+Conflicto fuente: entrada R1 consume gate ADB y PERMITIR lo requiere; COMPROBAR
+no renovaba con snapshot pendiente. Explicado y autorizado ajuste mínimo debug,
+sin ensayo fallido del APK previo ni inferir causa histórica PROT01. Función pura
+gate y lecturas Owner/snapshot/whitelist/features permiten renovar exclusivamente
+LOCKED propio íntegro; no writes ni salida, DUMP/caducidad/auth intactos. Timer,
+main/permisos/deps/CP1/CP2/planes/ADR no cambiados.
+
+Único recorrido: entrada R1/ADB LOCKED, renovación ROLLBACK_LOCKED_PROPIO/NINGUNA
+con LOCKED antes/después, adulto eligió1 y autenticó PERMITIR; servicio restauró
+baseline/readback y confirmó permiso con deadline60.000ms original, ADB NONE.
+Adulto usó otra app sin inventario/contenido y volvió solo, sin nuevo PIN al vencer;
+ADB LOCKED. Alarma+4ms/solicitud+12ms/LOCKED+429ms, no segundo exacto. Cancelación/
+emergencia bajo quiosco correctas manualmente, salida adulta/readback/finalNONE/
+snapshot borrado/plan cancelado/servicio detenido/uso normal confirmados.
+
+238 JVM debug correctos (5 nuevos), build correcto; núcleo/compileReleaseKotlin/
+assembleAndroidTest UP-TO-DATE, no ejecución nueva de núcleo. Instrumentación1 OK
+tres veces, sin adulto simulado. Release excluido por clases/manifest, no APK release.
+APK ensayado=final local/instalado hash2d6f6468… íntegro en evidencia; sin código
+posterior al ensayo, no fallos de comandos/builds/ensayo ni repetición automática.
+
+No rollback externo desdeLOCKED/reemplazo/guarda yaLOCKED/24h/crash/reboot/Doze/
+apagado/producto H05/H06/remoto/historial acreditados. PIN temporal laboratorio,
+API34 interactivo/FGS vivo, sin masterPIN definitivo. Notificación grant/canal/APK
+permanecen, no nuevas concesiones ni políticas amplias/Owner/PIN/ADB/HOME alterados.
+Sin repos ajenos/push/QR02/contrato nuevo/gitpush/despliegue/subagentes/sesiones/
+prompts de vuelta/otra tarea automática. Commit propio de cierre; esperar revisión.

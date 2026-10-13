@@ -15,12 +15,10 @@ class RollbackPrototipo : BroadcastReceiver() {
             when (intent.action) {
                 COMPROBAR -> {
                     comprobadoEn = null
-                    politicas.validarCapacidad()
-                    exigir(!politicas.pendiente(), Causa.SNAPSHOT_PENDIENTE)
-                    exigir(politicas.modoObservado() == ModoPrototipo.NONE, Causa.BASELINE_INCOMPATIBLE)
+                    val modo = politicas.validarComprobacionAdb()
                     comprobadoEn = SystemClock.elapsedRealtime()
                     resultCode = 1
-                    resultData = "BASELINE/NINGUNA"
+                    resultData = if (modo == ModoPrototipo.LOCKED) "ROLLBACK_LOCKED_PROPIO/NINGUNA" else "BASELINE/NINGUNA"
                 }
                 RESTAURAR -> {
                     ServicioTemporal.terminar(context)
