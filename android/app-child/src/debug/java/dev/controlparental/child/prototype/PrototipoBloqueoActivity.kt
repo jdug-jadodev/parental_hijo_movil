@@ -15,6 +15,12 @@ import android.widget.CheckBox
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.ScrollView
+import android.widget.EditText
+import android.text.InputType
+import android.Manifest
+import android.app.NotificationManager
+import android.content.pm.PackageManager
+import android.os.Build
 import androidx.activity.ComponentActivity
 import dev.controlparental.child.admin.PolicyEnforcer
 import dev.controlparental.child.emergency.EmergencyAccess
@@ -30,6 +36,7 @@ class PrototipoBloqueoActivity : ComponentActivity() {
     private var lectura: Runnable? = null
     private var destruida = false
     private var informe = Diagnostico(Etapa.REPOSO)
+    private lateinit var emergenciaVerificada: CheckBox
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,14 +49,42 @@ class PrototipoBloqueoActivity : ComponentActivity() {
         }
         texto = TextView(this).apply { textSize = 18f }
         columna.addView(texto)
-        val emergenciaVerificada = CheckBox(this).apply {
+        emergenciaVerificada = CheckBox(this).apply {
             text = "Adulto: comprobé Keyguard y acceso a Emergencia sin llamar en este A13"
         }
         columna.addView(emergenciaVerificada)
+        val minutos = EditText(this).apply {
+            hint = "Minutos enteros 1–1440: elige, sin valor inicial"
+            inputType = InputType.TYPE_CLASS_NUMBER
+        }
+        columna.addView(minutos)
         fun boton(titulo: String, accion: () -> Unit) {
             columna.addView(Button(this).apply { text = titulo; setOnClickListener { accion() } })
         }
         boton("1. Comprobar credencial Android (sin bloquear)") { autenticar(FinAutenticacion.COMPROBAR) }
+        boton("Preparar ensayo temporal con notificación visible") {
+            ejecutar(Etapa.ROLLBACK_ADB) {
+                exigir(emergenciaVerificada.isChecked, Causa.CHECKBOX_FALTA)
+                exigir(Build.VERSION.SDK_INT >= 34, Causa.ANDROID_NO_ADMITIDO)
+                if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 20)
+                    mostrar("Autoriza notificación del ensayo y pulsa Preparar otra vez; aún sin permiso temporal")
+                } else {
+                    exigir(getSystemService(NotificationManager::class.java).areNotificationsEnabled(), Causa.NOTIFICACION_NO_VISIBLE)
+                    ServicioTemporal.preparar(this)
+                    mostrar("Preparación solicitada; verifica notificación y TIMER_LISTO antes de permitir")
+                }
+            }
+        }
+        boton("Permitir los minutos elegidos con credencial Android") {
+            ejecutar(Etapa.CREDENCIAL) {
+                val cantidad = PermisoTemporal.minutos(minutos.text.toString())
+                    ?: throw FalloPrototipo(Causa.MINUTOS_INVALIDOS)
+                exigir(ServicioTemporal.instancia != null, Causa.TIMER_NO_LISTO)
+                exigir(emergenciaVerificada.isChecked, Causa.CHECKBOX_FALTA)
+                autenticar(FinAutenticacion.PERMITIR, cantidad)
+            }
+        }
         boton("2. Entrar en bloqueo reversible") {
             ejecutar(Etapa.EMERGENCIA) {
                 exigir(!entrada.pendiente, Causa.CONTEXTO_OBSOLETO)
@@ -60,8 +95,8 @@ class PrototipoBloqueoActivity : ComponentActivity() {
                 exigir(RollbackPrototipo.comprobar() == Causa.NINGUNA, RollbackPrototipo.comprobar())
                 exigir(tickets.consumirComprobacion(), Causa.TICKET_FALTA)
                 exigir(RollbackPrototipo.consumirComprobacion(), Causa.ADB_FALTA)
-                entrada.entrar()
-                vigilar()
+                if (ServicioTemporal.tienePlan()) ServicioTemporal.instancia!!.bloquearAhora()
+                else { entrada.entrar(); vigilar() }
             }
         }
         boton("Salir con credencial Android del adulto") { autenticar(FinAutenticacion.SALIR) }
@@ -117,7 +152,7 @@ class PrototipoBloqueoActivity : ComponentActivity() {
                 else -> "PINNED/otro: NO es quiosco válido"
             }
         } catch (_: RuntimeException) { "DESCONOCIDO" }
-        texto.text = "PROT01 DEBUG\n$modo\n${informe.etapa}/${informe.causa}\n$mensaje\nSin tiempo, red ni política CP/1. Emergencia independiente."
+        texto.text = "PROTOTIPO DEBUG\n$modo\n${informe.etapa}/${informe.causa}\n$mensaje\n${ServicioTemporal.instancia?.ultimoDiagnostico ?: "TIMER_NO_LISTO"}\nPlan=${ServicioTemporal.tienePlan()}\nSin red/CP1. Emergencia independiente; temporizador RAM, no producto."
     }
     private fun ejecutar(etapa: Etapa, accion: () -> Unit) {
         diagnosticar(Diagnostico(etapa))
@@ -125,7 +160,7 @@ class PrototipoBloqueoActivity : ComponentActivity() {
             diagnosticar(Diagnostico(informe.etapa, (e as? FalloPrototipo)?.causa ?: Causa.ANDROID_ERROR))
         }
     }
-    private fun autenticar(fin: FinAutenticacion) = ejecutar(Etapa.CREDENCIAL) {
+    private fun autenticar(fin: FinAutenticacion, minutos: Int? = null) = ejecutar(Etapa.CREDENCIAL) {
         exigir(!entrada.pendiente, Causa.CONTEXTO_OBSOLETO)
         politicas.validarCapacidad()
         cancelar()
@@ -143,8 +178,15 @@ class PrototipoBloqueoActivity : ComponentActivity() {
                         when (aceptado) {
                             FinAutenticacion.COMPROBAR -> mostrar("Credencial comprobada en RAM. Comprobar rollback ADB antes de entrar")
                             FinAutenticacion.SALIR -> {
+                                ServicioTemporal.terminar(this@PrototipoBloqueoActivity)
                                 entrada.salirAutorizado()
                                 vigilar()
+                            }
+                            FinAutenticacion.PERMITIR -> {
+                                exigir(emergenciaVerificada.isChecked, Causa.CHECKBOX_FALTA)
+                                val servicio = ServicioTemporal.instancia ?: throw FalloPrototipo(Causa.TIMER_NO_LISTO)
+                                servicio.permitir(minutos ?: throw FalloPrototipo(Causa.MINUTOS_INVALIDOS), true)
+                                mostrar("Operación de permiso solicitada. CONFIRMADO solo según PROT02; no renueva al volver")
                             }
                             null -> diagnosticar(Diagnostico(Etapa.CREDENCIAL,
                                 if (tickets.causa == Causa.NINGUNA) Causa.CALLBACK_OBSOLETO else tickets.causa))

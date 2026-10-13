@@ -2,7 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Solo laboratorio: permite retirada del admin de prueba por ADB coordinada. -->
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SYSTEM_EXEMPTED" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <application android:testOnly="true">
+        <service android:name=".prototype.ServicioTemporal" android:exported="false"
+            android:foregroundServiceType="systemExempted" />
         <activity android:name=".prototype.PrototipoBloqueoActivity"
             android:exported="true" android:label="Prototipo reversible (DEBUG)" android:lockTaskMode="normal">
             <intent-filter>

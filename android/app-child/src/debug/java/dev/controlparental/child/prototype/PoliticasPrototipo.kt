@@ -11,7 +11,8 @@ import android.hardware.biometrics.BiometricManager
 import dev.controlparental.child.admin.ChildAdminReceiver
 
 /** Solo dos políticas DPM. No HOME, suspensión, restricciones, claves ni estado CP/1. */
-internal class PoliticasPrototipo(contexto: Context, private val actividad: Activity? = null) : PuertoEntrada {
+internal class PoliticasPrototipo(contexto: Context, private val actividad: Activity? = null,
+    private val reutilizarSnapshot: Boolean = false, private val iniciarExterno: (() -> Unit)? = null) : PuertoEntrada {
     private val contexto = contexto.applicationContext
     private val dpm = contexto.getSystemService(DevicePolicyManager::class.java)
     private val am = contexto.getSystemService(ActivityManager::class.java)
@@ -36,6 +37,7 @@ internal class PoliticasPrototipo(contexto: Context, private val actividad: Acti
 
     override fun preparar() {
         validarCapacidad()
+        if (reutilizarSnapshot) { validarBaselineGuardado(); return }
         exigir(!pendiente(), Causa.SNAPSHOT_PENDIENTE)
         exigir(modo() == ActivityManager.LOCK_TASK_MODE_NONE, Causa.BASELINE_INCOMPATIBLE)
         val keyguard = contexto.getSystemService(KeyguardManager::class.java)
@@ -47,6 +49,15 @@ internal class PoliticasPrototipo(contexto: Context, private val actividad: Acti
             Causa.BASELINE_INCOMPATIBLE)
         exigir(archivo.edit().putStringSet("paquetes", paquetes).putInt("flags", flags)
             .putBoolean("pendiente", true).commit(), Causa.SNAPSHOT_NO_GUARDADO)
+    }
+    fun validarBaselineGuardado() {
+        validarCapacidad()
+        exigir(pendiente(), Causa.SNAPSHOT_PENDIENTE)
+        val paquetes = archivo.getStringSet("paquetes", null)?.toSet()
+        exigir(paquetes != null && paquete !in paquetes && archivo.contains("flags"), Causa.BASELINE_INCOMPATIBLE)
+        exigir(dpm.getLockTaskPackages(admin).toSet() == paquetes &&
+            dpm.getLockTaskFeatures(admin) == archivo.getInt("flags", 0) &&
+            modo() == ActivityManager.LOCK_TASK_MODE_NONE, Causa.RESTAURACION_AJENA)
     }
     override fun escribirPaquetes() { dpm.setLockTaskPackages(admin, arrayOf(paquete)) }
     override fun escribirFeatures() { dpm.setLockTaskFeatures(admin, flagsPrueba) }
@@ -60,7 +71,8 @@ internal class PoliticasPrototipo(contexto: Context, private val actividad: Acti
         exigir(pendiente() && paquetesListos() && featuresListos(), Causa.CONTEXTO_OBSOLETO)
         val keyguard = contexto.getSystemService(KeyguardManager::class.java)
         exigir(!keyguard.isKeyguardLocked && !keyguard.isDeviceLocked, Causa.KEYGUARD_ACTIVO)
-        (actividad ?: throw FalloPrototipo(Causa.CONTEXTO_OBSOLETO)).startLockTask()
+        if (iniciarExterno != null) iniciarExterno.invoke()
+        else (actividad ?: throw FalloPrototipo(Causa.CONTEXTO_OBSOLETO)).startLockTask()
     }
     override fun modoObservado() = when (modo()) {
         ActivityManager.LOCK_TASK_MODE_NONE -> ModoPrototipo.NONE

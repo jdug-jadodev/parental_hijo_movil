@@ -1,6 +1,6 @@
 package dev.controlparental.child.prototype
 
-internal enum class FinAutenticacion { COMPROBAR, SALIR }
+internal enum class FinAutenticacion { COMPROBAR, SALIR, PERMITIR }
 internal class TicketPrototipo(val id: Long, val fin: FinAutenticacion, val inicio: Long)
 
 /** Solo debug, autoridad RAM de laboratorio; nunca guarda PIN o resultados en Bundle. */

@@ -23,6 +23,7 @@ class RollbackPrototipo : BroadcastReceiver() {
                     resultData = "BASELINE/NINGUNA"
                 }
                 RESTAURAR -> {
+                    ServicioTemporal.terminar(context)
                     comprobadoEn = null
                     val resultado = goAsync()
                     val entrada = EntradaPrototipo(politicas, SystemClock::elapsedRealtime)

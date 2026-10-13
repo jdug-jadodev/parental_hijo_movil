@@ -24,5 +24,11 @@ class CapacidadPrototipoTest {
             ComponentName(contexto, RollbackPrototipo::class.java), 0)
         assertTrue(receptor.exported)
         assertEquals(Manifest.permission.DUMP, receptor.permission)
+        @Suppress("DEPRECATION")
+        val servicio = contexto.packageManager.getServiceInfo(
+            ComponentName(contexto, ServicioTemporal::class.java), 0)
+        assertFalse(servicio.exported)
+        assertEquals(android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED,
+            servicio.foregroundServiceType)
     }
 }

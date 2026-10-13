@@ -664,3 +664,40 @@ laboratorio; no H05/H06/puertas/tiempo/remoto/reboot/proceso muerto/producto apr
 No segunda entrada, auditoría exhaustiva, planes/ADR/CP1/CP2/proveedor/servidor/push/
 QR02/repos ajenos/gitpush/despliegue ni siguiente tarea automática. APK/hash local
 en evidencia; commit propio de cierre en respuesta. Esperar revisión.
+
+## HIJO-PROT02 — permiso debug1min y bloqueo automático desde otra app
+
+2026-10-13, base `4faea1f`. **LOGRADO en ensayo interactivo/proceso vivo,
+RESTAURADO**. Evidencia `pruebas/EVIDENCIA_HIJO_PROT02.md`. Solo A13 SM-A135M/API34,
+selector ADB fijo, A56 excluido. Nuevas confirmaciones antes de install/notificación/
+FGS, separada de ensayo único1min y adicional para guarda final sin ensayo.
+
+Servicio debug no exportado `systemExempted` por Device Owner, visible; listener
+AlarmManager.setExact ELAPSED_REALTIME_WAKEUP ligado a servicio vivo (API34+),
+sin SCHEDULE_EXACT_ALARM/special-access por ADB/wakelock/deps nuevas. Modelo puro
+de propuesta/confirmación/referencia/generación/boot/deadline original; minutos
+enteros1..1440 sin preselección, autenticación Android temporal, no masterPIN.
+Baseline/rollback/salida/emergencia preparados antes; vencimiento no pide PIN.
+Snapshot privado/readbacks/política reducida y relanzamiento oficial LockTask;
+servicio fuera Activity para volver desde otra app. Salida/rollback cancela plan.
+
+233 JVM debug/0 fallos (12 nuevos), builds correctos; núcleo/compileReleaseKotlin
+UP-TO-DATE, no ejecutados nuevamente. Exclusión clases/manifest release comprobada,
+no APK release. Instrumentación 1 test OK tres veces; pequeño error de comando
+shell install sin argumentos código1 y stderr no conservado, instalación corregida
+Success, registrado sin inventar causa. CP1/CP2/main/planes/ADR/fixtures intactos.
+
+Manual: eligió1min/callback adulto, abrió otra app y volvió solo al prototipo; ADB
+LOCKED. Entrega alarma+17ms/solicitud+60ms/LOCKED+1308ms relativo al deadline;
+no segundo exacto ni timestamp civil. Cancelación/emergencia bajo LOCKED y salida
+autenticada confirmadas. FinalNONE/sin snapshot, readback políticas restauradas,
+PLAN_CANCELADO/servicio terminado, uso normal/sin notificación. Grant/canal debug
+notificación y APK permanecen; no nuevo plan tras actualización final.
+
+Revisión detectó borde no ejercitado «bloquear ahora yaLOCKED»: guarda añadida
+para conservar bloqueo sin writes; APK final instalado autorizado, sin repetir
+minuto. Evidencia distingue hashes del APK ensayado y final. No permitir desde
+LOCKED/reemplazo/bloquearahora físicos acreditados ni persistencia/crash/reboot/
+Doze/apagado, no H05/H06/puertas/producto/remoto/contador/historial aprobados.
+Sin servidor/repos ajenos/push/QR02/gitpush/despliegue/subagentes u otra unidad
+automática. Esperar revisión tras commit de cierre.
