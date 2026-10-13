@@ -7,6 +7,9 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
+import android.app.KeyguardManager
+import android.content.BroadcastReceiver
+import android.content.IntentFilter
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
@@ -15,6 +18,7 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.os.SystemClock
+import android.os.PowerManager
 import android.provider.Settings
 import android.util.Log
 
@@ -22,6 +26,21 @@ import android.util.Log
 class ServicioTemporal : Service() {
     private val handler = Handler(Looper.getMainLooper())
     private val permiso = PermisoTemporal(SystemClock::elapsedRealtime)
+    private val vencimiento = VencimientoKeyguard(SystemClock::elapsedRealtime)
+    private var receptorRegistrado = false
+    private var senalDesbloqueoMs: Long? = null
+    private var desbloqueoAptoMs: Long? = null
+    private val receptorDesbloqueo = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (intent.action != Intent.ACTION_USER_PRESENT && intent.action != Intent.ACTION_SCREEN_ON) return
+            val ref = vencimiento.actual ?: return
+            if (vencimiento.estado != EstadoVencimiento.VENCIDO_PENDIENTE) return
+            if (intent.action == Intent.ACTION_USER_PRESENT) senalDesbloqueoMs = SystemClock.elapsedRealtime()
+            registrar("SENAL_${if (intent.action == Intent.ACTION_USER_PRESENT) "USER_PRESENT" else "SCREEN_ON"} retrasoMs=${SystemClock.elapsedRealtime()-ref.deadlineMs}")
+            // Una comprobación por señal, no bucle: dejar asentarse la transición de Keyguard.
+            handler.postDelayed({ intentarVencido(ref) }, 100)
+        }
+    }
     private var alarma: AlarmManager.OnAlarmListener? = null
     private var operacion = 0L
     private var ocupado = false
@@ -47,6 +66,10 @@ class ServicioTemporal : Service() {
                 .setContentText("Permiso temporal y retorno a bloqueo. Salida adulta en la app.")
                 .setContentIntent(abrir).setOngoing(true).build()
             startForeground(20, n, ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED)
+            registerReceiver(receptorDesbloqueo, IntentFilter().apply {
+                addAction(Intent.ACTION_USER_PRESENT); addAction(Intent.ACTION_SCREEN_ON)
+            }, Context.RECEIVER_NOT_EXPORTED)
+            receptorRegistrado = true
             instancia = this
             registrar("TIMER_LISTO")
         } catch (e: RuntimeException) { registrar("ERROR_${causa(e)}"); stopSelf() }
@@ -95,6 +118,7 @@ class ServicioTemporal : Service() {
         try { permiso.confirmar(ref) }
         catch (e: RuntimeException) { am.cancel(listener); throw e }
         alarma?.let(am::cancel)
+        vencimiento.cancelar()
         alarma = listener
         registrar("PERMISO_CONFIRMADO restanteMs=${ref.deadlineMs-SystemClock.elapsedRealtime()}")
     }
@@ -114,7 +138,32 @@ class ServicioTemporal : Service() {
             if (entrega != EntregaTemporal.OBSOLETA) cancelarPlan()
             return // No volver a programar, renovar deadline o fingir bloqueo.
         }
-        bloquear(ref)
+        vencimiento.armar(ref, boot())
+        senalDesbloqueoMs = null; desbloqueoAptoMs = null
+        intentarVencido(ref)
+    }
+    private fun intentarVencido(ref: ReferenciaTemporal) {
+        if (permiso.actual !== ref || vencimiento.actual !== ref ||
+            vencimiento.estado != EstadoVencimiento.VENCIDO_PENDIENTE) return
+        try {
+            val kg = getSystemService(KeyguardManager::class.java)
+            val interactivo = getSystemService(PowerManager::class.java).isInteractive
+            val keyguard = kg.isKeyguardLocked
+            val usuarioBloqueado = kg.isDeviceLocked
+            val impedido = !interactivo || keyguard || usuarioBloqueado
+            if (vencimiento.intentar(ref, boot(), impedido)) {
+                desbloqueoAptoMs = SystemClock.elapsedRealtime()
+                registrar("DESBLOQUEO_APTO retrasoMs=${SystemClock.elapsedRealtime()-ref.deadlineMs}")
+                bloquear(ref)
+            } else {
+                if (vencimiento.estado == EstadoVencimiento.VENCIDO_PENDIENTE)
+                    registrar("VENCIDO_ENFORCEMENT_PENDIENTE interactivo=$interactivo keyguard=$keyguard usuarioBloqueado=$usuarioBloqueado retrasoMs=${SystemClock.elapsedRealtime()-ref.deadlineMs}")
+                else registrar("VENCIDO_ERROR_CONTEXTO retrasoMs=${SystemClock.elapsedRealtime()-ref.deadlineMs}")
+            }
+        } catch (e: RuntimeException) {
+            vencimiento.fallar(ref)
+            registrar("ENFORCEMENT_ERROR_${causa(e)}")
+        }
     }
     internal fun bloquearAhora() {
         exigir(!ocupado && permiso.actual != null, Causa.CONTEXTO_OBSOLETO)
@@ -142,14 +191,22 @@ class ServicioTemporal : Service() {
             bloqueo.entrar()
             vigilar(bloqueo, g) {
                 ocupado = false
+                vencimiento.terminar(ref, bloqueo.diagnostico.etapa == Etapa.LOCKED_VERIFICADO)
                 registrar("FINAL_${bloqueo.diagnostico.etapa} retrasoMs=${SystemClock.elapsedRealtime()-ref.deadlineMs}")
+                if (bloqueo.diagnostico.etapa == Etapa.LOCKED_VERIFICADO) {
+                    senalDesbloqueoMs?.let { registrar("LOCKED_DESDE_USER_PRESENT_MS=${SystemClock.elapsedRealtime()-it}") }
+                    desbloqueoAptoMs?.let { registrar("LOCKED_DESDE_APTO_MS=${SystemClock.elapsedRealtime()-it}") }
+                }
                 if (bloqueo.diagnostico.etapa != Etapa.LOCKED_VERIFICADO && politicas.pendiente()) {
                     val salida = EntradaPrototipo(politicas, SystemClock::elapsedRealtime)
                     entrada = salida; salida.salirAutorizado()
                     vigilar(salida, g) {}
                 }
             }
-        } catch (e: RuntimeException) { registrar("EXPIRACION_ERROR_${causa(e)}"); cancelarPlan() }
+        } catch (e: RuntimeException) {
+            ocupado = false; vencimiento.fallar(ref)
+            registrar("EXPIRACION_ERROR_${causa(e)}")
+        }
     }
     private fun vigilar(modelo: EntradaPrototipo, g: Long, fin: () -> Unit) {
         val tarea = object : Runnable {
@@ -168,11 +225,14 @@ class ServicioTemporal : Service() {
     }
     internal fun cancelarPlan() {
         operacion++; ocupado = false; permiso.cancelar()
+        vencimiento.cancelar()
+        senalDesbloqueoMs = null; desbloqueoAptoMs = null
         alarma?.let { getSystemService(AlarmManager::class.java).cancel(it) }; alarma = null
         registrar("PLAN_CANCELADO")
     }
     override fun onDestroy() {
         cancelarPlan()
+        if (receptorRegistrado) { unregisterReceiver(receptorDesbloqueo); receptorRegistrado = false }
         if (instancia === this) instancia = null
         registrar("SERVICIO_TERMINADO_SIN_SUPERVIVENCIA")
         super.onDestroy()

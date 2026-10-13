@@ -737,3 +737,37 @@ API34 interactivo/FGS vivo, sin masterPIN definitivo. Notificación grant/canal/
 permanecen, no nuevas concesiones ni políticas amplias/Owner/PIN/ADB/HOME alterados.
 Sin repos ajenos/push/QR02/contrato nuevo/gitpush/despliegue/subagentes/sesiones/
 prompts de vuelta/otra tarea automática. Commit propio de cierre; esperar revisión.
+
+## HIJO-PROT04 — preparado, impedimento físico y restauración
+
+2026-10-13, base `478f97d`. **PREPARADO / BLOQUEADO_FISICO**.
+Evidencia `pruebas/EVIDENCIA_HIJO_PROT04.md`. Solo debug/testDebug: intención RAM
+VENCIDO_PENDIENTE separada de LOCKED, ref/boot/generación/deadline originales,
+receptor dinámico SCREEN_ON/USER_PRESENT en servicio existente, revalidación de
+interactividad/Keyguard antes de único intento acotado; no renovación ni bypass.
+Salida/rollback invalida intención/callbacks/listener antes de restore. Sin manifest/
+permisos nuevos/main/CP1/CP2/fixtures/planes/ADR/deps/repos ajenos.
+
+247 JVM correctos (9 nuevos) y dos builds exitosos, núcleo/release/testAPK tareas
+UP-TO-DATE no contadas nuevas; exclusión release clases/manifest inspeccionada.
+Autorización concreta obtenida antes de install y luego antes del ensayo previsto.
+Único A13 SM-A135M/API34, adb-s fijo, A56 excluido; baseline Owner/NONE/test1 OK,
+install Success, servicio TIMER_LISTO visible, gateBASELINE/NINGUNA.
+
+No recorrido apagado acreditado: confirmación inicial manual «aceptado; apagada»
+corregida por adulto: botón de apagado/encendido averiado, no podía apagar.
+Logs solo TIMER_LISTO/etapas previas, sin PERMISO_CONFIRMADO/entrega/LOCKED.
+No inventar fallo de Android ni causa de falta de aceptación. Se detuvo sin
+repetición/forzar pantalla/permisos. Rollback result1 RESTAURADO/NINGUNA y final
+NONE/sin servicio/snapshot (instrumentación1 OK), adulto confirma uso normal.
+No salida adulta desdeLOCKED/emergencia/cancelación físicas nuevas en esta unidad.
+
+APK preparado/instalado/final hash5eff03e5… completo en evidencia; NO APK ensayado
+en apagado/Keyguard. Error real de shell final pidof vacío/.Trim null exit1: hash
+sí comprobado antes, último logcat no ejecutado. No matarproceso/crash acreditado.
+
+No cero ventana tras desbloquear garantizada ni supervivencia proceso/Doze/reboot/
+producto H05/H06/remoto/masterPIN/historial aprobados. Cualquier alternativa para
+botón averiado/ensayo posterior requiere nueva coordinación/autorización física.
+Commit propio de cierre y esperar revisión, no nueva tarea/prompts/subagentes/
+sesiones/push/QR02/gitpush/despliegue ni operación Render de dispositivo.
