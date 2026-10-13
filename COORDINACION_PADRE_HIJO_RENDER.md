@@ -556,3 +556,46 @@ Keystore/WSS/CP1/schema/fixtures/planes/ADR aceptados, dispositivos/ADB/CA/LAN/p
 despliegue/repos ajenos/QR02. QR padre reproducido no corregido. Sin subagentes/
 sesiones/prompts de vuelta o siguiente tarea automática. Commit propio en respuesta/
 git log; detenerse para revisión conjunta. CP/2 sigue provisional.
+
+## Resultado HIJO-C08 — gate final del draft integrado R1
+
+2026-10-13, base hijo `8b25c24`. **APTO_PARA_GENERAR_CONTRATO_SEPARADO**.
+Nota final: `hijo/COMPROBACION_FINAL_CP2_R1.md`. Fuente PADRE-C04-R1 `75eb56e`
+§§1–14 íntegros recibidos en siete partes del coordinador, no lectura directa
+externa acreditada; no reintentos/ampliación permisos. Git limpio antes de tarea.
+
+No error material de especificación encontrado que requiera corrección de campo/
+regla bloqueante. Confirmados en R1 libre LOCAL/REMOTO, ALLOW_FOR60..86400 múltiplo60
+sin preselección/LOCK sin apertura, contador autorizado apagado/Keyguard/offline,
+retención domingo21 local/array8/catch-up y purga UNKNOWN independientes de permiso.
+Revisión/seq/contextos/ACK histórico/STATE/frescura/calidad/tombstones coherentes.
+DST primera ocurrencia/primer instante posterior ratificado técnicamente para
+especificación; sin imposición de zona UTC o pérdida de guardas/emergencia.
+
+§10: formatos locales cerrados CHILD_OFFER/PAIR_ACCEPT CPv2PAIR y OFFLINEv2
+boot/revisión/acción/nonce ratificados para contrato separado. Hash CPv2RECOVERY
+nuevo y hashes CPv1RECOVERY legados con esquema/pair/purpose/consumos/esperas
+preservados, no rehash claro/fallback WSS/recuperación que abre normal. Consumo
+OFFLINE no consume código impreso por implicación; privado v2 y revalidación/commit
+se requieren antes de función RAM. RECOVER_PARENT presencial conserva vínculo
+hasta nuevo commit; transición sin herramientas/readback/ruta segura queda bloqueada.
+No alta/migración/PAIR físico o H05/H06/puertas aprobadas por esta ratificación.
+
+Recuento y cálculo PowerShell local §14 coincide: STATE91/84/15, payload7116/
+frame9788; límite8192=>frame11224; PAIR1355/frame2108, oferta524,
+OFFLINE731/frame1276. Solo aritmética/cota condicional del inventario, sin firma/
+codec/script de fronteras/fixture/test/build; ejercicio relay2966/4122 no reejecutado.
+No aumentar límites. Lecturas propias codec/crypto/boot/repositorio/recovery
+identifican trabajo privado v2 separado, no implementación existente acreditada.
+
+Dueño autorizó preparar versión/contrato/schema/validadores/tests locales NUEVOS
+separados tras gate; coordinador iniciará asignación, no esta sesión automáticamente.
+CP1/fixtures/planes/ADR aceptados intactos. Parámetros privados/ancla/capacidades/
+productos Android y emisor/proveedor push siguen unidades posteriores, no cuentas/
+SDK/token/endpoint/servicio aprobado ni operación pública.
+
+Rutas: nota final, este relevo, ESTADO.md. Sin código/tests/builds/Android/UI/Keystore/
+KDF/WSS/APK/dispositivos/ADB/políticas/CA/LAN/push/despliegue/repos ajenos/QR02,
+subagentes/sesiones/prompts de vuelta. QR padre reproducido no corregido; L02 no
+promovida. Git diff --check y commit propio de cierre; hash en respuesta/git log.
+Detenerse; etiqueta APTO solo gate de especificación/formato, no prueba operacional.
