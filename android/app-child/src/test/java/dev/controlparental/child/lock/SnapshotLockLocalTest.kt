@@ -4,6 +4,15 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class SnapshotLockLocalTest {
+    @Test fun `uso libre conserva snapshot y permite bloquear despues sin pisar baseline`() {
+        adaptador.preparar(); val bytes = a.bytes!!.copyOf()
+        adaptador.aplicar(); adaptador.solicitarInicio(); adaptador.restaurar(); p.estado = ModoLocal.NONE
+        assertTrue(adaptador.baselineConfirmado()); assertArrayEquals(bytes, a.bytes)
+        adaptador.comprobarAlternancia(); adaptador.aplicarGuardado(); adaptador.solicitarInicio()
+        assertEquals(ModoLocal.LOCKED, p.estado); assertArrayEquals(bytes, a.bytes)
+        p.lista = setOf("dev.ajeno")
+        try { adaptador.aplicarGuardado(); fail() } catch (e: FalloLocal) { assertEquals(CausaLocal.POLITICA_AJENA, e.causa) }
+    }
     @Test fun `snapshot propio reaprovechado tras reboot no captura baseline falso`() {
         adaptador.preparar(); val b = a.bytes!!.copyOf(); adaptador.aplicar()
         p.estado = ModoLocal.NONE; val writes = p.writes

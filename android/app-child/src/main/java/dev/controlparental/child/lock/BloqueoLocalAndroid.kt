@@ -30,21 +30,24 @@ internal object BloqueoLocalAndroid {
         transicionar(a, false, true, autoridad, entregar, true)
     fun enrolar(a: Activity, autoridad: () -> Boolean, entregar: (DiagnosticoLocal) -> Unit): Boolean =
         transicionar(a, false, false, autoridad, entregar, true)
+    fun usarGuardado(a: Activity, autoridad: () -> Boolean, entregar: (DiagnosticoLocal) -> Unit): Boolean =
+        transicionar(a, true, false, autoridad, entregar, true, true)
     /** Worker piloto captura baseline antes de persistir armado y ANTES de writes DPM. */
     fun prepararEnrolamiento(c: Context) = AdaptadorLockLocal(archivo(c), PoliticasLockAndroid(c)).preparar()
     private fun transicionar(a: Activity, salir: Boolean, reentrada: Boolean, autoridad: () -> Boolean,
-        entregar: (DiagnosticoLocal) -> Unit, conservar: Boolean = false): Boolean {
+        entregar: (DiagnosticoLocal) -> Unit, conservar: Boolean = false, guardarBaseline: Boolean = false): Boolean {
         if (!autoridad() || !ocupado.compareAndSet(false, true)) return false
         val g = operacion.incrementAndGet()
         val inicioHabilitado = AtomicBoolean(true)
         val p = PoliticasLockAndroid(a, a) { inicioHabilitado.get() && operacion.get() == g && autoridad() }
         val adaptador = AdaptadorLockLocal(archivo(a), p)
         val puerto = if (!conservar) adaptador else object : PuertoLockLocal by adaptador {
-            override fun preparar() { if (reentrada) adaptador.comprobarReentrada() else adaptador.comprobarEntradaPreparada() }
-            override fun aplicar() { if (reentrada) adaptador.comprobarReentrada() else adaptador.aplicar() }
+            override fun preparar() { if (reentrada) adaptador.comprobarAlternancia() else adaptador.comprobarEntradaPreparada() }
+            override fun aplicar() { if (reentrada) adaptador.aplicarGuardado() else adaptador.aplicar() }
             override fun solicitarInicio() {
                 if (!reentrada || adaptador.modo() != ModoLocal.LOCKED) adaptador.solicitarInicio()
             }
+            override fun restaurado() = if (guardarBaseline) adaptador.baselineConfirmado() else adaptador.restaurado()
         }
         val modelo = TransicionLocal(puerto, SystemClock::elapsedRealtime, autoridad, conservar)
         diagnostico = DiagnosticoLocal(if (salir) FaseLocal.RESTAURANDO else FaseLocal.PREPARANDO)

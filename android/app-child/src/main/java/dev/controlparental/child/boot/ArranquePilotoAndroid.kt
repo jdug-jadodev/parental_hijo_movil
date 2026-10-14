@@ -19,6 +19,7 @@ import dev.controlparental.child.ui.LauncherActivity
 import java.io.File
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicLong
+import dev.controlparental.child.network.ControlRedAndroid
 
 internal enum class FasePiloto { DESARMADO, ARMADO, PENDIENTE_KEYGUARD, ESPERANDO_ACTIVITY, ESPERANDO_LOCKED, LOCKED, FINALIZANDO, ERROR }
 
@@ -71,6 +72,7 @@ internal object ArranquePilotoAndroid {
                 enrolado = r != null
                 if (r == null) { fase = FasePiloto.DESARMADO; return@execute }
                 if (!r.armado) { fase = FasePiloto.FINALIZANDO; return@execute }
+                if (ControlRedAndroid.permiteUsoRAM) return@execute
                 escuchar(c); traza(c, evento, r)
                 if (!c.getSystemService(UserManager::class.java).isUserUnlocked || c.getSystemService(KeyguardManager::class.java).isKeyguardLocked) {
                     fase = FasePiloto.PENDIENTE_KEYGUARD; traza(c, "KEYGUARD", r); return@execute
@@ -99,6 +101,7 @@ internal object ArranquePilotoAndroid {
                 val m = almacen(a); val r = m.observar() ?: return@execute
                 enrolado = true
                 if (!r.armado) { fase = FasePiloto.FINALIZANDO; return@execute }
+                if (ControlRedAndroid.permiteUsoRAM) return@execute
                 if (!a.getSystemService(UserManager::class.java).isUserUnlocked || a.getSystemService(KeyguardManager::class.java).isKeyguardLocked) {
                     escuchar(a); fase = FasePiloto.PENDIENTE_KEYGUARD; return@execute
                 }
@@ -148,6 +151,13 @@ internal object ArranquePilotoAndroid {
                     if (!ok) { fase = FasePiloto.ERROR; entregar() }
                 }
             } catch (_: Exception) { fase = FasePiloto.ERROR; handler.post(entregar) }
+        }
+    }
+    /** Nueva revocación LOCAL05 invalida un intento anterior; la red reconectada no llama esto. */
+    fun exigirBloqueo(c: Context) {
+        ejecutor.execute {
+            token.incrementAndGet(); intento = null; lanzamiento = null
+            senal(c, "BLOQUEO_REQUERIDO_LOCAL05")
         }
     }
     fun finalizar(a: Activity, autoridad: () -> Boolean, entregar: () -> Unit) {

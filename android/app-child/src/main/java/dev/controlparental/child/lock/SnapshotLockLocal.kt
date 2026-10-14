@@ -87,6 +87,24 @@ internal class AdaptadorLockLocal(private val archivo: ArchivoSnapshotLocal,
         exigirLocal(politicas.leerPaquetes() == setOf(politicas.paquete) &&
             politicas.leerFeatures() == politicas.featuresPropios && politicas.modo() != ModoLocal.PINNED, CausaLocal.POLITICA_AJENA)
     }
+    /** LOCAL05 alterna solo entre baseline guardado y nuestras dos políticas, sin recapturar. */
+    fun comprobarAlternancia() {
+        val s = snapshot(); politicas.validar()
+        exigirLocal(politicas.paquete !in s.paquetes && politicas.modo() != ModoLocal.PINNED, CausaLocal.BASELINE)
+        val p = politicas.leerPaquetes(); val f = politicas.leerFeatures()
+        exigirLocal((p == s.paquetes && f == s.features) ||
+            (p == setOf(politicas.paquete) && f == politicas.featuresPropios), CausaLocal.POLITICA_AJENA)
+    }
+    fun aplicarGuardado() {
+        comprobarAlternancia()
+        if (politicas.leerPaquetes() == setOf(politicas.paquete) && politicas.leerFeatures() == politicas.featuresPropios) return
+        aplicar()
+    }
+    fun baselineConfirmado(): Boolean {
+        val s = snapshot()
+        return politicas.leerPaquetes() == s.paquetes && politicas.leerFeatures() == s.features &&
+            politicas.modoRestauracion() == ModoLocal.NONE
+    }
     override fun restaurar() {
         val s = snapshot()
         exigirLocal(politicas.paquete !in s.paquetes, CausaLocal.SNAPSHOT)
@@ -96,9 +114,7 @@ internal class AdaptadorLockLocal(private val archivo: ArchivoSnapshotLocal,
         politicas.paquetes(s.paquetes); politicas.features(s.features)
     }
     override fun restaurado(): Boolean {
-        val s = snapshot()
-        if (politicas.leerPaquetes() != s.paquetes || politicas.leerFeatures() != s.features ||
-            politicas.modoRestauracion() != ModoLocal.NONE) return false
+        if (!baselineConfirmado()) return false
         archivo.borrar(); exigirLocal(archivo.leer() == null, CausaLocal.SNAPSHOT); return true
     }
     private fun snapshot() = archivo.leer()?.let(CodecSnapshotLocal::decodificar) ?: throw FalloLocal(CausaLocal.SNAPSHOT)
