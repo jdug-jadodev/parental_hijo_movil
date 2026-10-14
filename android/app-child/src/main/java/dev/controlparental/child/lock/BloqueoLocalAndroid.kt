@@ -30,6 +30,8 @@ internal object BloqueoLocalAndroid {
         transicionar(a, false, true, autoridad, entregar, true)
     fun enrolar(a: Activity, autoridad: () -> Boolean, entregar: (DiagnosticoLocal) -> Unit): Boolean =
         transicionar(a, false, false, autoridad, entregar, true)
+    /** Worker piloto captura baseline antes de persistir armado y ANTES de writes DPM. */
+    fun prepararEnrolamiento(c: Context) = AdaptadorLockLocal(archivo(c), PoliticasLockAndroid(c)).preparar()
     private fun transicionar(a: Activity, salir: Boolean, reentrada: Boolean, autoridad: () -> Boolean,
         entregar: (DiagnosticoLocal) -> Unit, conservar: Boolean = false): Boolean {
         if (!autoridad() || !ocupado.compareAndSet(false, true)) return false
@@ -38,7 +40,7 @@ internal object BloqueoLocalAndroid {
         val p = PoliticasLockAndroid(a, a) { inicioHabilitado.get() && operacion.get() == g && autoridad() }
         val adaptador = AdaptadorLockLocal(archivo(a), p)
         val puerto = if (!conservar) adaptador else object : PuertoLockLocal by adaptador {
-            override fun preparar() { if (reentrada) adaptador.comprobarReentrada() else adaptador.preparar() }
+            override fun preparar() { if (reentrada) adaptador.comprobarReentrada() else adaptador.comprobarEntradaPreparada() }
             override fun aplicar() { if (reentrada) adaptador.comprobarReentrada() else adaptador.aplicar() }
             override fun solicitarInicio() {
                 if (!reentrada || adaptador.modo() != ModoLocal.LOCKED) adaptador.solicitarInicio()

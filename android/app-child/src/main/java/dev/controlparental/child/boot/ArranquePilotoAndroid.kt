@@ -135,6 +135,8 @@ internal object ArranquePilotoAndroid {
                     ArchivoSnapshotAndroid(File(a.noBackupFilesDir, "lock-local-v1.snapshot")).leer() == null)
                 exigirPiloto(ArchivoSnapshotAndroid(File(a.noBackupFilesDir, "proteccion-local-v1.snapshot")).leer() == null &&
                     PoliticasProteccionAndroid(a).leer() == LecturaProteccion(false, false, false, false))
+                exigirPiloto(almacen(a).leer() == null && autoridad())
+                BloqueoLocalAndroid.prepararEnrolamiento(a)
                 val r = almacen(a).armar(autoridad); enrolado = true; fase = FasePiloto.ARMADO
                 val g = token.incrementAndGet(); escuchar(a); traza(a, "ARMADO", r)
                 handler.post {

@@ -937,3 +937,55 @@ persistencia físicos pendientes, DPMpersistente noLockTaskpersistente. Rednueva
 vigente pero señal/plazo/usooffline pendientes, no implementada. CP1/CP2/fixtures/
 planes/ADR/deps/reposajenos/padre/Render/Push/QR02 intactos. Cierrecommit/detener,
 sin otra tarea/ensayo/push/despliegue/subagentes/sesiones/promptsdevuelta.
+
+## HIJO-LOCAL04 — autobloqueo tras boot con latencia y piloto finalizado
+
+14-10-2026, base644dbef/bloque1 `9cfe675`. **AUTOBOOT_LOCKED_LOGRADO_Y_RESTAURADO**.
+Piloto MAIN código adulto fresco ARMAR_BOOT/FINALIZAR_BOOT, intenciónDPversionada
+marca-registro/enrolamiento local/boot/monotónico/generación; distinto H04/CP1/snapshot
+restauración. Virgensinarmado no bloquea, corrupción/perdida parcial no alta libre;
+no defensa checksum contra root/pérdida total. BeforeUserUnlocked soloDP, conserva
+Keyguard/emergencia, ceroCE/códigostore. Capturar snapshotbaseline ANTES DP-armar y
+DPMwrites; reentrada exige snapshot/políticaspropias exactas sin recrear baseline,
+erroresconservan obligación, PINNED no éxito. Lanzamiento oficial DeviceOwner,
+Activitylifecycle/readbackLOCKED, una referencia/gen/intento y timeoutActivity5s/
+LockTask3s; sin FGS/HOMEpersistente/suspensiones/permisos nuevos/red/ALLOW/ACK.
+Finalizar adulto desarma/invalida watchers primero, restore/readbacks/NONE y borrar
+DP temporal después; cerrar/fondo/recuperación pregunta no sale ni desarma.
+
+320debug/265release correctos,14nuevoscompartidos (release repite), coreUP-TO-DATE.
+Primerglobal timeout120s enlint; lintseparado correcto12avisos/flagInlinedApi nuevo,
+guardSDKdirecto>=33 sin suppress y buildglobalcorrecto; final39s APKdebug/test/
+releaseunsigned/lintRelease0errores11avisos (último reportUP-TO-DATE). TresAndroid
+DPAtomic/fuenteFAKE OK0.258s tras installapp/test autorizadoSuccess, capacidad1antes/
+final, ningunapolíticareal/credencial simulada comoevidencia. DEXbootMAINpresentes/
+testausentes/rollbacksoloDEBUG. lintDebugFGS/verificadorFake previos no reejecutados/
+resueltos. Plans/ADR/CP1/CP2/fixtures/deps/reposajenos intactos; H04bootcontext
+seactualiza naturalmente4→5, no migración unilateral ni falsas seq/permisos.
+
+A13únicoSM-A135M/adb-sfijo/A56excluido. BaselineNONE/sinsnapshots/LOCAL03false/
+pilotoDESARMADO y rutas rollbackshellbaseline comprobadas (noaplicadoprobado).
+Confirmaciónespecífica UNarmado/UNrebootmanual; armarcódigo→ADB LOCKED/boot4/gen1,
++165ms desde armado. Menúmanual inaccesible bajoquiosco/botónroto, NOrebootmanual;
+dueño pidió alternativa, se obtuvo confirmación **ADICIONAL explícita adb-s reboot
+UNA vez**, comandoexit0. No salir ni desarmar para reiniciar, ninguna repetición.
+Dueño confirma Keyguard/Emergencia prePIN sin llamadas; ADBlecturasprevioPINno
+disponibles (no habilitar/grants/rebootextra). Luego Androidunlocksinabrirmanualmain/
+sinBloquear/códigoparental→pantalla hijoBLOQUEADO automática confirmada.
+LogsDP boot5/gen2 LOCKED_BOOT_COMPLETED/PENDIENTE_KEYGUARD/USER_UNLOCKED y ADBLOCKED:
+4068ms USER_UNLOCKED→readback (+2586ms solicitud). No medir instantePIN/ventanaefectiva
+ni certificarceroescapes; receptorboot/intención/Keyguard NO éxito por sí mismos.
+BOOT_COMPLETEDposterior nosegundointento/permiso. Adulto códigoMAINnuevasesión/
+recuperacióndisponibles y FINALIZARENSAYO codecódigofresco→readbacksDESARMADO/
+enroladofalse/sinsnapshotDP-Lock-LOCAL03/NONE/uso normal. Sinrollbackshellaplicado.
+
+Evidencia `pruebas/EVIDENCIA_HIJO_LOCAL04.md`; APKensayado=finalinstalado3c283303…,
+unsigned6491d8a3… no físico (hashesíntegros allí), código no cambiado despuésinstall.
+Registroadulto/código/pregunta/datos conservados; ningún armado persistente deja
+sorpresa al siguiente reboot. Crash/processkill/rollbackexternoaplicado/corrupción
+física/rebootmanualseguro/otrofirmware/red/uso productivo pendientes; noH05/H06/
+productfinal/remoto/zeroescape certificados. Nueva red perderconexiónbloquea/
+reconectarNOabre sin autorizaciónnueva vigente sigue sin señal/plazo/usooffline
+resueltos, no implementar aquí; cachéLOCAL03 no perseguida. Render no dispositivos.
+Cierrecommit/detener sin otra tarea/ensayo/reboot/push/despliegue/subagentes/sesiones/
+promptsdevuelta; siguiente física exige asignación/confirmación específica nueva.

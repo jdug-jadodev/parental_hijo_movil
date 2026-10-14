@@ -4,6 +4,19 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class SesionAdultoTest {
+    @Test fun `boot exige codigo fresco por armar finalizar y reboot borra autoridad RAM`() {
+        for (fin in listOf(FinAdulto.ARMAR_BOOT, FinAdulto.FINALIZAR_BOOT)) {
+            s.reanudar(); assertNull(s.solicitar(fin))
+            val t = s.solicitar(FinAdulto.ENTRAR)!!
+            s.completar(t, ResultadoAdulto(TipoAdulto.AUTENTICADO, revision = 9))
+            val accion = s.solicitar(fin)!!
+            assertFalse(s.accionVigente(accion))
+            assertFalse(s.autorizarAccion(accion, ResultadoAdulto(TipoAdulto.RESPUESTA_VALIDA, revision = 9)))
+            assertTrue(s.autorizarAccion(accion, ResultadoAdulto(TipoAdulto.AUTENTICADO, revision = 9)))
+            boot++; assertFalse(s.accionVigente(accion))
+            assertEquals(AutoridadAdulto.CERRADA, SesionAdulto({ tiempo }, { boot }).estado())
+        }
+    }
     @Test fun `proteger y restaurar requieren codigo fresco proposito y ticket vigentes`() {
         for (fin in listOf(FinAdulto.PROTEGER_APP, FinAdulto.RESTAURAR_APP)) {
             s.reanudar(); assertNull(s.solicitar(fin))
