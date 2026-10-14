@@ -271,7 +271,7 @@ class AccesoAdultoActivity : ComponentActivity() {
             FinAdulto.BLOQUEAR -> "Confirmar bloqueo local"
             else -> "Confirmar salida reversible de ensayo"
         })
-        if (red) texto("Piloto LOCAL: red predeterminada INTERNET+VALIDATED, no DNS/relay. NORMAL pierde autorización tras10.000ms elapsedRealtime desde señal negativa; si vuelve antes cancela gracia, después NO reabre. Excepción OFFLINE LOCAL no se revoca solo por falta de red, ni se crea por recuperación. Reboot invalida ambos. Armar requiere baseline desarmado/LOCAL03 restaurada y crea bootpiloto + FGS visible; FINALIZAR RED cancela referencias/gracia/observador antes desarmar/restaurar. No permiso remoto ni persistencia permanente autorizada. Gate lintRelease pendiente: no ensayo físico aprobado aquí.")
+        if (red) texto("Piloto LOCAL: red predeterminada INTERNET+VALIDATED, no DNS/relay. NORMAL pierde autorización tras10.000ms elapsedRealtime desde señal negativa; si vuelve antes cancela gracia, después NO reabre. Excepción OFFLINE LOCAL no se revoca solo por falta de red, ni se crea por recuperación. Reboot invalida ambos. Armar requiere baseline desarmado/LOCAL03 restaurada y crea bootpiloto + FGS visible; FINALIZAR RED cancela referencias/gracia/observador antes desarmar/restaurar. No permiso remoto ni persistencia permanente autorizada. Instalación, notificaciones, armado y cambios de conectividad requieren coordinación física específica.")
         val confirmarOffline = if (fin == FinAdulto.USO_OFFLINE) CheckBox(this).apply {
             text = getString(R.string.confirmar_offline_local)
             isChecked = false; columna.addView(this)

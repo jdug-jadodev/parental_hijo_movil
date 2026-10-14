@@ -1,6 +1,9 @@
 package dev.controlparental.child.network
 
 import android.app.Activity
+import android.app.NotificationManager
+import android.app.admin.DevicePolicyManager
+import android.os.Build
 import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
@@ -17,12 +20,15 @@ import dev.controlparental.child.lock.*
 import java.io.File
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicLong
+import java.util.concurrent.atomic.AtomicBoolean
 
 /** Observador de default vive con FGS, no con Activity. Permisos RAM separados de sesión adulta. */
 internal object ControlRedAndroid {
     private val ejecutor = Executors.newSingleThreadExecutor { Thread(it, "control-red-local") }
     private val handler = Handler(Looper.getMainLooper())
     private val epoca = AtomicLong()
+    private val visible = ObservadorVisible()
+    private val servicioFallido = AtomicBoolean()
     private var modelo: UsoRedLocal? = null
     private var callback: ConnectivityManager.NetworkCallback? = null
     private var gracia: Runnable? = null
@@ -42,7 +48,8 @@ internal object ControlRedAndroid {
             { Settings.Global.getInt(dp.contentResolver, Settings.Global.BOOT_COUNT, -1) })
     }
     private fun publicar(m: UsoRedLocal, evento: String) {
-        uso = m.uso; validacion = m.red; deadline = m.deadline; referenciaPublica = m.referencia; permiteUsoRAM = m.permiteUso
+        uso = m.uso; validacion = m.red; deadline = m.deadline; referenciaPublica = m.referencia
+        permiteUsoRAM = m.permiteUso && listo
         Log.i("ControlRedLocal", "evento=$evento uso=$uso red=$validacion gen=${m.referencia?.generacion} elapsed=${SystemClock.elapsedRealtime()} deadline=$deadline")
     }
     fun consultar(c: Context, entregar: () -> Unit) {
@@ -69,7 +76,7 @@ internal object ControlRedAndroid {
             handler.post {
                 if (!autoridad()) { entregar(); return@post }
                 try { c.startForegroundService(Intent(c, ControlRedService::class.java)) }
-                catch (_: RuntimeException) { uso = UsoLocal.ERROR; permiteUsoRAM = false }
+                catch (_: RuntimeException) { servicioTerminado(c) }
                 entregar()
             }
         }
@@ -83,7 +90,7 @@ internal object ControlRedAndroid {
             cerrando = false
             handler.post {
                 if (autoridad()) try { c.startForegroundService(Intent(c, ControlRedService::class.java)) }
-                catch (_: RuntimeException) { uso = UsoLocal.ERROR; permiteUsoRAM = false }
+                catch (_: RuntimeException) { servicioTerminado(c) }
                 entregar()
             }
         }
@@ -94,6 +101,14 @@ internal object ControlRedAndroid {
             caps?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true,
             caps?.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED) == true)
     } catch (_: RuntimeException) { ValidacionRed.DESCONOCIDA }
+    fun confirmarForeground() { servicioFallido.set(false); visible.confirmarForeground() }
+    private fun condiciones(c: Context): CondicionesObservador = try {
+        val nm = c.getSystemService(NotificationManager::class.java)
+        CondicionesObservador(Build.VERSION.SDK_INT >= 34,
+            c.getSystemService(DevicePolicyManager::class.java).isDeviceOwnerApp(c.packageName),
+            nm.areNotificationsEnabled(),
+            nm.getNotificationChannel("control-red-local")?.importance?.let { it != NotificationManager.IMPORTANCE_NONE } == true)
+    } catch (_: RuntimeException) { CondicionesObservador(false, false, false, false) }
     fun observar(c: Context) {
         ejecutor.execute {
             if (callback != null || cerrando) return@execute
@@ -106,14 +121,17 @@ internal object ControlRedAndroid {
                 override fun onCapabilitiesChanged(network: Network, caps: NetworkCapabilities) { senal(c, g) }
             }
             try {
-                cm.registerDefaultNetworkCallback(cb); callback = cb; listo = true
+                cm.registerDefaultNetworkCallback(cb); callback = cb; visible.confirmarCallback()
+                listo = visible.vigente(condiciones(c))
+                if (!listo) { servicioTerminado(c); return@execute }
                 evaluar(c, g)
-            } catch (_: RuntimeException) { uso = UsoLocal.ERROR; permiteUsoRAM = false; listo = false }
+            } catch (_: RuntimeException) { servicioTerminado(c) }
         }
     }
     fun senal(c: Context, g: Long = epoca.get()) { ejecutor.execute { evaluar(c, g) } }
     private fun evaluar(c: Context, g: Long) {
         if (g != epoca.get() || cerrando || !listo) return
+        if (!visible.vigente(condiciones(c))) { servicioTerminado(c); return }
         val m = modelo ?: return
         val permitia = m.permiteUso
         val ahora = actual(c.getSystemService(ConnectivityManager::class.java))
@@ -136,10 +154,16 @@ internal object ControlRedAndroid {
             val m = modelo
             if (m == null || !listo || cerrando || !autoridad()) { handler.post(entregar); return@execute }
             evaluar(a, epoca.get()) // Lectura default actual, no capacidades del callback antiguo.
-            if (!m.autorizar(tipo, autoridad)) { publicar(m, "AUTORIZACION_RECHAZADA"); handler.post(entregar); return@execute }
+            if (!visible.autorizar(m, tipo, condiciones(a), autoridad)) {
+                publicar(m, "AUTORIZACION_RECHAZADA")
+                if (!visible.vigente(condiciones(a))) servicioTerminado(a)
+                handler.post(entregar); return@execute
+            }
             val ref = m.referencia!!; publicar(m, "AUTORIZACION_LOCAL_$tipo")
             handler.post {
-                val aceptada = BloqueoLocalAndroid.usarGuardado(a, { permiteUsoRAM && referenciaPublica == ref && autoridad() }) { d ->
+                val aceptada = BloqueoLocalAndroid.usarGuardado(a, {
+                    permiteUsoRAM && referenciaPublica == ref && visible.vigente(condiciones(a)) && autoridad()
+                }) { d ->
                     ejecutor.execute {
                         if (m.referencia != ref) return@execute
                         if (d.fase != FaseLocal.RESTAURADO) {
@@ -168,15 +192,21 @@ internal object ControlRedAndroid {
         }
     }
     private fun cancelar(c: Context) {
+        visible.invalidar()
         epoca.incrementAndGet(); listo = false; permiteUsoRAM = false
         gracia?.let(handler::removeCallbacks); gracia = null
         val anterior = callback; callback = null
         anterior?.let { try { c.getSystemService(ConnectivityManager::class.java).unregisterNetworkCallback(it) } catch (_: RuntimeException) { uso = UsoLocal.ERROR } }
     }
     fun servicioTerminado(c: Context) {
+        visible.invalidar(); listo = false; permiteUsoRAM = false
+        if (servicioFallido.getAndSet(true)) return
         ejecutor.execute {
             cancelar(c)
-            if (!cerrando) modelo?.let { m -> m.referencia?.let(m::falloEnforcement); publicar(m, "SERVICIO_TERMINADO"); ArranquePilotoAndroid.exigirBloqueo(c) }
+            if (!cerrando) {
+                modelo?.let { m -> m.referencia?.let(m::falloEnforcement); publicar(m, "SERVICIO_TERMINADO"); ArranquePilotoAndroid.exigirBloqueo(c) }
+                handler.post { c.stopService(Intent(c, ControlRedService::class.java)) }
+            }
         }
     }
     fun finalizar(a: Activity, autoridad: () -> Boolean, entregar: () -> Unit) {

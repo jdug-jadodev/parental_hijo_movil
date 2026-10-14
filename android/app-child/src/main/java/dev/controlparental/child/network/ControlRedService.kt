@@ -36,12 +36,16 @@ class ControlRedService : Service() {
                 .setContentIntent(abrir).setOngoing(true).build()
             if (Build.VERSION.SDK_INT < 34) error("API no admitida")
             startForeground(105, n, ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED)
+            ControlRedAndroid.confirmarForeground()
             registerReceiver(desbloqueo, IntentFilter().apply {
                 addAction(Intent.ACTION_SCREEN_ON); addAction(Intent.ACTION_USER_PRESENT)
             }, Context.RECEIVER_NOT_EXPORTED)
             registrado = true
             ControlRedAndroid.observar(applicationContext)
-        } catch (_: RuntimeException) { stopSelf() }
+        } catch (_: RuntimeException) {
+            ControlRedAndroid.servicioTerminado(applicationContext)
+            stopSelf()
+        }
     }
     override fun onStartCommand(i: Intent?, flags: Int, startId: Int) = START_NOT_STICKY
     override fun onBind(i: Intent?): IBinder? = null

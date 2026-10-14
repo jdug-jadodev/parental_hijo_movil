@@ -996,3 +996,13 @@ reconectarNOabre sin autorizaciónnueva vigente sigue sin señal/plazo/usoofflin
 resueltos, no implementar aquí; cachéLOCAL03 no perseguida. Render no dispositivos.
 Cierrecommit/detener sin otra tarea/ensayo/reboot/push/despliegue/subagentes/sesiones/
 promptsdevuelta; siguiente física exige asignación/confirmación específica nueva.
+
+## HIJO-LOCAL05 / LOCAL05-R1 — devolución posterior a LOCAL04
+
+14-10-2026. LOCAL05 original cerró en `b2f59f8`, bloque1 `552d4b9`:342debug/287release0fallos,22nuevoscompartidos; bloqueo gateFGS/ninguna física. La entrega original quedó arriba de este archivo; esta devolución posteriorLOCAL04 elimina ambigüedad cronológica. Evidencia original `pruebas/EVIDENCIA_HIJO_LOCAL05.md` se conserva histórica.
+
+R1 baseb2f59f8: **PREPARADO_FISICO_PENDIENTE_AUTORIZACION**. Excepción expresamente autorizada tools:ignore SOLO ForegroundServicePermission en service MAIN ControlRedService; documentación oficial HTTP200 exige almenosUNO (DeviceOwner O alarmas), diagnósticoAGP8.11.1 exigía conjunción no aplicable a rutaDO. GuardSDK>=34/Owner/notificaciones/canal conservados; puerta confirmastartForeground+callback y fallosfailclosed explícitos, sin alarmas/suppressglobal/deps/roles/prototype. Runtime todavía NO probado.
+
+348debug/293release0fallos/errores,6nuevoscompartidos; lintRelease0errores11avisos; APKdebug/test/releaseunsignedcompilados, core-protocol:testUP-TO-DATE y3DPAndroidNOejecutados. Fuente/razón/riesgo/scopesignore/hashes/rutas en `pruebas/EVIDENCIA_HIJO_LOCAL05_R1.md`. No ADB/instalación/grants/armado/conectividad/reboot/push. A13últimoestadoLOCAL04 sin nueva consulta; A56excluido.
+
+Esperar nueva aprobación instalación/notificación/testsaislados y armado/corte manual concreto antes del ensayoNORMAL; OFFLINE requiere fase aparte. No afirmar LOCKEDred/latencias/FGSsurvivecrash/ceroescape/productfinal/H05/H06/remoto/DNS ni usar ACK como enforcement. No otra tarea automática. Render no dispositivos.

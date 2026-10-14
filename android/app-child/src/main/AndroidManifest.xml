@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
     <!-- H01: DPC y HOME declarados; sin permisos de monitoreo ni endurecimiento. -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <!-- Permiso normal: prompt oficial solo para alta presencial, no PIN adulto cotidiano. -->
@@ -16,7 +17,8 @@
         android:supportsRtl="true"
         android:theme="@style/TemaHijo">
         <service android:name=".network.ControlRedService" android:exported="false"
-            android:foregroundServiceType="systemExempted" />
+            android:foregroundServiceType="systemExempted"
+            tools:ignore="ForegroundServicePermission" />
         <activity
             android:name=".ui.LauncherActivity"
             android:exported="true"
