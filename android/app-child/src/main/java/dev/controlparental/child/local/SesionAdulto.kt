@@ -1,13 +1,14 @@
 package dev.controlparental.child.local
 
-internal enum class FinAdulto { ALTA, ENTRAR, RECUPERAR, CAMBIAR, BLOQUEAR, SALIR_ENSAYO, PROTEGER_APP, RESTAURAR_APP, ARMAR_BOOT, FINALIZAR_BOOT, ARMAR_RED, USO_NORMAL, USO_OFFLINE, BLOQUEAR_RED, FINALIZAR_RED }
+internal enum class FinAdulto { ALTA, ENTRAR, RECUPERAR, CAMBIAR, BLOQUEAR, SALIR_ENSAYO, PROTEGER_APP, RESTAURAR_APP, ARMAR_BOOT, FINALIZAR_BOOT, ARMAR_RED, USO_NORMAL, USO_OFFLINE, BLOQUEAR_RED, FINALIZAR_RED, USO_TIEMPO_NORMAL, USO_TIEMPO_OFFLINE }
 internal class TicketAdulto(val epoca: Long, val fin: FinAdulto, val boot: Int, val limite: Long)
 internal enum class AutoridadAdulto { CERRADA, ADMINISTRAR, CAMBIAR_CODIGO }
 
 /** Autoridad solo RAM; no escribe ni concede permiso de uso y no conoce CP/1. */
 internal class SesionAdulto(private val ahora: () -> Long, private val boot: () -> Int) {
     private val finesAccion = setOf(FinAdulto.BLOQUEAR, FinAdulto.SALIR_ENSAYO, FinAdulto.PROTEGER_APP, FinAdulto.RESTAURAR_APP, FinAdulto.ARMAR_BOOT, FinAdulto.FINALIZAR_BOOT,
-        FinAdulto.ARMAR_RED, FinAdulto.USO_NORMAL, FinAdulto.USO_OFFLINE, FinAdulto.BLOQUEAR_RED, FinAdulto.FINALIZAR_RED)
+        FinAdulto.ARMAR_RED, FinAdulto.USO_NORMAL, FinAdulto.USO_OFFLINE, FinAdulto.BLOQUEAR_RED, FinAdulto.FINALIZAR_RED,
+        FinAdulto.USO_TIEMPO_NORMAL, FinAdulto.USO_TIEMPO_OFFLINE)
     private var epoca = 0L
     private var primerPlano = false
     private var ticket: TicketAdulto? = null

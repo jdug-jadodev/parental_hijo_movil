@@ -4,6 +4,18 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class SesionAdultoTest {
+    @Test fun `temporal normal y offline requieren proposito codigo revision boot vigentes`() {
+        for (fin in listOf(FinAdulto.USO_TIEMPO_NORMAL, FinAdulto.USO_TIEMPO_OFFLINE)) {
+            s.reanudar(); assertNull(s.solicitar(fin))
+            val entrada = s.solicitar(FinAdulto.ENTRAR)!!
+            s.completar(entrada, ResultadoAdulto(TipoAdulto.AUTENTICADO, revision = 9))
+            val t = s.solicitar(fin)!!
+            assertFalse(s.autorizarAccion(t, ResultadoAdulto(TipoAdulto.RESPUESTA_VALIDA, revision = 9)))
+            assertFalse(s.autorizarAccion(t, ResultadoAdulto(TipoAdulto.AUTENTICADO, revision = 8)))
+            assertTrue(s.autorizarAccion(t, ResultadoAdulto(TipoAdulto.AUTENTICADO, revision = 9)))
+            s.cerrar(); assertFalse(s.accionVigente(t))
+        }
+    }
     @Test fun `uso normal offline bloqueo y cierre de red exigen codigo fresco`() {
         for (fin in listOf(FinAdulto.ARMAR_RED, FinAdulto.USO_NORMAL, FinAdulto.USO_OFFLINE, FinAdulto.BLOQUEAR_RED, FinAdulto.FINALIZAR_RED)) {
             s.reanudar(); assertNull(s.solicitar(fin))

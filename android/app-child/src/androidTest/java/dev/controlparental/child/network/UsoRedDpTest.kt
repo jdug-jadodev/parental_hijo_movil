@@ -12,6 +12,14 @@ import java.util.UUID
 /** DP UUID/contexto simulado. No políticas/credenciales/callbackred reales. */
 @RunWith(AndroidJUnit4::class)
 class UsoRedDpTest {
+    @Test fun temporalSoloRamNoSeReconstruyeDesdeDP() = aislado { m, _ ->
+        assertTrue(m.preparar { true })
+        assertTrue(m.autorizar(UsoLocal.EXCEPCION_OFFLINE, MinutosUso.desdeTexto("1")!!) { true })
+        assertEquals(60100L, m.vencimientoUso)
+        assertTrue(m.cargar()); assertFalse(m.permiteUso)
+        assertNull(m.vencimientoUso); assertNull(m.inicioUso)
+        assertTrue(m.cerrar { true }); assertTrue(m.finalizar(true))
+    }
     private fun aislado(accion: (UsoRedLocal, File) -> Unit) {
         val c = InstrumentationRegistry.getInstrumentation().targetContext.createDeviceProtectedStorageContext()
         val base = "prueba-red-${UUID.randomUUID()}"

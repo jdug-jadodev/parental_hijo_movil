@@ -13,11 +13,12 @@ internal class ObservadorVisible {
     fun confirmarCallback() { callback = true }
     fun invalidar() { foreground = false; callback = false }
     fun vigente(c: CondicionesObservador) = foreground && callback && c.validas
-    fun autorizar(m: UsoRedLocal, tipo: UsoLocal, c: CondicionesObservador, autoridad: () -> Boolean): Boolean {
+    fun autorizar(m: UsoRedLocal, tipo: UsoLocal, c: CondicionesObservador, minutos: MinutosUso? = null,
+        autoridad: () -> Boolean): Boolean {
         if (!vigente(c)) {
             invalidar(); m.referencia?.let(m::falloEnforcement)
             return false
         }
-        return m.autorizar(tipo, autoridad)
+        return m.autorizar(tipo, minutos, autoridad)
     }
 }

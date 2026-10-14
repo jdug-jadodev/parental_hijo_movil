@@ -9,7 +9,7 @@ import java.security.MessageDigest
 
 internal enum class ValidacionRed { DESCONOCIDA, NO_VALIDADA, VALIDADA }
 internal enum class UsoLocal { BLOQUEADO, NORMAL, EXCEPCION_OFFLINE, FINALIZANDO, ERROR }
-internal enum class MotivoRed { INICIO, CODIGO_ADULTO, RED_10S, BLOQUEAR_ADULTO, BOOT_O_RELOJ, ENFORCEMENT, CIERRE }
+internal enum class MotivoRed { INICIO, CODIGO_ADULTO, RED_10S, BLOQUEAR_ADULTO, BOOT_O_RELOJ, ENFORCEMENT, CIERRE, TIEMPO }
 internal data class ObligacionRed(val generacion: Long, val boot: Int, val motivo: MotivoRed)
 internal data class ReferenciaRed(val generacion: Long, val boot: Int)
 internal object CodecObligacionRed {
@@ -37,12 +37,15 @@ internal class UsoRedLocal(private val marca: ArchivoSnapshotLocal, private val 
     var uso = UsoLocal.BLOQUEADO; private set
     var red = ValidacionRed.DESCONOCIDA; private set
     var deadline: Long? = null; private set
+    var inicioUso: Long? = null; private set
+    var vencimientoUso: Long? = null; private set
     var referencia: ReferenciaRed? = null; private set
     private var ultimo = 0L
     private var revisionRed = -1L
     private var generacionObservador = -1L
     private var obligacion: ObligacionRed? = null
     val permiteUso get() = uso == UsoLocal.NORMAL || uso == UsoLocal.EXCEPCION_OFFLINE
+    val proximoPlazo get() = listOfNotNull(deadline, vencimientoUso).minOrNull()
     fun preparar(autoridad: () -> Boolean) = seguro {
         require(autoridad() && marca.leer() == null && archivo.leer() == null)
         val r = ObligacionRed(1, boot(), MotivoRed.INICIO); require(ahora() >= 0)
@@ -52,7 +55,7 @@ internal class UsoRedLocal(private val marca: ArchivoSnapshotLocal, private val 
     }
     fun cargar(): Boolean = seguro {
         val r = leer(); obligacion = r; referencia = ReferenciaRed(r.generacion, r.boot)
-        uso = UsoLocal.BLOQUEADO; deadline = null; red = ValidacionRed.DESCONOCIDA
+        uso = UsoLocal.BLOQUEADO; limpiarPlazos(); red = ValidacionRed.DESCONOCIDA
         ultimo = ahora(); require(ultimo >= 0)
         if (boot() != r.boot) revocar(MotivoRed.BOOT_O_RELOJ)
     }
@@ -82,14 +85,16 @@ internal class UsoRedLocal(private val marca: ArchivoSnapshotLocal, private val 
         }
     }
     fun iniciarObservador(g: Long) { generacionObservador = g; revisionRed = -1; red = ValidacionRed.DESCONOCIDA }
-    fun autorizar(tipo: UsoLocal, autoridad: () -> Boolean): Boolean {
+    fun autorizar(tipo: UsoLocal, minutos: MinutosUso? = null, autoridad: () -> Boolean): Boolean {
         if (!autoridad() || tipo !in setOf(UsoLocal.NORMAL, UsoLocal.EXCEPCION_OFFLINE) ||
             uso in setOf(UsoLocal.ERROR, UsoLocal.FINALIZANDO) ||
             (tipo == UsoLocal.NORMAL && red != ValidacionRed.VALIDADA)) return false
         return seguro {
-        require(contexto())
-        // Guardar obligación antes de abrir políticas; reiniciar proceso no reconstruye autorización.
-        guardar(MotivoRed.CODIGO_ADULTO); uso = tipo; deadline = null
+            require(contexto())
+            val inicio = ahora(); val fin = minutos?.deadlineDesde(inicio)
+            // Guardar obligación antes de abrir; no persistir inicio/plazo/permiso RAM.
+            guardar(MotivoRed.CODIGO_ADULTO); uso = tipo; deadline = null
+            inicioUso = inicio; vencimientoUso = fin
         }
     }
     fun comprobarDeadline(ref: ReferenciaRed): Boolean = seguro {
@@ -97,12 +102,18 @@ internal class UsoRedLocal(private val marca: ArchivoSnapshotLocal, private val 
         if (contexto()) vencerSiCorresponde()
     }
     private fun vencerSiCorresponde() {
-        if (uso == UsoLocal.NORMAL && deadline?.let { ahora() >= it } == true) revocar(MotivoRed.RED_10S)
+        if (!permiteUso) return
+        val n = ahora()
+        val fin = vencimientoUso
+        val gracia = if (uso == UsoLocal.NORMAL) deadline else null
+        // Si ambos llegaron, la primera obligación cronológica gana; empate: tiempo.
+        if (fin != null && n >= fin && (gracia == null || fin <= gracia)) revocar(MotivoRed.TIEMPO)
+        else if (gracia != null && n >= gracia) revocar(MotivoRed.RED_10S)
     }
     fun bloquear(autoridad: () -> Boolean): Boolean = if (!autoridad()) false else seguro { revocar(MotivoRed.BLOQUEAR_ADULTO) }
     fun falloEnforcement(ref: ReferenciaRed) = seguro { if (referencia == ref) revocar(MotivoRed.ENFORCEMENT) }
     private fun revocar(motivo: MotivoRed) {
-        uso = UsoLocal.BLOQUEADO; deadline = null // Ni IO fallido conserva permiso RAM.
+        uso = UsoLocal.BLOQUEADO; limpiarPlazos() // Ni IO fallido conserva permiso RAM.
         guardar(motivo)
     }
     private fun guardar(motivo: MotivoRed) {
@@ -121,7 +132,8 @@ internal class UsoRedLocal(private val marca: ArchivoSnapshotLocal, private val 
         archivo.borrar(); marca.borrar(); require(archivo.leer() == null && marca.leer() == null)
         obligacion = null; referencia = null; uso = UsoLocal.BLOQUEADO
     }
+    private fun limpiarPlazos() { deadline = null; inicioUso = null; vencimientoUso = null }
     private fun seguro(accion: () -> Unit): Boolean = try { accion(); true } catch (_: Exception) {
-        uso = UsoLocal.ERROR; deadline = null; false
+        uso = UsoLocal.ERROR; limpiarPlazos(); false
     }
 }
