@@ -771,3 +771,36 @@ producto H05/H06/remoto/masterPIN/historial aprobados. Cualquier alternativa par
 botón averiado/ensayo posterior requiere nueva coordinación/autorización física.
 Commit propio de cierre y esperar revisión, no nueva tarea/prompts/subagentes/
 sesiones/push/QR02/gitpush/despliegue ni operación Render de dispositivo.
+
+## HIJO-PROT04-R1 — vencido bajo Keyguard acreditado, retorno parcial
+
+2026-10-13, base08ecd81, solo evidencia/ESTADO/relevo. Dueño pidió retomar;
+autorización específica1min con botón existente Emergencia/Keyguard (lockNow)
+tras confirmar presencia/credencial/cargador para despertar. Sin ADB para forzar
+pantalla, cambios de «No apagar conectado», grants/reinstalación/build/código.
+Único A13 SM-A135M/API34, adb-s fijo, A56 excluido; Owner/NONE/sin snapshot,
+hash5eff03e5… igual APK preparado/ensayado/instalado/final. Test1 baseline OK.
+
+**PARCIAL**. Primer permiso1min explícito aceptado, lockNow manual apagó pantalla;
+entrega vencida+6ms, pendiente+22ms con interactivo=false/keyguard=true/usuario
+bloqueado=true; FGS vivo/ADB NONE. SCREEN_ON+120157ms aúnKeyguard. Adulto despertó
+con huella y desbloqueó PIN Android, pero luego confirmó haber pulsado PERMITIR
+otra vez. Log segundo permiso acredita referencia/deadline nuevos y segundo
+vencimiento+5ms/solicitud+18ms/LOCKED+397ms/ADB LOCKED. **No contar dos permisos
+como único minuto correcto ni segundoLOCKED como retorno del deadline original.**
+No señalUSER_PRESENT/primerLOCKED observados; causa ausente no determinada,
+no inferir renovación espontánea ni fallo de Android, ventana otra app no medida.
+
+Se detuvo al detectar segundo permiso, salida adulta autenticada, cancelación/
+servicio terminado/restauración por logs propios; finalNONE/sin servicio/snapshot,
+test1 final OK, rollback result1, uso normal confirmado. Sin repetir cancelación/
+emergencia bajoLOCKED al priorizar restore. No seguimiento otro deadline físico.
+Instrumentación1 dos veces, no JVM/release/build nuevos;
+pidof ausente tras salida manejado (código individual no registrado), logs
+históricos por PID observado recuperados. Resto sin errores reportados.
+
+Detalle `pruebas/EVIDENCIA_HIJO_PROT04_R1.md`. Primer vencimiento apagadoKeyguard
+validado solo API34/FGS vivo/lockNow; primer retorno al desbloquear sin PERMITIR
+nuevo queda pendiente. Sin producto/H05/H06/cero ventana/Doze/crash/reboot/remoto/
+masterPIN/Push/CP2. Cierre commit documental y esperar revisión, no nueva prueba/
+tarea/prompts/subagentes/sesiones/repos ajenos/gitpush/despliegue.
