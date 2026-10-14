@@ -19,5 +19,7 @@
             android:permission="android.permission.DUMP" />
         <receiver android:name=".local.RollbackLocalDebug" android:exported="true"
             android:permission="android.permission.DUMP" />
+        <receiver android:name=".local.RollbackProteccionDebug" android:exported="true"
+            android:permission="android.permission.DUMP" />
     </application>
 </manifest>

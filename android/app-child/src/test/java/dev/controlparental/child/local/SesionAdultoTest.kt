@@ -4,7 +4,39 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class SesionAdultoTest {
+    @Test fun `proteger y restaurar requieren codigo fresco proposito y ticket vigentes`() {
+        for (fin in listOf(FinAdulto.PROTEGER_APP, FinAdulto.RESTAURAR_APP)) {
+            s.reanudar(); assertNull(s.solicitar(fin))
+            val entrada = s.solicitar(FinAdulto.ENTRAR)!!
+            s.completar(entrada, ResultadoAdulto(TipoAdulto.AUTENTICADO, revision = 7))
+            val t = s.solicitar(fin)!!; assertFalse(s.accionVigente(t))
+            assertFalse(s.autorizarAccion(t, ResultadoAdulto(TipoAdulto.RESPUESTA_VALIDA, revision = 7)))
+            assertFalse(s.autorizarAccion(t, ResultadoAdulto(TipoAdulto.AUTENTICADO, revision = 8)))
+            assertTrue(s.autorizarAccion(t, ResultadoAdulto(TipoAdulto.AUTENTICADO, revision = 7)))
+            tiempo += 120_000; assertFalse(s.accionVigente(t))
+        }
+    }
+    @Test fun `fondo boot y ticket obsoleto nunca desprotegen`() {
+        for (fin in listOf(FinAdulto.PROTEGER_APP, FinAdulto.RESTAURAR_APP)) {
+            s.reanudar(); val entrada = s.solicitar(FinAdulto.ENTRAR)!!
+            s.completar(entrada, ResultadoAdulto(TipoAdulto.AUTENTICADO, revision = 7))
+            val t = s.solicitar(fin)!!
+            assertTrue(s.autorizarAccion(t, ResultadoAdulto(TipoAdulto.AUTENTICADO, revision = 7)))
+            val nuevo = s.solicitar(fin)!!; assertFalse(s.accionVigente(t))
+            assertTrue(s.autorizarAccion(nuevo, ResultadoAdulto(TipoAdulto.AUTENTICADO, revision = 7)))
+            boot++; assertFalse(s.accionVigente(nuevo))
+            s.cerrar(); assertFalse(s.accionVigente(nuevo))
+        }
+    }
     private var tiempo = 10L
+    @Test fun `respuesta y cambio de codigo no autorizan retirar proteccion`() {
+        s.reanudar(); val r = s.solicitar(FinAdulto.RECUPERAR)!!
+        s.completar(r, ResultadoAdulto(TipoAdulto.RESPUESTA_VALIDA, revision = 3))
+        assertNull(s.solicitar(FinAdulto.RESTAURAR_APP))
+        val c = s.solicitar(FinAdulto.CAMBIAR)!!
+        s.completar(c, ResultadoAdulto(TipoAdulto.GUARDADO, revision = 4))
+        assertNull(s.solicitar(FinAdulto.RESTAURAR_APP))
+    }
     private var boot = 1
     private val s = SesionAdulto({ tiempo }, { boot })
     @Test fun `entrar autoriza solo administracion RAM no uso`() {

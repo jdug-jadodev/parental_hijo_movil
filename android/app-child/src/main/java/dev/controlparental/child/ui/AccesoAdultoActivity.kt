@@ -30,6 +30,7 @@ import dev.controlparental.child.local.*
 import dev.controlparental.child.lock.BloqueoLocalAndroid
 import dev.controlparental.child.lock.FaseLocal
 import dev.controlparental.child.lock.ModoLocal
+import dev.controlparental.child.protection.ProteccionAndroid
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -79,6 +80,8 @@ class AccesoAdultoActivity : ComponentActivity() {
         limpiar(); texto(titulo)
         val modo = try { BloqueoLocalAndroid.modo(this).name } catch (_: RuntimeException) { "DESCONOCIDO" }
         texto("Lock Task observado=$modo; transición=${BloqueoLocalAndroid.diagnostico.fase}/${BloqueoLocalAndroid.diagnostico.causa}")
+        val p = ProteccionAndroid.estado
+        texto("Protección de app=${p.fase}/${p.causa}; snapshot=${p.snapshot}; lectura=${p.lectura ?: "DESCONOCIDA"}")
         boton("Emergencia / Keyguard del sistema") {
             cerrarAutoridad()
             EmergencyAccess(PolicyEnforcer(this)).irAPantallaBloqueo()
@@ -116,7 +119,12 @@ class AccesoAdultoActivity : ComponentActivity() {
         val n = consulta.incrementAndGet()
         val aceptado = AdultoAndroid.ejecutar(applicationContext, { it.resumen() }) { r ->
             runOnUiThread {
-                if (activa && consulta.get() == n) { resumen = r; publica(mensajePublico) }
+                if (activa && consulta.get() == n) {
+                    resumen = r
+                    ProteccionAndroid.consultar(applicationContext) {
+                        if (activa && consulta.get() == n) publica(mensajePublico)
+                    }
+                }
             }
         }
         if (!aceptado) { texto("Operación anterior en curso. No se ha abierto acceso."); boton("Actualizar") { consultar() } }
@@ -217,12 +225,21 @@ class AccesoAdultoActivity : ComponentActivity() {
         val locked = modo == ModoLocal.LOCKED
         boton("BLOQUEAR AHORA — piloto MAIN", modo == ModoLocal.NONE) { confirmarBloqueo(FinAdulto.BLOQUEAR) }
         boton("SALIDA REVERSIBLE DE ENSAYO — no permiso productivo", locked) { confirmarBloqueo(FinAdulto.SALIR_ENSAYO) }
-        for (s in listOf("Permitir libre — pendiente", "Permitir tiempo — pendiente", "Red — pendiente", "Ajustes y desinstalación — pendiente")) boton(s, false)
+        boton("PROTEGER APP — gestión global de aplicaciones", !ProteccionAndroid.estado.snapshot) { confirmarBloqueo(FinAdulto.PROTEGER_APP) }
+        boton("RESTAURAR PROTECCIÓN — baseline de ensayo", ProteccionAndroid.estado.snapshot) { confirmarBloqueo(FinAdulto.RESTAURAR_APP) }
+        for (s in listOf("Permitir libre — pendiente", "Permitir tiempo — pendiente", "Red — pendiente", "Otras políticas de Ajustes — pendiente")) boton(s, false)
         boton("Cerrar sesión") { cerrarAutoridad(); sesion.reanudar(); consultar() }
     }
     private fun confirmarBloqueo(fin: FinAdulto) {
         if (sesion.estado() != AutoridadAdulto.ADMINISTRAR) { consultar(); return }
-        base(if (fin == FinAdulto.BLOQUEAR) "Confirmar bloqueo local" else "Confirmar salida reversible de ensayo")
+        val proteccion = fin == FinAdulto.PROTEGER_APP || fin == FinAdulto.RESTAURAR_APP
+        base(when (fin) {
+            FinAdulto.PROTEGER_APP -> "Confirmar protección de app — alcance global"
+            FinAdulto.RESTAURAR_APP -> "Restaurar protección al baseline de ensayo"
+            FinAdulto.BLOQUEAR -> "Confirmar bloqueo local"
+            else -> "Confirmar salida reversible de ensayo"
+        })
+        if (proteccion) texto("setUninstallBlocked: solo hijo. DISALLOW_APPS_CONTROL: TODAS las apps del usuario; impide desinstalar/deshabilitar/borrar datos o caché/forzar detención/cambiar valores predeterminados desde Ajustes o launcher. No bloquea todo Ajustes ni establece restricciones de instalación/actualización; compatibilidad de estas pendiente. ADB conserva acceso de laboratorio. Puede persistir tras reboot; no es Lock Task persistente. Cerrar/fondo/recuperar código o salir del quiosco NO retiran protección; restaurar exige otra autenticación.")
         texto("Requiere código adulto fresco para esta operación. No cambia red/tiempo ni autoriza ALLOW CP/2. Cancelar/fondo no sale de LOCKED.")
         val codigo = campo("Código adulto", codigo = true)
         boton("Confirmar con mi código") {
@@ -236,7 +253,18 @@ class AccesoAdultoActivity : ComponentActivity() {
                         cerrarAutoridad(); sesion.reanudar(); mensajePublico = "Operación no autorizada."; consultar()
                         return@runOnUiThread
                     }
-                    base("Intención aceptada; pendiente de readback — no afirmar LOCKED todavía")
+                    base("Intención aceptada; pendiente de readback — no afirmar aplicado todavía")
+                    if (proteccion) {
+                        val iniciada = ProteccionAndroid.ejecutar(applicationContext, fin == FinAdulto.RESTAURAR_APP,
+                            { sesion.accionVigente(t) }) resultadoProteccion@{ d ->
+                            if (!activa || consulta.get() != n) return@resultadoProteccion
+                            cerrarAutoridad(); sesion.reanudar()
+                            mensajePublico = "Protección=${d.fase}/${d.causa}; uninstall/control propio/global/efectivo=${d.lectura}. No es permiso de uso."
+                            consultar()
+                        }
+                        if (!iniciada) { cerrarAutoridad(); sesion.reanudar(); mensajePublico = "Protección ocupada o autoridad caducada."; consultar() }
+                        return@runOnUiThread
+                    }
                     val iniciada = BloqueoLocalAndroid.ejecutar(this, fin == FinAdulto.SALIR_ENSAYO,
                         { sesion.accionVigente(t) }) resultadoLock@{ d ->
                         if (!activa || consulta.get() != n) return@resultadoLock

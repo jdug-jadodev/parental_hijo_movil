@@ -1,11 +1,12 @@
 package dev.controlparental.child.local
 
-internal enum class FinAdulto { ALTA, ENTRAR, RECUPERAR, CAMBIAR, BLOQUEAR, SALIR_ENSAYO }
+internal enum class FinAdulto { ALTA, ENTRAR, RECUPERAR, CAMBIAR, BLOQUEAR, SALIR_ENSAYO, PROTEGER_APP, RESTAURAR_APP }
 internal class TicketAdulto(val epoca: Long, val fin: FinAdulto, val boot: Int, val limite: Long)
 internal enum class AutoridadAdulto { CERRADA, ADMINISTRAR, CAMBIAR_CODIGO }
 
 /** Autoridad solo RAM; no escribe ni concede permiso de uso y no conoce CP/1. */
 internal class SesionAdulto(private val ahora: () -> Long, private val boot: () -> Int) {
+    private val finesAccion = setOf(FinAdulto.BLOQUEAR, FinAdulto.SALIR_ENSAYO, FinAdulto.PROTEGER_APP, FinAdulto.RESTAURAR_APP)
     private var epoca = 0L
     private var primerPlano = false
     private var ticket: TicketAdulto? = null
@@ -30,7 +31,7 @@ internal class SesionAdulto(private val ahora: () -> Long, private val boot: () 
     @Synchronized fun solicitar(fin: FinAdulto): TicketAdulto? {
         if (!primerPlano || boot() < 0 || ahora() < ultimo) return null
         if (fin == FinAdulto.CAMBIAR && estado() != AutoridadAdulto.CAMBIAR_CODIGO) return null
-        if (fin in setOf(FinAdulto.BLOQUEAR, FinAdulto.SALIR_ENSAYO) && estado() != AutoridadAdulto.ADMINISTRAR) return null
+        if (fin in finesAccion && estado() != AutoridadAdulto.ADMINISTRAR) return null
         accionAcreditada = null
         val t = ahora(); ultimo = t
         val vencimiento = if (fin == FinAdulto.CAMBIAR) minOf(limite, Math.addExact(t, 120_000))
@@ -62,7 +63,7 @@ internal class SesionAdulto(private val ahora: () -> Long, private val boot: () 
         if (estado() == AutoridadAdulto.CAMBIAR_CODIGO) revision else null
     /** Exige otro código válido para cada operación, ligado a revisión y propósito. */
     @Synchronized fun autorizarAccion(t: TicketAdulto, r: ResultadoAdulto): Boolean {
-        if (!vigente(t) || t.fin !in setOf(FinAdulto.BLOQUEAR, FinAdulto.SALIR_ENSAYO) ||
+        if (!vigente(t) || t.fin !in finesAccion ||
             r.tipo != TipoAdulto.AUTENTICADO || r.revision != revision) return false
         accionAcreditada = t; limite = t.limite; arranque = t.boot
         return true
