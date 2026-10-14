@@ -5,6 +5,11 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class UsoRedLocalTest {
+    @Test fun `corrupcion durante uso no se repara al autenticar otro permiso`() {
+        normal(); f.bytes = byteArrayOf(0)
+        assertFalse(m.autorizar(UsoLocal.EXCEPCION_OFFLINE) { true }); assertFalse(m.permiteUso)
+        assertArrayEquals(byteArrayOf(0), f.bytes)
+    }
     @Test fun `fondo adulto o propuesta obsoleta no cancela uso ya aceptado`() {
         normal(); val ref = m.referencia
         assertFalse(m.autorizar(UsoLocal.EXCEPCION_OFFLINE) { false })

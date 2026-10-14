@@ -34,6 +34,7 @@ internal object ControlRedAndroid {
     @Volatile var validacion = ValidacionRed.DESCONOCIDA; private set
     @Volatile var deadline: Long? = null; private set
     @Volatile var permiteUsoRAM = false; private set
+    @Volatile private var referenciaPublica: ReferenciaRed? = null
     private fun crear(c: Context): UsoRedLocal {
         val dp = c.applicationContext.createDeviceProtectedStorageContext()
         return UsoRedLocal(ArchivoSnapshotAndroid(File(dp.noBackupFilesDir, "uso-red-v1.marca")),
@@ -41,7 +42,7 @@ internal object ControlRedAndroid {
             { Settings.Global.getInt(dp.contentResolver, Settings.Global.BOOT_COUNT, -1) })
     }
     private fun publicar(m: UsoRedLocal, evento: String) {
-        uso = m.uso; validacion = m.red; deadline = m.deadline; permiteUsoRAM = m.permiteUso
+        uso = m.uso; validacion = m.red; deadline = m.deadline; referenciaPublica = m.referencia; permiteUsoRAM = m.permiteUso
         Log.i("ControlRedLocal", "evento=$evento uso=$uso red=$validacion gen=${m.referencia?.generacion} elapsed=${SystemClock.elapsedRealtime()} deadline=$deadline")
     }
     fun consultar(c: Context, entregar: () -> Unit) {
@@ -68,6 +69,20 @@ internal object ControlRedAndroid {
             handler.post {
                 if (!autoridad()) { entregar(); return@post }
                 try { c.startForegroundService(Intent(c, ControlRedService::class.java)) }
+                catch (_: RuntimeException) { uso = UsoLocal.ERROR; permiteUsoRAM = false }
+                entregar()
+            }
+        }
+    }
+    fun reanudarObservador(c: Context, autoridad: () -> Boolean, entregar: () -> Unit) {
+        ejecutor.execute {
+            val m = modelo
+            if (m == null || m.uso != UsoLocal.BLOQUEADO || !autoridad() || !ArranquePilotoAndroid.enrolado) {
+                handler.post(entregar); return@execute
+            }
+            cerrando = false
+            handler.post {
+                if (autoridad()) try { c.startForegroundService(Intent(c, ControlRedService::class.java)) }
                 catch (_: RuntimeException) { uso = UsoLocal.ERROR; permiteUsoRAM = false }
                 entregar()
             }
@@ -124,7 +139,7 @@ internal object ControlRedAndroid {
             if (!m.autorizar(tipo, autoridad)) { publicar(m, "AUTORIZACION_RECHAZADA"); handler.post(entregar); return@execute }
             val ref = m.referencia!!; publicar(m, "AUTORIZACION_LOCAL_$tipo")
             handler.post {
-                val aceptada = BloqueoLocalAndroid.usarGuardado(a, { permiteUsoRAM && modelo?.referencia == ref && autoridad() }) { d ->
+                val aceptada = BloqueoLocalAndroid.usarGuardado(a, { permiteUsoRAM && referenciaPublica == ref && autoridad() }) { d ->
                     ejecutor.execute {
                         if (m.referencia != ref) return@execute
                         if (d.fase != FaseLocal.RESTAURADO) {
@@ -133,21 +148,30 @@ internal object ControlRedAndroid {
                         handler.post(entregar)
                     }
                 }
-                if (!aceptada) ejecutor.execute { m.falloEnforcement(ref); publicar(m, "NO_INICIADO"); handler.post(entregar) }
+                if (!aceptada) ejecutor.execute {
+                    if (m.referencia == ref) {
+                        m.falloEnforcement(ref); publicar(m, "NO_INICIADO"); ArranquePilotoAndroid.exigirBloqueo(a)
+                    }
+                    handler.post(entregar)
+                }
             }
         }
     }
     fun bloquear(c: Context, autoridad: () -> Boolean, entregar: () -> Unit) {
         ejecutor.execute {
             val m = modelo
-            if (m != null && m.bloquear(autoridad)) { publicar(m, "BLOQUEAR_ADULTO"); ArranquePilotoAndroid.exigirBloqueo(c) }
+            if (m != null && autoridad()) {
+                m.bloquear(autoridad); publicar(m, "BLOQUEAR_ADULTO")
+                if (!m.permiteUso) ArranquePilotoAndroid.exigirBloqueo(c)
+            }
             handler.post(entregar)
         }
     }
     private fun cancelar(c: Context) {
         epoca.incrementAndGet(); listo = false; permiteUsoRAM = false
         gracia?.let(handler::removeCallbacks); gracia = null
-        callback?.let { c.getSystemService(ConnectivityManager::class.java).unregisterNetworkCallback(it) }; callback = null
+        val anterior = callback; callback = null
+        anterior?.let { try { c.getSystemService(ConnectivityManager::class.java).unregisterNetworkCallback(it) } catch (_: RuntimeException) { uso = UsoLocal.ERROR } }
     }
     fun servicioTerminado(c: Context) {
         ejecutor.execute {
@@ -166,6 +190,26 @@ internal object ControlRedAndroid {
                     ejecutor.execute {
                         if (m.finalizar(ArranquePilotoAndroid.fase == FasePiloto.DESARMADO)) { modelo = null; activo = false }
                         publicar(m, "FINAL_RESTAURADO"); handler.post(entregar)
+                    }
+                }
+            }
+        }
+    }
+    /** Solo autoridad técnica proporcionada por receptor DEBUG/DUMP; sin entrada MAIN exportada. */
+    fun finalizarTecnico(c: Context, autoridad: () -> Boolean, entregar: () -> Unit) {
+        ejecutor.execute {
+            if (!autoridad()) { handler.post(entregar); return@execute }
+            val m = modelo
+            if (m == null && !activo) { handler.post(entregar); return@execute }
+            val cargado = m ?: crear(c).also { modelo = it; it.cargar() }
+            if (!cargado.cerrar(autoridad)) { publicar(cargado, "ERROR_CIERRE_TECNICO"); handler.post(entregar); return@execute }
+            cerrando = true; cancelar(c); publicar(cargado, "DESACTIVAR_TECNICO")
+            handler.post {
+                c.stopService(Intent(c, ControlRedService::class.java))
+                ArranquePilotoAndroid.finalizarTecnico(c, autoridad) {
+                    ejecutor.execute {
+                        if (cargado.finalizar(ArranquePilotoAndroid.fase == FasePiloto.DESARMADO)) { modelo = null; activo = false }
+                        publicar(cargado, "FINAL_TECNICO"); handler.post(entregar)
                     }
                 }
             }

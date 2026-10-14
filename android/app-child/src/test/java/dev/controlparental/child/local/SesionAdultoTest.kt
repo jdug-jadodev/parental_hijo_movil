@@ -4,6 +4,18 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class SesionAdultoTest {
+    @Test fun `uso normal offline bloqueo y cierre de red exigen codigo fresco`() {
+        for (fin in listOf(FinAdulto.ARMAR_RED, FinAdulto.USO_NORMAL, FinAdulto.USO_OFFLINE, FinAdulto.BLOQUEAR_RED, FinAdulto.FINALIZAR_RED)) {
+            s.reanudar(); assertNull(s.solicitar(fin))
+            val t = s.solicitar(FinAdulto.ENTRAR)!!
+            s.completar(t, ResultadoAdulto(TipoAdulto.AUTENTICADO, revision = 9))
+            val a = s.solicitar(fin)!!; assertFalse(s.accionVigente(a))
+            assertFalse(s.autorizarAccion(a, ResultadoAdulto(TipoAdulto.RESPUESTA_VALIDA, revision = 9)))
+            assertTrue(s.autorizarAccion(a, ResultadoAdulto(TipoAdulto.AUTENTICADO, revision = 9)))
+            val nueva = s.solicitar(fin)!!; assertFalse(s.accionVigente(a))
+            s.cerrar(); assertFalse(s.accionVigente(nueva))
+        }
+    }
     @Test fun `boot exige codigo fresco por armar finalizar y reboot borra autoridad RAM`() {
         for (fin in listOf(FinAdulto.ARMAR_BOOT, FinAdulto.FINALIZAR_BOOT)) {
             s.reanudar(); assertNull(s.solicitar(fin))

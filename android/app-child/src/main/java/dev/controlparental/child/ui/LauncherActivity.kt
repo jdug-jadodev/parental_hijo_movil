@@ -47,6 +47,7 @@ import kotlinx.coroutines.delay
 import dev.controlparental.child.lock.BloqueoLocalAndroid
 import dev.controlparental.child.lock.ModoLocal
 import dev.controlparental.child.boot.ArranquePilotoAndroid
+import dev.controlparental.child.network.ControlRedAndroid
 
 /** HOME no persistente. Reentrada piloto exclusivamente desde intención DP ya enrolada. */
 class LauncherActivity : ComponentActivity() {
@@ -87,6 +88,7 @@ class LauncherActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         primerPlanoPiloto = true
+        if (ControlRedAndroid.activo) ControlRedAndroid.senal(applicationContext)
         ArranquePilotoAndroid.actividad(this, { primerPlanoPiloto && !isFinishing && !isDestroyed }) {
             bloqueadoLocal = try { BloqueoLocalAndroid.modo(this) == ModoLocal.LOCKED } catch (_: RuntimeException) { false }
         }

@@ -84,6 +84,7 @@ internal class UsoRedLocal(private val marca: ArchivoSnapshotLocal, private val 
     fun iniciarObservador(g: Long) { generacionObservador = g; revisionRed = -1; red = ValidacionRed.DESCONOCIDA }
     fun autorizar(tipo: UsoLocal, autoridad: () -> Boolean): Boolean {
         if (!autoridad() || tipo !in setOf(UsoLocal.NORMAL, UsoLocal.EXCEPCION_OFFLINE) ||
+            uso in setOf(UsoLocal.ERROR, UsoLocal.FINALIZANDO) ||
             (tipo == UsoLocal.NORMAL && red != ValidacionRed.VALIDADA)) return false
         return seguro {
         require(contexto())
@@ -106,13 +107,14 @@ internal class UsoRedLocal(private val marca: ArchivoSnapshotLocal, private val 
     }
     private fun guardar(motivo: MotivoRed) {
         val previo = obligacion ?: error("Sin obligación")
+        require(leer() == previo) // No sobrescribir corrupción/cambio ajeno con un nuevo permiso.
         val r = ObligacionRed(Math.addExact(previo.generacion, 1), boot().takeIf { it >= 0 } ?: previo.boot, motivo)
         archivo.escribir(CodecObligacionRed.codificar(r)); require(leer() == r)
         obligacion = r; referencia = ReferenciaRed(r.generacion, r.boot)
     }
     fun cerrar(autoridad: () -> Boolean): Boolean = if (!autoridad()) false else seguro {
         revocar(MotivoRed.CIERRE); uso = UsoLocal.FINALIZANDO
-        generacionObservador = -1; revisionRed = -1
+        generacionObservador = -1; revisionRed = -1; red = ValidacionRed.DESCONOCIDA
     }
     fun finalizar(restaurado: Boolean): Boolean = seguro {
         require(restaurado && uso == UsoLocal.FINALIZANDO)

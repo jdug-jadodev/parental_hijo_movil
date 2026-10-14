@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="confirmar_offline_local">Confirmo explícitamente la EXCEPCIÓN OFFLINE LOCAL y uso sin internet validada</string>
     <string name="app_name">Control parental — dispositivo administrado</string>
     <string name="titulo_inicial">No configurado</string>
     <string name="aviso_inicial">Esta versión prepara la aplicación del hijo. Todavía no controla el tiempo ni bloquea otras aplicaciones.</string>

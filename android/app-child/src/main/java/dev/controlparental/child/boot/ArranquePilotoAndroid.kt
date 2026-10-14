@@ -111,8 +111,8 @@ internal object ArranquePilotoAndroid {
                 val g = token.incrementAndGet(); fase = FasePiloto.ESPERANDO_LOCKED; traza(a, "SOLICITAR_LOCKED", r)
                 handler.post {
                     if (token.get() != g) return@post
-                    if (!primerPlano()) { fase = FasePiloto.ERROR; entregar(); return@post }
-                    val ok = BloqueoLocalAndroid.reentrar(a, { token.get() == g && primerPlano() }) { d ->
+                    if (!primerPlano() || ControlRedAndroid.permiteUsoRAM) { fase = FasePiloto.ERROR; entregar(); return@post }
+                    val ok = BloqueoLocalAndroid.reentrar(a, { token.get() == g && primerPlano() && !ControlRedAndroid.permiteUsoRAM }) { d ->
                         if (token.get() != g) return@reentrar
                         fase = when {
                             d.fase == FaseLocal.LOCKED -> FasePiloto.LOCKED

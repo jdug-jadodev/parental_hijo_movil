@@ -1,5 +1,12 @@
 # Relevo de coordinación — padre, hijo y WebSocket CP/1
 
+## HIJO-LOCAL05 — entrega bloqueada sin física, 14 de octubre de 2026
+
+- Base6ab6c1c; bloque1 `552d4b9`; cierre en commit que incorpora este relevo. MAIN uso libre NORMAL LOCAL/red default INTERNET+VALIDATED/gracia10.000ms y EXCEPCIÓN OFFLINE LOCAL con código fresco/casilla explícita; autoridad/snapshot/boot separados de CP/1. Reconexión antes deadline cancela gracia; a partir de10s revoca y NO abre de nuevo. Boot/proceso recreado no reconstruyen permisosRAM. No duración nueva/CP2/remoteoffline.
+- **ENTREGADA_BLOQUEADA_LINT_RELEASE_SIN_FISICA**:342debug/287release0fallos/errores; APKdebug/releaseunsigned/AndroidTestcompilados.3testsAndroid DP/fakesNOejecutados; core-protocol:testUP-TO-DATE. lintRelease1error11avisos: ForegroundServicePermission exige alarmas paraFGSsystemExempted aunque docs admitenDeviceOwner. Sin permisosalarmas/suppress/baseline/deps/bypass. Evidencia/rutas/hashes: `pruebas/EVIDENCIA_HIJO_LOCAL05.md`.
+- NingúnADB/instalación/notificaciones/armado/corteconectividad/LOCAL03/reboot ni cambio en otros repos/push. A13 último estado conocidoLOCAL04 desarmado/NONE/restaurado, no reconsultado. No bloqueo físico por red/latencia/crash/zeroescape/productfinal acreditados.
+- Resolver gate únicamente por revisión/asignación concreta; luego nueva autorización específica de instalación/notificación/armado y cortes manuales. No PREPARADO_FISICO mientras gate falla. Detenido: no siguiente tarea ni ensayo automático. Render no dispositivos.
+
 Fecha: 9 de octubre de 2026. Base de coordinación: commit hijo `524ad8b`.
 
 ## Petición para la sesión de Render
