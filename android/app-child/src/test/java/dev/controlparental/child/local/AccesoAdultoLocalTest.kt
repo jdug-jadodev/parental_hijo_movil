@@ -124,4 +124,21 @@ class AccesoAdultoLocalTest {
         assertFalse(a.salt.contentEquals(b.salt)); assertFalse(a.hash.contentEquals(b.hash))
         assertTrue(kdf.coincide("00123", a)); assertFalse(kdf.coincide("00124", a))
     }
+    @Test fun `cancelar alta durante derivacion no deja registro ni concede bootstrap`() {
+        var vigente = true
+        val d = object : DerivadorAdulto by fake {
+            override fun crear(texto: String): VerificadorAdulto { vigente = false; return fake.crear(texto) }
+        }
+        assertEquals(TipoAdulto.RECHAZADO, motor(d).configurar("00123", "00123", "Pregunta", "Respuesta", "Respuesta") { vigente }.tipo)
+        assertNull(memoria.bytes)
+    }
+    @Test fun `fallo de reserva o readback nunca devuelve autoridad`() {
+        alta(); val fallido = object : AlmacenAdulto {
+            override fun leer() = memoria.leer()
+            override fun guardar(registro: RegistroAdulto) { memoria.guardar(registro); throw IllegalStateException() }
+        }
+        val m = AccesoAdultoLocal(fallido, fake, { tiempo }, { boot })
+        assertEquals(TipoAdulto.ERROR, m.verificar("00123", false) { true }.tipo)
+        assertEquals(1, memoria.leer()!!.fallos)
+    }
 }

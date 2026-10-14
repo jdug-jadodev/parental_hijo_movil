@@ -30,11 +30,17 @@ internal class SesionAdulto(private val ahora: () -> Long, private val boot: () 
         if (!primerPlano || boot() < 0 || ahora() < ultimo) return null
         if (fin == FinAdulto.CAMBIAR && estado() != AutoridadAdulto.CAMBIAR_CODIGO) return null
         val t = ahora(); ultimo = t
-        return TicketAdulto(++epoca, fin, boot(), Math.addExact(t, 120_000)).also { ticket = it }
+        val vencimiento = if (fin == FinAdulto.CAMBIAR) minOf(limite, Math.addExact(t, 120_000))
+            else Math.addExact(t, 120_000)
+        return TicketAdulto(++epoca, fin, boot(), vencimiento).also { ticket = it }
     }
     @Synchronized fun vigente(t: TicketAdulto): Boolean {
         val n = ahora(); val valida = primerPlano && ticket === t && t.epoca == epoca &&
             boot() == t.boot && n >= ultimo && n < t.limite
+        if (n < ultimo || boot() != t.boot || n >= t.limite) {
+            autoridad = AutoridadAdulto.CERRADA
+            if (ticket === t) ticket = null
+        }
         ultimo = n
         return valida
     }

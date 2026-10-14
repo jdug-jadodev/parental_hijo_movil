@@ -33,4 +33,11 @@ class SesionAdultoTest {
         s.reanudar(); val t = s.solicitar(FinAdulto.ENTRAR)!!; boot++
         assertFalse(s.vigente(t)); tiempo = 0; assertNull(s.solicitar(FinAdulto.ENTRAR))
     }
+    @Test fun `ticket de cambiar no prolonga ventana concedida por respuesta`() {
+        s.reanudar(); val t = s.solicitar(FinAdulto.RECUPERAR)!!
+        s.completar(t, ResultadoAdulto(TipoAdulto.RESPUESTA_VALIDA, revision = 1))
+        tiempo += 119_999; val cambiar = s.solicitar(FinAdulto.CAMBIAR)!!
+        assertEquals(t.limite, cambiar.limite)
+        tiempo++; assertFalse(s.vigente(cambiar))
+    }
 }

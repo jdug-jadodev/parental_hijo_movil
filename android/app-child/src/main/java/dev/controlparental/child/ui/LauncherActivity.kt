@@ -1,6 +1,7 @@
 package dev.controlparental.child.ui
 
 import android.os.Bundle
+import android.content.Intent
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -71,6 +72,7 @@ class LauncherActivity : ComponentActivity() {
                         consultarRecuperacion()
                     }, actualizarRecuperacion = { if (!recuperacion.ocupado) consultarRecuperacion() },
                     enviarCodigo = { proposito, texto -> consultarRecuperacion(proposito, texto) },
+                    abrirAdulto = { startActivity(Intent(this, AccesoAdultoActivity::class.java)) },
                     volver = { cerrarRecuperacion() })
             }
         }
@@ -136,6 +138,7 @@ private fun PantallaInicial(
     abrirRecuperacion: () -> Unit,
     actualizarRecuperacion: () -> Unit,
     enviarCodigo: (PropositoRecuperacionLocal, String) -> Unit,
+    abrirAdulto: () -> Unit,
     volver: () -> Unit,
 ) {
     LaunchedEffect(recuperacionVisible) {
@@ -158,6 +161,7 @@ private fun PantallaInicial(
                 style = MaterialTheme.typography.headlineMedium,
             )
             AccesoEmergenciaSistema(resultadoEmergencia, solicitarEmergencia)
+            Button(onClick = abrirAdulto) { Text("Acceso adulto local: código y pregunta") }
             if (recuperacionVisible) {
                 RecoveryScreen(recuperacion, enviarCodigo, volver)
             } else {

@@ -804,3 +804,53 @@ validado solo API34/FGS vivo/lockNow; primer retorno al desbloquear sin PERMITIR
 nuevo queda pendiente. Sin producto/H05/H06/cero ventana/Doze/crash/reboot/remoto/
 masterPIN/Push/CP2. Cierre commit documental y esperar revisión, no nueva prueba/
 tarea/prompts/subagentes/sesiones/repos ajenos/gitpush/despliegue.
+
+## HIJO-LOCAL01 — puerta adulta MAIN implementada y validada localmente
+
+2026-10-13, basef9eeeea, bloque1 `6d5bbf9`. **IMPLEMENTADO/VALIDACION_LOCAL_LOGRADA**,
+instalación/alta/pruebas solo tras autorización física específica. MAIN abre Activity
+noexportada código/pregunta. Alta DeviceOwner/DEVICE_CREDENTIAL/ticketRAM/almacén
+virgen coherente, no default/bypass ni reemplazo. Código ASCII5..10 cadena/ceros;
+respuesta exacta v1 sin trim/NFC/case (explícito en UI), pregunta personalizada.
+Recuperación offline solo establece código nuevo y cierra, nunca revela anterior/
+abre administración/uso. Sesión RAM120s cierra fondo/salida/reentrada/proceso, no
+concede/cancela permiso normal. Controles sensibles futuros todos deshabilitados.
+
+PBKDF2HMACSHA256210000/saltsindependientes, AES256GCM/Keystore/CE/noBackupAtomicFile/
+readback, marcador/versionado privado v1; artefactos perdidos/corrupción/versión
+desconocida fallan cerrado, no alta libre ni regeneración clave. Espera agregada
+reserva durableantesKDF,5fallos60s10fallos300s/bootregresivo reimponeespera,
+respuesta/cambio no resetean cupo. No contador antirollback hardware/promesa de
+pregunta fuerte; calibraciónlatencia y variantes de cancelación/BootstrapOEM
+pendientes en A13; almacén Keystore aislado ya probado en cinco tests.
+Permiso normalUSE_BIOMETRIC MAIN para alta, sin grantespecial ni políticas nuevas.
+
+266debug/211release JVM correctos,19 locales nuevos compartidos, release repite;
+coreUP-TO-DATE. APKdebug/test/releaseunsigned construidos, lintRelease0errores11avisos.
+lintDebug fallóerrorFGS manifestdebug previo; no supresión/permisosalarmes nuevos.
+Verificador APK genérico falló subcadenaFake AndroidX/Kotlinmetadata; inspección
+tablasDEX propia confirmó claseslocales producto/ausencia tests locales y prototype
+ausente release, manifestadulta noexportada. Cinco testsAndroid nuevos preparados
+soloalmacén/aliasUUID efímeros, ejecutadosOK72.075s, nunca estadoadultoreal usado.
+
+Rutas en `pruebas/EVIDENCIA_HIJO_LOCAL01.md`; APKdebug preparado41fdde66… y
+releaseunsignedd97da195… hashesíntegros allí. APKdebugensayado=finalinstalado,
+releaseunsigned no físico. Autorizaciónpresencial concreta obtenida antes de
+instalar/alta/pruebas, dueño presente, únicoA13 SM-A135M/adb-s, A56 excluido;
+app/test Success y capacidades1 OK antes/final. Sesión Render no opera dispositivos.
+
+Dueño confirmó configuración tras mensajeocupado/resuelto con Actualizar una vez,
+entrada por código/panelprotegido y regreso de fondo exige nuevo código, pregunta
+propia→solo código nuevo→nuevo código autentica, cierre explícito/emergencia visible/
+uso normal. Sin repetiralta ni leer secretos. Finalregistroadultoconfigurado/código
+nuevo conservado/sesióncerrada/ADB NONE/sin snapshot/servicio. No políticas nuevas.
+Cancelación/caducidad120s/esperas/reboot/desconexiónfísica/KDFindividual pendientes;
+sin red deshabilitada: recuperación no usa red por implementación, no ensayooffline.
+
+Nueva regla posteriorC08 registrada: pérdida conexión requerida bloquea aunque
+tiempo, reconexión sin nueva autorización no restaura; supersede continuidadoffline
+documental anterior. Señal/plazo/uso estandooffline pendientes/no implementaciónred.
+Puertaadmin/recuperaciónoffline no concede uso. Reboot/ajustes/desinstalación/
+enforcement/QR/remoto/Push fueraunidad; salida física nueva antes de endurecer.
+CP1/CP2/fixtures/planes/ADR/deps/RecoveryController/prototipos/reposajenos intactos.
+No H05/H06/producto acreditados. Cierrecommit y detener, sin otra tarea/push.
