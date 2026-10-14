@@ -1006,3 +1006,15 @@ R1 baseb2f59f8: **PREPARADO_FISICO_PENDIENTE_AUTORIZACION**. Excepción expresam
 348debug/293release0fallos/errores,6nuevoscompartidos; lintRelease0errores11avisos; APKdebug/test/releaseunsignedcompilados, core-protocol:testUP-TO-DATE y3DPAndroidNOejecutados. Fuente/razón/riesgo/scopesignore/hashes/rutas en `pruebas/EVIDENCIA_HIJO_LOCAL05_R1.md`. No ADB/instalación/grants/armado/conectividad/reboot/push. A13últimoestadoLOCAL04 sin nueva consulta; A56excluido.
 
 Esperar nueva aprobación instalación/notificación/testsaislados y armado/corte manual concreto antes del ensayoNORMAL; OFFLINE requiere fase aparte. No afirmar LOCKEDred/latencias/FGSsurvivecrash/ceroescape/productfinal/H05/H06/remoto/DNS ni usar ACK como enforcement. No otra tarea automática. Render no dispositivos.
+
+### LOCAL05-R1 — cierre físico posterior, NORMAL logrado y restaurado
+
+Correccióncommit `6d3e085`; cierre en commit de esta devolución. El estado PREPARADO_FISICO anterior quedó superado por autorizaciones concretas en sesiónhijo. **NORMAL_LOCKED_RED_RECONEXION_NO_ABRE_Y_RESTAURADO**; OFFLINEfísica pendiente/no autorizada, no aprobación permanente.
+
+A13únicoSM-A135M/todoadb-s/A56excluido. Instalaciónapp-r rechazotestonly; reintento-t autorizadoexit1sin detalle, hashbaseAPKconfirmaappnueva; adultoindicócablemalconectado y autorizaciónadicionaltestsolo→installtestSuccess/3DPAndroidOK0.322s. Sin reinstalaciónautomática. APKdebugensayado=final `d6de016608a22245843def8d32062004943e0de6d3aafec2ab2d4692221dfc84`; releaseunsigned `13c529467439eee57046c4b901b965ae4568f365f67145051a8aef3bf7ba4120` no físico.
+
+Confirmacionesseparadasnotificación/UNarmado MAIN codecódigofresco→FGSrealforeground=true/systemExempted/listo=true/LOCKED. Antes de corte se acordó nueva excepción explícita al límiterouter: propietario manualmente bloquea/restaura SOLOA13 desde su appmódem, sin sesiones consultando/controlando router/redidentificadores/credenciales/otrodispositivo. UNNORMALautoridadfresca→NONE; UNcorte→señalNO_VALIDADA4772255/deadline4782255/revocación4782281/solicitud4782507/LOCKED4783220: **10965msseñal→LOCKED**,713mssolicitud→LOCKED. Corte físico exacto no medido; ni DNS/relay/deteccióninstantánea garantizados.
+
+Restauraciónmanualred→VALIDADA4877235 mantieneBLOQUEADO/LOCKED/gen3, no nuevaautorización/autoapertura. FINALIZARRED MAIN codecódigofresco desactivaobserver5016642 antesdesarmeboot5016707/restore5016885/finalred5016893. Finalreadbacks: NONE/REDactivo-listofalse/deadlinenull/bootDESARMADO-enrolfalse/LOCAL02baseline/LOCAL03snapshotfalseytodosfalse/servicioausente/cuatroDPpilotoausentes/uso normal. Credencial adulta conservada; sin shellrollbackaplicado.
+
+348debug/293release0fallos/lintRelease0errores11avisos/6JVMnuevos; coreUP-TO-DATE;3AndroidrealesahoraOK. LímitesFGScrash/Keyguard/bootinvalidaambos/latenciaotrasfirmwares/OFFLINEreal pendientes, noH05/H06/productfinal/remoto/24h/ceroescape. Evidenciaíntegra `pruebas/EVIDENCIA_HIJO_LOCAL05_R1.md`/ESTADOactualizado. No reboot/kills/Doze/grantsADB/LOCAL03/endurecimiento/reposajenos/push. **Entregado y detenido**, sin otra tarea ni ensayo automático. Render no dispositivos.
