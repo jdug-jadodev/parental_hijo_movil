@@ -27,6 +27,9 @@ import androidx.activity.ComponentActivity
 import dev.controlparental.child.admin.PolicyEnforcer
 import dev.controlparental.child.emergency.EmergencyAccess
 import dev.controlparental.child.local.*
+import dev.controlparental.child.lock.BloqueoLocalAndroid
+import dev.controlparental.child.lock.FaseLocal
+import dev.controlparental.child.lock.ModoLocal
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -74,6 +77,8 @@ class AccesoAdultoActivity : ComponentActivity() {
     }
     private fun base(titulo: String) {
         limpiar(); texto(titulo)
+        val modo = try { BloqueoLocalAndroid.modo(this).name } catch (_: RuntimeException) { "DESCONOCIDO" }
+        texto("Lock Task observado=$modo; transición=${BloqueoLocalAndroid.diagnostico.fase}/${BloqueoLocalAndroid.diagnostico.causa}")
         boton("Emergencia / Keyguard del sistema") {
             cerrarAutoridad()
             EmergencyAccess(PolicyEnforcer(this)).irAPantallaBloqueo()
@@ -208,8 +213,43 @@ class AccesoAdultoActivity : ComponentActivity() {
     private fun administrar() {
         base("Administración adulta autenticada")
         texto("Sesión solo RAM, hasta2 minutos absolutos desde la solicitud. Salir/fondo cierra. No concede uso ni altera ningún permiso vigente.")
-        for (s in listOf("Permitir tiempo — pendiente", "Bloquear uso — pendiente", "Red — pendiente", "Ajustes y desinstalación — pendiente")) boton(s, false)
+        val modo = try { BloqueoLocalAndroid.modo(this) } catch (_: RuntimeException) { null }
+        val locked = modo == ModoLocal.LOCKED
+        boton("BLOQUEAR AHORA — piloto MAIN", modo == ModoLocal.NONE) { confirmarBloqueo(FinAdulto.BLOQUEAR) }
+        boton("SALIDA REVERSIBLE DE ENSAYO — no permiso productivo", locked) { confirmarBloqueo(FinAdulto.SALIR_ENSAYO) }
+        for (s in listOf("Permitir libre — pendiente", "Permitir tiempo — pendiente", "Red — pendiente", "Ajustes y desinstalación — pendiente")) boton(s, false)
         boton("Cerrar sesión") { cerrarAutoridad(); sesion.reanudar(); consultar() }
+    }
+    private fun confirmarBloqueo(fin: FinAdulto) {
+        if (sesion.estado() != AutoridadAdulto.ADMINISTRAR) { consultar(); return }
+        base(if (fin == FinAdulto.BLOQUEAR) "Confirmar bloqueo local" else "Confirmar salida reversible de ensayo")
+        texto("Requiere código adulto fresco para esta operación. No cambia red/tiempo ni autoriza ALLOW CP/2. Cancelar/fondo no sale de LOCKED.")
+        val codigo = campo("Código adulto", codigo = true)
+        boton("Confirmar con mi código") {
+            val t = sesion.solicitar(fin) ?: return@boton
+            val secreto = codigo.text.toString(); base("Verificando autoridad de la operación…")
+            val n = consulta.incrementAndGet()
+            val admitida = AdultoAndroid.ejecutar(applicationContext, { it.verificar(secreto, false) { sesion.vigente(t) } }) { r ->
+                runOnUiThread {
+                    if (!activa || consulta.get() != n) return@runOnUiThread
+                    if (!sesion.autorizarAccion(t, r)) {
+                        cerrarAutoridad(); sesion.reanudar(); mensajePublico = "Operación no autorizada."; consultar()
+                        return@runOnUiThread
+                    }
+                    base("Intención aceptada; pendiente de readback — no afirmar LOCKED todavía")
+                    val iniciada = BloqueoLocalAndroid.ejecutar(this, fin == FinAdulto.SALIR_ENSAYO,
+                        { sesion.accionVigente(t) }) resultadoLock@{ d ->
+                        if (!activa || consulta.get() != n) return@resultadoLock
+                        cerrarAutoridad(); sesion.reanudar()
+                        mensajePublico = "Resultado=${d.fase}/${d.causa}. ${if (d.fase == FaseLocal.LOCKED) "Bloqueo real leído." else "No es autorización de uso productiva."}"
+                        consultar()
+                    }
+                    if (!iniciada) { cerrarAutoridad(); sesion.reanudar(); mensajePublico = "Otra transición en curso o autoridad caducada."; consultar() }
+                }
+            }
+            if (!admitida) { cerrarAutoridad(); sesion.reanudar(); consultar() }
+        }
+        boton("Cancelar operación (no desbloquea)") { cerrarAutoridad(); sesion.reanudar(); consultar() }
     }
     private fun operar(t: TicketAdulto, accion: (AccesoAdultoLocal) -> ResultadoAdulto) {
         mensajePublico = ""

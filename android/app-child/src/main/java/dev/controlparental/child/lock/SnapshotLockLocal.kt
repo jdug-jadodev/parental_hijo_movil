@@ -74,6 +74,7 @@ internal class AdaptadorLockLocal(private val archivo: ArchivoSnapshotLocal,
     }
     override fun solicitarInicio() { politicas.validar(); politicas.iniciar() }
     override fun modo() = politicas.modo()
+    override fun modoProteccion() = politicas.modoRestauracion()
     override fun restaurar() {
         val s = snapshot()
         exigirLocal(politicas.paquete !in s.paquetes, CausaLocal.SNAPSHOT)

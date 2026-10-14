@@ -8,7 +8,7 @@ import android.content.pm.PackageManager
 import dev.controlparental.child.domain.CondicionesEmergencia
 import dev.controlparental.child.emergency.PuertoPantallaBloqueo
 
-/** Único adaptador que modifica políticas. H02 solo solicita lockNow sin flags. */
+/** Adaptador de emergencia H02: solo lockNow sin flags. Lock Task piloto tiene su puerto separado. */
 class PolicyEnforcer(contexto: Context) : PuertoPantallaBloqueo {
     private val contexto = contexto.applicationContext
 

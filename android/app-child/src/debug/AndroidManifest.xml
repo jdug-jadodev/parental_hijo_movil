@@ -17,5 +17,7 @@
         </activity>
         <receiver android:name=".prototype.RollbackPrototipo" android:exported="true"
             android:permission="android.permission.DUMP" />
+        <receiver android:name=".local.RollbackLocalDebug" android:exported="true"
+            android:permission="android.permission.DUMP" />
     </application>
 </manifest>

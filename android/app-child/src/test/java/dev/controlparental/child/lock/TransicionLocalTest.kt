@@ -64,4 +64,11 @@ class TransicionLocalTest {
         p.observado = ModoLocal.LOCKED; val g = m.salir(); tiempo += 2000; m.observar(g)
         assertEquals(FaseLocal.ERROR, m.diagnostico.fase); assertEquals(1, p.restores)
     }
+    @Test fun `error concurrente si ya quedo LOCKED no aplica rollback automatico`() {
+        val puerto = object : PuertoLockLocal by p {
+            override fun aplicar() { p.observado = ModoLocal.LOCKED; throw FalloLocal(CausaLocal.IO_O_ANDROID) }
+        }
+        val modelo = TransicionLocal(puerto, { tiempo }, { autoridad }); modelo.entrar()
+        assertEquals(FaseLocal.ERROR, modelo.diagnostico.fase); assertEquals(0, p.restores)
+    }
 }

@@ -854,3 +854,40 @@ Puertaadmin/recuperaciónoffline no concede uso. Reboot/ajustes/desinstalación/
 enforcement/QR/remoto/Push fueraunidad; salida física nueva antes de endurecer.
 CP1/CP2/fixtures/planes/ADR/deps/RecoveryController/prototipos/reposajenos intactos.
 No H05/H06/producto acreditados. Cierrecommit y detener, sin otra tarea/push.
+
+## HIJO-LOCAL02 — bloqueo MAIN y salida adulta real logrados
+
+2026-10-13, base8533ae4, bloque1 `602586e`. **RECORRIDO_MAIN_LOGRADO_Y_RESTAURADO**,
+un bloqueo real autorizado A13 SM-A135M; selecciónúnico/adb-s fijo/A56 excluido.
+Modelo/puerto/actor/snapshotAtomic privados MAIN, no debugimports/CP1 reinterpretado.
+BLOQUEARAHORA y SALIDAENSAYO requieren panel autenticado y otro código fresco por
+operación/ticket/revisión/boot/plazo. Sesión se cierra sin retirarLOCKED; recuperación
+solo código nuevo y luego nueva autenticación, no salida directa por respuesta.
+Whitelistsolo propio/featuresKEYGUARD|GLOBAL_ACTIONS, sin HOME/settings/suspensión/
+desinstalación/red/permiso de uso normal. Snapshot antes de writes, compare contra
+baseline/propio, borrado solo readback paq/features/NONE; error/ajena no defaults.
+
+284debug/229release correctos,18 nuevos compartidos/release repite, coreUP-TO-DATE;
+APKdebug/test/releaseunsigned construidos/lintRelease0errores11avisos. lintDebugFGS
+previo y verificadorFake genérico no reejecutados/ocultados/reparados. DEX/clases/
+manifest separan rollbackDUMP/debug/tests del producto, MAINLock presente release.
+Dos AndroidAtomicFile/políticasFAKE OK0.161s, capacidades1 antes/final, ninguna
+simulaciónadulto/DPMwrites desde tests. Instalación app/test Success tras nueva
+autorizaciónpresencial; baselineNONE/sinsnapshots/servicio y rollback shell ruta
+probada result1 antes de restringir; no rollback externo físico desdeLOCKED probado.
+
+Confirmaciónadicional UNrecorridoMAIN. Dueño autentica panel+acción bloqueo, reporta
+LOCKED/NINGUNA; ADBLOCKED. Inicio/Recientes/cancelarpregunta sin cambio código y
+cancelar salida no abrieron, emergencia/Keyguard sin llamadas funcionó; ADB seguía
+LOCKED. Salida MAIN con código adulto fresco (NO PINAndroid) → uso normal/ADB NONE,
+COMPROBAR_LOCAL baseline1/snapshot local ausente por readback y sin servicio/snapshot
+prot. No shellrestore después de salida ni nuevaentrada/cambio credenciales reales.
+
+Evidencia `pruebas/EVIDENCIA_HIJO_LOCAL02.md`; APKensayado=finalinstalado717a2cce…,
+releaseunsigned1d5a4920… no físico, hashesíntegros allí. Registroadulto conservado,
+sesióncerrada/finalNONE. No H05/H06/productfinal/boot/proceso muerto/ceroescapes/
+rollbackexternoLOCKED/caducidad durante transición física acreditados. Recuperación
+real LOCAL01 antecedente, enLOCAL02 pregunta solo cancelada bajo quiosco. Red nueva
+vigente pero señal/plazo/usooffline pendientes; no implementación/red probada.
+Planes/ADR/CP1/CP2/fixtures/deps/reposajenos/Push/QR02/servidor intactos. Cierrecommit
+y detener sin otra tarea/ensayo/push/despliegue/subagentes/sesiones/promptsdevuelta.

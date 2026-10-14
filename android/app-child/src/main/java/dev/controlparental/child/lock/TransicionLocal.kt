@@ -11,6 +11,7 @@ internal interface PuertoLockLocal {
     fun aplicar()
     fun solicitarInicio()
     fun modo(): ModoLocal
+    fun modoProteccion(): ModoLocal = modo()
     fun restaurar()
     fun restaurado(): Boolean
 }
@@ -66,6 +67,14 @@ internal class TransicionLocal(private val puerto: PuertoLockLocal, private val 
     private fun fallar(e: Exception) {
         val c = causa(e)
         if (preparado && diagnostico.fase != FaseLocal.RESTAURANDO) {
+            // Si ya quedó LOCKED, un error/cierre no es autoridad para devolver uso.
+            try {
+                if (puerto.modoProteccion() == ModoLocal.LOCKED) {
+                    diagnostico = DiagnosticoLocal(FaseLocal.ERROR, c); return
+                }
+            } catch (_: Exception) {
+                diagnostico = DiagnosticoLocal(FaseLocal.ERROR, c); return
+            }
             try { puerto.restaurar(); inicio = ahora(); diagnostico = DiagnosticoLocal(FaseLocal.RESTAURANDO, c) }
             catch (fallo: Exception) { diagnostico = DiagnosticoLocal(FaseLocal.ERROR, causa(fallo)) }
         } else diagnostico = DiagnosticoLocal(FaseLocal.ERROR, c)

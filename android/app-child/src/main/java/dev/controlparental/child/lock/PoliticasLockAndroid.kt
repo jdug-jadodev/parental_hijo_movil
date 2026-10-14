@@ -57,9 +57,11 @@ internal class PoliticasLockAndroid(c: Context, private val actividad: Activity?
     override fun paquetes(valor: Set<String>) { owner(); dpm.setLockTaskPackages(admin, valor.toTypedArray()) }
     override fun features(valor: Int) { owner(); dpm.setLockTaskFeatures(admin, valor) }
     override fun modo(): ModoLocal {
-        falloInicio.get()?.let { throw FalloLocal(it) }
         return when (am.lockTaskModeState) {
-            ActivityManager.LOCK_TASK_MODE_NONE -> ModoLocal.NONE
+            ActivityManager.LOCK_TASK_MODE_NONE -> {
+                falloInicio.get()?.let { throw FalloLocal(it) }
+                ModoLocal.NONE
+            }
             ActivityManager.LOCK_TASK_MODE_LOCKED -> ModoLocal.LOCKED
             else -> ModoLocal.PINNED
         }

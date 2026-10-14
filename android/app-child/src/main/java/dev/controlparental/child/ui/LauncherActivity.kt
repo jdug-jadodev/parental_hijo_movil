@@ -44,6 +44,8 @@ import dev.controlparental.child.recovery.EstadoPantallaRecuperacion
 import dev.controlparental.child.recovery.RecuperacionAndroid
 import java.util.concurrent.atomic.AtomicInteger
 import kotlinx.coroutines.delay
+import dev.controlparental.child.lock.BloqueoLocalAndroid
+import dev.controlparental.child.lock.ModoLocal
 
 /** HOME mínimo; no inicia Lock Task ni registra HOME persistente todavía. */
 class LauncherActivity : ComponentActivity() {
@@ -54,6 +56,7 @@ class LauncherActivity : ComponentActivity() {
     private var recuperacionVisible by mutableStateOf(false)
     private var recuperacion by mutableStateOf(EstadoPantallaRecuperacion())
     private val consultaRecuperacion = AtomicInteger()
+    private var bloqueadoLocal by mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,6 +64,7 @@ class LauncherActivity : ComponentActivity() {
         setContent {
             MaterialTheme {
                 PantallaInicial(diagnostico, resultadoEmergencia, estadoComprobado,
+                    bloqueadoLocal,
                     recuperacionVisible, recuperacion,
                     solicitarEmergencia = {
                         cerrarRecuperacion()
@@ -80,6 +84,7 @@ class LauncherActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
+        bloqueadoLocal = try { BloqueoLocalAndroid.modo(this) == ModoLocal.LOCKED } catch (_: RuntimeException) { false }
         diagnostico = DeviceCapabilities(this).leerAdministracion()
         val consulta = ++consultaEstado
         estadoComprobado = null
@@ -132,6 +137,7 @@ private fun PantallaInicial(
     diagnostico: DiagnosticoAdministracion,
     resultadoEmergencia: ResultadoAccesoEmergencia?,
     estadoComprobado: Boolean?,
+    bloqueadoLocal: Boolean,
     recuperacionVisible: Boolean,
     recuperacion: EstadoPantallaRecuperacion,
     solicitarEmergencia: () -> Unit,
@@ -152,6 +158,13 @@ private fun PantallaInicial(
                 .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
+            if (bloqueadoLocal) {
+                Text("BLOQUEADO — Lock Task MAIN observado", style = MaterialTheme.typography.headlineMedium)
+                Text("Piloto local. Acceso adulto y recuperación por pregunta disponibles; no bloqueo productivo de red/arranque acreditado.")
+                AccesoEmergenciaSistema(resultadoEmergencia, solicitarEmergencia)
+                Button(onClick = abrirAdulto) { Text("Acceso adulto: código o recuperación por pregunta") }
+                return@Column
+            }
             Text(
                 text = stringResource(if (estadoComprobado == false) R.string.estado_local_error else when (diagnostico.estadoPreparacion) {
                     EstadoPreparacion.NO_CONFIGURADO -> R.string.titulo_inicial

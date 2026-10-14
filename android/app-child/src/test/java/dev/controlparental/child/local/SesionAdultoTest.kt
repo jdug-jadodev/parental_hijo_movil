@@ -40,4 +40,20 @@ class SesionAdultoTest {
         assertEquals(t.limite, cambiar.limite)
         tiempo++; assertFalse(s.vigente(cambiar))
     }
+    @Test fun `cada bloqueo o salida exige codigo fresco y revision no solo panel`() {
+        s.reanudar(); assertNull(s.solicitar(FinAdulto.BLOQUEAR))
+        val entrada = s.solicitar(FinAdulto.ENTRAR)!!
+        s.completar(entrada, ResultadoAdulto(TipoAdulto.AUTENTICADO, revision = 1))
+        val t = s.solicitar(FinAdulto.BLOQUEAR)!!
+        assertFalse(s.accionVigente(t))
+        assertFalse(s.autorizarAccion(t, ResultadoAdulto(TipoAdulto.RESPUESTA_VALIDA, revision = 1)))
+        assertFalse(s.autorizarAccion(t, ResultadoAdulto(TipoAdulto.AUTENTICADO, revision = 2)))
+        assertTrue(s.autorizarAccion(t, ResultadoAdulto(TipoAdulto.AUTENTICADO, revision = 1)))
+        assertTrue(s.accionVigente(t)); s.cerrar(); assertFalse(s.accionVigente(t))
+    }
+    @Test fun `recuperacion no habilita salida hasta codigo nuevo autenticado`() {
+        s.reanudar(); val r = s.solicitar(FinAdulto.RECUPERAR)!!
+        s.completar(r, ResultadoAdulto(TipoAdulto.RESPUESTA_VALIDA, revision = 1))
+        assertNull(s.solicitar(FinAdulto.SALIR_ENSAYO))
+    }
 }
