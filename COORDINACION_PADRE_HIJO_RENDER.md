@@ -891,3 +891,49 @@ real LOCAL01 antecedente, enLOCAL02 pregunta solo cancelada bajo quiosco. Red nu
 vigente pero señal/plazo/usooffline pendientes; no implementación/red probada.
 Planes/ADR/CP1/CP2/fixtures/deps/reposajenos/Push/QR02/servidor intactos. Cierrecommit
 y detener sin otra tarea/ensayo/push/despliegue/subagentes/sesiones/promptsdevuelta.
+
+## HIJO-LOCAL03 — protección MAIN, parcial por caché y restaurada
+
+14-10-2026, base4431593/implementación `c7fb85e`. **PARCIAL_RESTAURADO**.
+Dos políticas nuevas: setUninstallBlocked solo hijo y DISALLOW_APPS_CONTROL para
+gestión de TODASapps del usuario. Alternativa granular userControlDisabledPackages
+solo documenta datos/force-stop y no deshabilitar; no usada. UI/aviso global,
+autorización física concreta temporal distinta de autorización install/test.
+Owner/API34/puertoDI/modelo/actorIO/código adulto fresco por operación/revisión/
+boot/generación/ticket vigentes. Cerrar/fondo/pregunta/LockTasksalida no retiran
+protección. SnapshotAtomic privado independiente de credencial/LockTask, guardar
+anteswrites/readback/compare propio local-global vs efectivo. API34 uninstallgetter
+es RESUELTO, no propio: baseline true incompatible anteswrites, no falsa atribución.
+Restore solo contribuciones propias, nunca clear global/otroadmin ni defaults.
+
+306debug/251release correctos,22nuevos compartidos (release repite), núcleoUP-TO-DATE.
+APKdebug/test/unsigned construidos; primer lintRelease falló NewApi guardindirecto,
+corregido guardSDK directo sin suppress/minSDK/deps; último BUILD SUCCESSFUL/
+lintRelease0errores11avisos. lintDebugFGS/verificadorFake previos no reejecutados/
+corregidos. InspecciónDEX/manifest MAINpresente/tests ausentes/rollback solo DEBUG.
+3AndroidAtomic/políticasFAKE OK0.217s tras instalación app/test autorizada Success,
+capacidad1OKantes-final. Ninguna escritura DPM desde instrumentación/simulaciónadulto.
+
+A13únicoSM-A135M/todo adb-s/A56excluido. BaselineNONE/sinsnapshots/servicio,
+uninstall/controlpropio/globalpropio/efectivo todosfalse. Ruta rollbackshellDUMP
+responde: sin snapshot ERROR/SNAPSHOT sin writes, no prueba de rollback desdeaplicado.
+Dueño pulsó Proteger antes autorizaciónglobal, pero readbacksin snapshot/todosfalse
+confirmó no aplicación (faltaba formulario/código fresco). No atribuir desinstalar/
+force-stop ya inhibidos entonces a LOCAL03. Luego autorización explícita global
+y UNAaplicación adulta→ACTIVA/readbackuninstalltrue/controlpropiotrue/globalfalse/
+efectivotrue. Ajustes propio sin intentar acciones destructivas: desinstalar/
+deshabilitar/borrardatos/force-stop inhibidos, **borrarcaché disponible**. Contradice
+alcance documentado en fabricante, causa no determinada; no borrar para comprobar.
+Detener sin ampliar/repetir, restauración MAIN con código fresco→readbacks todosfalse/
+snapshot ausente/LOCAL02baseline1/NONE/uso normal/sesióncerrada. Confirmaciónagrupada
+de entrada/recuperación/emergencia disponibles, no nueva llamada o LockTaskensayo/
+Keyguarddetallado. No código/pregunta cambiados ni recoveryrealnuevo.
+
+Evidencia `pruebas/EVIDENCIA_HIJO_LOCAL03.md`; APKensayado=finalinstalado40891e21…,
+unsignedef1dd1ba… no físico (hashesíntegros allí). Credenciales/datos conservados,
+no políticas nuevas activas permanente. No H05/H06/productfinal/boot/red/remoto
+acreditados. Caché/rollbackexternodesdeaplicado/multiadmin/actualizaciónnormal/
+persistencia físicos pendientes, DPMpersistente noLockTaskpersistente. Rednueva
+vigente pero señal/plazo/usooffline pendientes, no implementada. CP1/CP2/fixtures/
+planes/ADR/deps/reposajenos/padre/Render/Push/QR02 intactos. Cierrecommit/detener,
+sin otra tarea/ensayo/push/despliegue/subagentes/sesiones/promptsdevuelta.
