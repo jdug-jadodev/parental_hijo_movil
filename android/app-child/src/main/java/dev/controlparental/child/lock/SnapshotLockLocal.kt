@@ -75,6 +75,13 @@ internal class AdaptadorLockLocal(private val archivo: ArchivoSnapshotLocal,
     override fun solicitarInicio() { politicas.validar(); politicas.iniciar() }
     override fun modo() = politicas.modo()
     override fun modoProteccion() = politicas.modoRestauracion()
+    /** Reboot no elimina la obligación CE ni inventa baseline: solo políticas propias exactas. */
+    fun comprobarReentrada() {
+        val s = snapshot(); politicas.validar()
+        exigirLocal(politicas.paquete !in s.paquetes, CausaLocal.SNAPSHOT)
+        exigirLocal(politicas.leerPaquetes() == setOf(politicas.paquete) &&
+            politicas.leerFeatures() == politicas.featuresPropios && politicas.modo() != ModoLocal.PINNED, CausaLocal.POLITICA_AJENA)
+    }
     override fun restaurar() {
         val s = snapshot()
         exigirLocal(politicas.paquete !in s.paquetes, CausaLocal.SNAPSHOT)

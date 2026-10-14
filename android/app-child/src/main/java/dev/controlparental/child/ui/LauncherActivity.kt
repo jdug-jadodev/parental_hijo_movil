@@ -46,8 +46,9 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlinx.coroutines.delay
 import dev.controlparental.child.lock.BloqueoLocalAndroid
 import dev.controlparental.child.lock.ModoLocal
+import dev.controlparental.child.boot.ArranquePilotoAndroid
 
-/** HOME mínimo; no inicia Lock Task ni registra HOME persistente todavía. */
+/** HOME no persistente. Reentrada piloto exclusivamente desde intención DP ya enrolada. */
 class LauncherActivity : ComponentActivity() {
     private var diagnostico by mutableStateOf(DiagnosticoAdministracion())
     private var resultadoEmergencia by mutableStateOf<ResultadoAccesoEmergencia?>(null)
@@ -57,6 +58,7 @@ class LauncherActivity : ComponentActivity() {
     private var recuperacion by mutableStateOf(EstadoPantallaRecuperacion())
     private val consultaRecuperacion = AtomicInteger()
     private var bloqueadoLocal by mutableStateOf(false)
+    @Volatile private var primerPlanoPiloto = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,6 +86,10 @@ class LauncherActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
+        primerPlanoPiloto = true
+        ArranquePilotoAndroid.actividad(this, { primerPlanoPiloto && !isFinishing && !isDestroyed }) {
+            bloqueadoLocal = try { BloqueoLocalAndroid.modo(this) == ModoLocal.LOCKED } catch (_: RuntimeException) { false }
+        }
         bloqueadoLocal = try { BloqueoLocalAndroid.modo(this) == ModoLocal.LOCKED } catch (_: RuntimeException) { false }
         diagnostico = DeviceCapabilities(this).leerAdministracion()
         val consulta = ++consultaEstado
@@ -103,6 +109,7 @@ class LauncherActivity : ComponentActivity() {
     }
 
     override fun onPause() {
+        primerPlanoPiloto = false
         consultaEstado++ // Descartar respuesta de una pantalla que ya dejó primer plano.
         cerrarRecuperacion()
         super.onPause()

@@ -4,6 +4,19 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class TransicionLocalTest {
+    @Test fun `piloto boot timeout conserva snapshot no devuelve uso por rollback`() {
+        val modelo = TransicionLocal(p, { tiempo }, { autoridad }, true)
+        val g = modelo.entrar(); tiempo += 3000; modelo.observar(g)
+        assertEquals(DiagnosticoLocal(FaseLocal.ERROR, CausaLocal.TIMEOUT), modelo.diagnostico)
+        assertEquals(0, p.restores)
+    }
+    @Test fun `piloto boot Keyguard pendiente conserva causa sin restore`() {
+        val puerto = object : PuertoLockLocal by p {
+            override fun preparar() { throw FalloLocal(CausaLocal.KEYGUARD) }
+        }
+        val modelo = TransicionLocal(puerto, { tiempo }, { autoridad }, true); modelo.entrar()
+        assertEquals(CausaLocal.KEYGUARD, modelo.diagnostico.causa); assertEquals(0, p.restores)
+    }
     private var tiempo = 10L
     private var autoridad = true
     private class PuertoPrueba : PuertoLockLocal {

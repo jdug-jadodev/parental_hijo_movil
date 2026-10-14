@@ -31,6 +31,7 @@ import dev.controlparental.child.lock.BloqueoLocalAndroid
 import dev.controlparental.child.lock.FaseLocal
 import dev.controlparental.child.lock.ModoLocal
 import dev.controlparental.child.protection.ProteccionAndroid
+import dev.controlparental.child.boot.ArranquePilotoAndroid
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -82,6 +83,7 @@ class AccesoAdultoActivity : ComponentActivity() {
         texto("Lock Task observado=$modo; transición=${BloqueoLocalAndroid.diagnostico.fase}/${BloqueoLocalAndroid.diagnostico.causa}")
         val p = ProteccionAndroid.estado
         texto("Protección de app=${p.fase}/${p.causa}; snapshot=${p.snapshot}; lectura=${p.lectura ?: "DESCONOCIDA"}")
+        texto("Piloto reinicio=${ArranquePilotoAndroid.fase}; enrolado=${ArranquePilotoAndroid.enrolado}. Si sigue armado, el siguiente reinicio exige bloqueo y nueva autoridad adulta.")
         boton("Emergencia / Keyguard del sistema") {
             cerrarAutoridad()
             EmergencyAccess(PolicyEnforcer(this)).irAPantallaBloqueo()
@@ -122,7 +124,9 @@ class AccesoAdultoActivity : ComponentActivity() {
                 if (activa && consulta.get() == n) {
                     resumen = r
                     ProteccionAndroid.consultar(applicationContext) {
-                        if (activa && consulta.get() == n) publica(mensajePublico)
+                        ArranquePilotoAndroid.consultar(applicationContext) {
+                            if (activa && consulta.get() == n) publica(mensajePublico)
+                        }
                     }
                 }
             }
@@ -223,8 +227,11 @@ class AccesoAdultoActivity : ComponentActivity() {
         texto("Sesión solo RAM, hasta2 minutos absolutos desde la solicitud. Salir/fondo cierra. No concede uso ni altera ningún permiso vigente.")
         val modo = try { BloqueoLocalAndroid.modo(this) } catch (_: RuntimeException) { null }
         val locked = modo == ModoLocal.LOCKED
-        boton("BLOQUEAR AHORA — piloto MAIN", modo == ModoLocal.NONE) { confirmarBloqueo(FinAdulto.BLOQUEAR) }
-        boton("SALIDA REVERSIBLE DE ENSAYO — no permiso productivo", locked) { confirmarBloqueo(FinAdulto.SALIR_ENSAYO) }
+        val enroladoBoot = ArranquePilotoAndroid.enrolado
+        boton("BLOQUEAR AHORA — piloto MAIN", modo == ModoLocal.NONE && !enroladoBoot) { confirmarBloqueo(FinAdulto.BLOQUEAR) }
+        boton("SALIDA REVERSIBLE DE ENSAYO — no permiso productivo", locked && !enroladoBoot) { confirmarBloqueo(FinAdulto.SALIR_ENSAYO) }
+        boton("ARMAR PILOTO REINICIO — persistirá al reiniciar", !enroladoBoot && modo == ModoLocal.NONE) { confirmarBloqueo(FinAdulto.ARMAR_BOOT) }
+        boton("FINALIZAR ENSAYO REINICIO — desarmar y restaurar", enroladoBoot) { confirmarBloqueo(FinAdulto.FINALIZAR_BOOT) }
         boton("PROTEGER APP — gestión global de aplicaciones", !ProteccionAndroid.estado.snapshot) { confirmarBloqueo(FinAdulto.PROTEGER_APP) }
         boton("RESTAURAR PROTECCIÓN — baseline de ensayo", ProteccionAndroid.estado.snapshot) { confirmarBloqueo(FinAdulto.RESTAURAR_APP) }
         for (s in listOf("Permitir libre — pendiente", "Permitir tiempo — pendiente", "Red — pendiente", "Otras políticas de Ajustes — pendiente")) boton(s, false)
@@ -233,12 +240,16 @@ class AccesoAdultoActivity : ComponentActivity() {
     private fun confirmarBloqueo(fin: FinAdulto) {
         if (sesion.estado() != AutoridadAdulto.ADMINISTRAR) { consultar(); return }
         val proteccion = fin == FinAdulto.PROTEGER_APP || fin == FinAdulto.RESTAURAR_APP
+        val boot = fin == FinAdulto.ARMAR_BOOT || fin == FinAdulto.FINALIZAR_BOOT
         base(when (fin) {
+            FinAdulto.ARMAR_BOOT -> "Armar reinicio: persistirá al reiniciar"
+            FinAdulto.FINALIZAR_BOOT -> "Finalizar ensayo: desarmar ANTES de restaurar políticas"
             FinAdulto.PROTEGER_APP -> "Confirmar protección de app — alcance global"
             FinAdulto.RESTAURAR_APP -> "Restaurar protección al baseline de ensayo"
             FinAdulto.BLOQUEAR -> "Confirmar bloqueo local"
             else -> "Confirmar salida reversible de ensayo"
         })
+        if (boot) texto("Piloto enrolado con intención DP durable: reinicio exige bloqueo nuevo, no reanuda tiempo/permiso/sesión. No garantía de cero ventana antes de LOCKED ni supervivencia ante crash. Keyguard/emergencia permanecen. Para volver al baseline usa FINALIZAR ENSAYO con código fresco; salir de administración no desarma. No activar protección LOCAL03 ni reiniciar sin coordinar ensayo específico.")
         if (proteccion) texto("setUninstallBlocked: solo hijo. DISALLOW_APPS_CONTROL: TODAS las apps del usuario; impide desinstalar/deshabilitar/borrar datos o caché/forzar detención/cambiar valores predeterminados desde Ajustes o launcher. No bloquea todo Ajustes ni establece restricciones de instalación/actualización; compatibilidad de estas pendiente. ADB conserva acceso de laboratorio. Puede persistir tras reboot; no es Lock Task persistente. Cerrar/fondo/recuperar código o salir del quiosco NO retiran protección; restaurar exige otra autenticación.")
         texto("Requiere código adulto fresco para esta operación. No cambia red/tiempo ni autoriza ALLOW CP/2. Cancelar/fondo no sale de LOCKED.")
         val codigo = campo("Código adulto", codigo = true)
@@ -254,6 +265,18 @@ class AccesoAdultoActivity : ComponentActivity() {
                         return@runOnUiThread
                     }
                     base("Intención aceptada; pendiente de readback — no afirmar aplicado todavía")
+                    if (boot) {
+                        val resultado = {
+                            if (activa && consulta.get() == n) {
+                                cerrarAutoridad(); sesion.reanudar()
+                                mensajePublico = "Piloto reinicio=${ArranquePilotoAndroid.fase}; enrolado=${ArranquePilotoAndroid.enrolado}. Comprueba readback Lock Task; armado persistirá al próximo reboot hasta finalizar ensayo."
+                                consultar()
+                            }
+                        }
+                        if (fin == FinAdulto.ARMAR_BOOT) ArranquePilotoAndroid.armar(this, { sesion.accionVigente(t) }, resultado)
+                        else ArranquePilotoAndroid.finalizar(this, { sesion.accionVigente(t) }, resultado)
+                        return@runOnUiThread
+                    }
                     if (proteccion) {
                         val iniciada = ProteccionAndroid.ejecutar(applicationContext, fin == FinAdulto.RESTAURAR_APP,
                             { sesion.accionVigente(t) }) resultadoProteccion@{ d ->

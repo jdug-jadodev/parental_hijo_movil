@@ -8,8 +8,9 @@ import dev.controlparental.child.admin.DeviceCapabilities
 import dev.controlparental.child.data.CargaEstado
 import dev.controlparental.child.data.EjecutorEstado
 import dev.controlparental.child.data.EstadoAndroid
+import java.util.concurrent.atomic.AtomicInteger
 
-/** Solo contexto duradero. No arranca UI, red ni quiosco y no usa identidad privada. */
+/** H04 conserva su contexto; piloto LOCAL04 separado solo si armado previamente por adulto. */
 class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action !in setOf(Intent.ACTION_LOCKED_BOOT_COMPLETED, Intent.ACTION_BOOT_COMPLETED,
@@ -19,6 +20,9 @@ class BootReceiver : BroadcastReceiver() {
         val accion = intent.action
         val desbloqueadoAlRecibir = TrazaArranque.leerDesbloqueo(protegido)
         val pendiente = goAsync()
+        val partes = AtomicInteger(2)
+        fun terminarParte() { if (partes.decrementAndGet() == 0) pendiente.finish() }
+        ArranquePilotoAndroid.senal(protegido, accion ?: "BOOT", ::terminarParte)
         try {
             EjecutorEstado.ejecutar {
                 try {
@@ -29,11 +33,11 @@ class BootReceiver : BroadcastReceiver() {
                     TrazaArranque.registrar(protegido, accion, desbloqueadoAlRecibir, CargaEstado.ErrorSeguro)
                     Log.e("EstadoControl", "No se pudo comprobar el estado local; no autorizar uso")
                 } finally {
-                    pendiente.finish()
+                    terminarParte()
                 }
             }
         } catch (_: RuntimeException) {
-            pendiente.finish()
+            terminarParte()
         }
     }
 }

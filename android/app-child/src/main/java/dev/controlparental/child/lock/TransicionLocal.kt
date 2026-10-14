@@ -18,7 +18,7 @@ internal interface PuertoLockLocal {
 
 /** Un intento, lectura acotada y rollback previo a LOCKED. Nunca rollback por cerrar sesión ya LOCKED. */
 internal class TransicionLocal(private val puerto: PuertoLockLocal, private val ahora: () -> Long,
-    private val autoridad: () -> Boolean) {
+    private val autoridad: () -> Boolean, private val conservarEnFallo: Boolean = false) {
     var diagnostico = DiagnosticoLocal(FaseLocal.REPOSO); private set
     var generacion = 0L; private set
     private var inicio = 0L
@@ -66,6 +66,7 @@ internal class TransicionLocal(private val puerto: PuertoLockLocal, private val 
     }
     private fun fallar(e: Exception) {
         val c = causa(e)
+        if (conservarEnFallo) { diagnostico = DiagnosticoLocal(FaseLocal.ERROR, c); return }
         if (preparado && diagnostico.fase != FaseLocal.RESTAURANDO) {
             // Si ya quedó LOCKED, un error/cierre no es autoridad para devolver uso.
             try {

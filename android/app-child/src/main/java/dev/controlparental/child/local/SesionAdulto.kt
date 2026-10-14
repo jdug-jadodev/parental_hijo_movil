@@ -1,12 +1,12 @@
 package dev.controlparental.child.local
 
-internal enum class FinAdulto { ALTA, ENTRAR, RECUPERAR, CAMBIAR, BLOQUEAR, SALIR_ENSAYO, PROTEGER_APP, RESTAURAR_APP }
+internal enum class FinAdulto { ALTA, ENTRAR, RECUPERAR, CAMBIAR, BLOQUEAR, SALIR_ENSAYO, PROTEGER_APP, RESTAURAR_APP, ARMAR_BOOT, FINALIZAR_BOOT }
 internal class TicketAdulto(val epoca: Long, val fin: FinAdulto, val boot: Int, val limite: Long)
 internal enum class AutoridadAdulto { CERRADA, ADMINISTRAR, CAMBIAR_CODIGO }
 
 /** Autoridad solo RAM; no escribe ni concede permiso de uso y no conoce CP/1. */
 internal class SesionAdulto(private val ahora: () -> Long, private val boot: () -> Int) {
-    private val finesAccion = setOf(FinAdulto.BLOQUEAR, FinAdulto.SALIR_ENSAYO, FinAdulto.PROTEGER_APP, FinAdulto.RESTAURAR_APP)
+    private val finesAccion = setOf(FinAdulto.BLOQUEAR, FinAdulto.SALIR_ENSAYO, FinAdulto.PROTEGER_APP, FinAdulto.RESTAURAR_APP, FinAdulto.ARMAR_BOOT, FinAdulto.FINALIZAR_BOOT)
     private var epoca = 0L
     private var primerPlano = false
     private var ticket: TicketAdulto? = null

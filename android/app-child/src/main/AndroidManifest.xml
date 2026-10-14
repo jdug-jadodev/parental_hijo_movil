@@ -14,7 +14,7 @@
         <activity
             android:name=".ui.LauncherActivity"
             android:exported="true"
-            android:lockTaskMode="if_whitelisted">
+            android:lockTaskMode="normal">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.HOME" />

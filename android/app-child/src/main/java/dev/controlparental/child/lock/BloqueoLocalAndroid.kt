@@ -25,12 +25,26 @@ internal object BloqueoLocalAndroid {
         else -> ModoLocal.PINNED
     }
     fun ejecutar(a: Activity, salir: Boolean, autoridad: () -> Boolean,
-        entregar: (DiagnosticoLocal) -> Unit): Boolean {
+        entregar: (DiagnosticoLocal) -> Unit): Boolean = transicionar(a, salir, false, autoridad, entregar)
+    fun reentrar(a: Activity, autoridad: () -> Boolean, entregar: (DiagnosticoLocal) -> Unit): Boolean =
+        transicionar(a, false, true, autoridad, entregar, true)
+    fun enrolar(a: Activity, autoridad: () -> Boolean, entregar: (DiagnosticoLocal) -> Unit): Boolean =
+        transicionar(a, false, false, autoridad, entregar, true)
+    private fun transicionar(a: Activity, salir: Boolean, reentrada: Boolean, autoridad: () -> Boolean,
+        entregar: (DiagnosticoLocal) -> Unit, conservar: Boolean = false): Boolean {
         if (!autoridad() || !ocupado.compareAndSet(false, true)) return false
         val g = operacion.incrementAndGet()
         val inicioHabilitado = AtomicBoolean(true)
         val p = PoliticasLockAndroid(a, a) { inicioHabilitado.get() && operacion.get() == g && autoridad() }
-        val modelo = TransicionLocal(AdaptadorLockLocal(archivo(a), p), SystemClock::elapsedRealtime, autoridad)
+        val adaptador = AdaptadorLockLocal(archivo(a), p)
+        val puerto = if (!conservar) adaptador else object : PuertoLockLocal by adaptador {
+            override fun preparar() { if (reentrada) adaptador.comprobarReentrada() else adaptador.preparar() }
+            override fun aplicar() { if (reentrada) adaptador.comprobarReentrada() else adaptador.aplicar() }
+            override fun solicitarInicio() {
+                if (!reentrada || adaptador.modo() != ModoLocal.LOCKED) adaptador.solicitarInicio()
+            }
+        }
+        val modelo = TransicionLocal(puerto, SystemClock::elapsedRealtime, autoridad, conservar)
         diagnostico = DiagnosticoLocal(if (salir) FaseLocal.RESTAURANDO else FaseLocal.PREPARANDO)
         ejecutor.execute {
             val gm = if (salir) modelo.salir() else modelo.entrar()
