@@ -1,0 +1,54 @@
+package dev.controlparental.child.local
+
+internal enum class FinAdulto { ALTA, ENTRAR, RECUPERAR, CAMBIAR }
+internal class TicketAdulto(val epoca: Long, val fin: FinAdulto, val boot: Int, val limite: Long)
+internal enum class AutoridadAdulto { CERRADA, ADMINISTRAR, CAMBIAR_CODIGO }
+
+/** Autoridad solo RAM; no escribe ni concede permiso de uso y no conoce CP/1. */
+internal class SesionAdulto(private val ahora: () -> Long, private val boot: () -> Int) {
+    private var epoca = 0L
+    private var primerPlano = false
+    private var ticket: TicketAdulto? = null
+    private var autoridad = AutoridadAdulto.CERRADA
+    private var revision = 0L
+    private var limite = 0L
+    private var arranque = -1
+    private var ultimo = 0L
+
+    @Synchronized fun reanudar() { cerrar(); primerPlano = true }
+    @Synchronized fun cerrar() {
+        epoca++; primerPlano = false; ticket = null; autoridad = AutoridadAdulto.CERRADA
+        revision = 0; limite = 0; arranque = -1
+    }
+    @Synchronized fun estado(): AutoridadAdulto {
+        val t = ahora()
+        if (!primerPlano || t < ultimo || t >= limite || boot() != arranque) autoridad = AutoridadAdulto.CERRADA
+        ultimo = t
+        return autoridad
+    }
+    @Synchronized fun solicitar(fin: FinAdulto): TicketAdulto? {
+        if (!primerPlano || boot() < 0 || ahora() < ultimo) return null
+        if (fin == FinAdulto.CAMBIAR && estado() != AutoridadAdulto.CAMBIAR_CODIGO) return null
+        val t = ahora(); ultimo = t
+        return TicketAdulto(++epoca, fin, boot(), Math.addExact(t, 120_000)).also { ticket = it }
+    }
+    @Synchronized fun vigente(t: TicketAdulto): Boolean {
+        val n = ahora(); val valida = primerPlano && ticket === t && t.epoca == epoca &&
+            boot() == t.boot && n >= ultimo && n < t.limite
+        ultimo = n
+        return valida
+    }
+    @Synchronized fun completar(t: TicketAdulto, r: ResultadoAdulto): Boolean {
+        if (!vigente(t)) return false
+        ticket = null
+        autoridad = when {
+            t.fin == FinAdulto.ENTRAR && r.tipo == TipoAdulto.AUTENTICADO -> AutoridadAdulto.ADMINISTRAR
+            t.fin == FinAdulto.RECUPERAR && r.tipo == TipoAdulto.RESPUESTA_VALIDA -> AutoridadAdulto.CAMBIAR_CODIGO
+            else -> AutoridadAdulto.CERRADA
+        }
+        revision = r.revision; limite = t.limite; arranque = t.boot
+        return true
+    }
+    @Synchronized fun revisionRecuperacion(): Long? =
+        if (estado() == AutoridadAdulto.CAMBIAR_CODIGO) revision else null
+}
