@@ -3,7 +3,7 @@
 Última actualización: 14 de octubre de 2026
 Commit de partida: ac7d801 (C01 completada)
 Tarea actual: HIJO-LOCAL08 — comprobación integrada OFFLINE temporal y Keyguard
-Estado: PARCIAL_OFFLINE_1MIN_VENCE_Y_RESTAURADO — OFFLINErealNO_VALIDADA→LOCKEDdeadline+337ms; apagado fue posterior, Keyguardpendientealvencimiento/primerretornounlock NO acreditados; segundaacciónadulto2min separada; finalNONE-desarmado
+Estado: CERRADA_POR_ACEPTACION_DEL_PROPIETARIO — OFFLINErealNO_VALIDADA→LOCKEDdeadline+337ms y restauración aceptados; evidencia física parcial: apagado fue posterior, Keyguardpendientealvencimiento/primerretornounlock NO acreditados; segundaacciónadulto2min separada; finalNONE-desarmado
 Commit de partida de H03: 499b31f.
 Primer commit H03: 80e1cb4. Commit de cierre: «Cerrar H03 con pruebas de mantenimiento y evidencia».
 C02 comprobada en JVM/Node y Android/Keystore. Commit de esta unidad: «Validar C02 en el A13 y excluir expresamente el A56».
@@ -276,7 +276,7 @@ La supervivencia del control ante muerte de proceso y suspensión sigue pendient
 
 ## Próxima tarea y lectura mínima
 
-LOCAL08 entregada PARCIAL_Y_RESTAURADA: revisar `pruebas/EVIDENCIA_HIJO_LOCAL08.md` y relevo; no siguiente tarea ni reensayo automático. Vencimiento OFFLINE1min sin red sí; apagadoantesdeadline/primerunlockconKeyguardpendiente sigue sin acreditar y segundoPERMITIR autónomo no lo valida. Todo nuevo recorrido requiere asignación/autorización específica; conservar LOCAL07cancelada/sinDNSVPN y reglaNORMAL10s/reconexiónNOabre. A13finalNONE/desarmado/sinservicio/sinsnapshots/credencialconservada. Referencias históricas siguientes no sustituyen este resultado actual.
+LOCAL08 CERRADA_POR_ACEPTACION_DEL_PROPIETARIO tras «igual funciono, entonces cierra eso». Se acepta vencimiento/bloqueo OFFLINE y restauración documentados en `pruebas/EVIDENCIA_HIJO_LOCAL08.md`, sin repetir el ensayo. Evidencia física sigue parcial: apagadoantesdeadline/primerunlockconKeyguardpendiente no acreditados; segundoPERMITIR autónomo no lo valida. Sin nueva prueba, instalación ni cambio de código/políticas. No siguiente tarea automática; conservar LOCAL07cancelada/sinDNSVPN y reglaNORMAL10s/reconexiónNOabre. A13últimoestadoverificadoNONE/desarmado/sinservicio/sinsnapshots/credencialconservada. Referencias históricas siguientes no sustituyen este cierre actual.
 
 HIJO-LOCAL04 cerrada AUTOBOOT_LOCKED_LOGRADO_Y_RESTAURADO: entregar evidencia/commits/APK y esperar revisión, sin otra tarea/ensayo/reboot automático. A13finalDESARMADO/enroladofalse/NONE/sinsnapshots/servicio/LOCAL03todasfalse/sesióncerrada/uso normal, código/pregunta/datos conservados; H04contexto ahora boot5 legítimo. Latencia4068ms tras USER_UNLOCKED y ventana efectiva no medida, rebootmanual bajoquiosco no disponible, no crash/zeroescapes/productfinal/H05/H06/red/remoto acreditados. Toda siguiente instalación/activación/reboot/ensayo requiere confirmación específica nueva; nunca dejar piloto armado permanente sin autorización adicional. RedposteriorC08 vigente pero señal/plazo/usooffline pendientes, cachéLOCAL03 pendiente no perseguida. CP1/CP2/planes/ADR/deps/reposajenos intactos/A56 excluido, sinpush.
 H00 cerrado: ADB autorizado, inventario obtenido y preparación confirmada. El formateo fue previo y declarado por el propietario, no ejecutado por el agente.

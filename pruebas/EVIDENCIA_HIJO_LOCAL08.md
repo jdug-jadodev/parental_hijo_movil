@@ -1,6 +1,10 @@
 # HIJO-LOCAL08 — OFFLINE temporal y recorrido Keyguard
 
-14 de octubre de 2026. Base `45476e6`. **PARCIAL_OFFLINE_1MIN_VENCE_Y_RESTAURADO; vencimiento con pantalla apagada/Keyguard pendiente NO acreditado**. Sin cambios de código ni instalación; cierre en commit que incorpora esta evidencia.
+14 de octubre de 2026. Base `45476e6`. **CERRADA_POR_ACEPTACION_DEL_PROPIETARIO; evidencia física parcial: OFFLINE_1MIN_VENCE_Y_RESTAURADO, vencimiento con pantalla apagada/Keyguard pendiente NO acreditado**. Sin cambios de código ni instalación; entrega inicial `aeae31a`.
+
+## Aceptación y cierre del propietario
+
+Tras la entrega inicial, el propietario indicó «igual funciono, entonces cierra eso». Se cierra LOCAL08 aceptando el vencimiento/bloqueo OFFLINE y restauración observados, sin reensayo ni tarea siguiente automática. Esta aceptación no convierte el apagado posterior en prueba de vencimiento bajo Keyguard ni mezcla las dos autorizaciones. El registro técnico siguiente permanece como evidencia parcial. Actualización exclusivamente documental, sin nuevos comandos físicos, builds, tests ni cambios de código/políticas; revisión `git diff --check` antes del commit de cierre.
 
 ## Alcance y procedencia
 
