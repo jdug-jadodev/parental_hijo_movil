@@ -14,9 +14,17 @@ internal class PilotoE2eAndroid(private val actividad: Activity, private val aut
     private val main = Handler(Looper.getMainLooper())
     @Volatile private var canal: CanalWssAndroid? = null
     @Volatile private var consulta: Pair<GeneracionCanalCp2, String>? = null
+    private val vencimiento = object : Runnable {
+        override fun run() {
+            if (cerrado.get()) return
+            if (!autoridad()) { close(); estado("Canal cerrado: sesión adulta caducada o sin primer plano"); return }
+            main.postDelayed(this, 1000)
+        }
+    }
     private fun vigente(ref: GeneracionCanalCp2) = !cerrado.get() && ref.activa && autoridad()
     fun conectar() {
         if (cerrado.get() || !autoridad()) return
+        main.removeCallbacks(vencimiento); main.postDelayed(vencimiento, 1000)
         ControlRedAndroid.iniciarCp2(actividad, { !cerrado.get() && autoridad() }, ::emitirEnActor,
             { emitirEnActor() }) { disponible ->
             if (cerrado.get() || !autoridad()) return@iniciarCp2
@@ -31,14 +39,15 @@ internal class PilotoE2eAndroid(private val actividad: Activity, private val aut
             }, { texto -> main.post { if (!cerrado.get()) estado(texto) } }).also { it.conectar() }
         }
     }
-    private fun emitirEnActor() {
-        val (ref, nonce) = consulta ?: return
-        if (!vigente(ref)) return
-        val bytes = ControlRedAndroid.stateCp2EnActor(actividad.applicationContext, nonce) { vigente(ref) } ?: return
-        if (vigente(ref)) canal?.enviar(ref, bytes)
+    private fun emitirEnActor(): Boolean {
+        val (ref, nonce) = consulta ?: return false
+        if (!vigente(ref)) return false
+        val bytes = ControlRedAndroid.stateCp2EnActor(actividad.applicationContext, nonce) { vigente(ref) } ?: return false
+        return vigente(ref) && canal?.enviar(ref, bytes) == true
     }
     override fun close() {
         if (!cerrado.compareAndSet(false, true)) return
+        main.removeCallbacks(vencimiento)
         consulta = null; canal?.close(); canal = null
         ControlRedAndroid.cerrarCanalCp2()
     }

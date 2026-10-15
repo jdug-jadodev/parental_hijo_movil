@@ -42,7 +42,7 @@ internal class CanalWssAndroid(c: Context, mensaje: (GeneracionCanalCp2, ByteArr
                     actor.execute { modelo.abierto(ref, object : SocketCp2 {
                         override fun enviar(texto: String) = webSocket.send(texto)
                         override fun cerrar() { webSocket.close(1000, null); webSocket.cancel() }
-                    }, response.header("Sec-WebSocket-Protocol")) }
+                    }, response.headers.values("Sec-WebSocket-Protocol").singleOrNull()) }
                 }
                 override fun onMessage(webSocket: WebSocket, text: String) {
                     if (cerrado.get()) return
@@ -62,10 +62,10 @@ internal class CanalWssAndroid(c: Context, mensaje: (GeneracionCanalCp2, ByteArr
             })
         }
     }
-    fun enviar(ref: GeneracionCanalCp2, bytes: ByteArray) {
-        if (!cerrado.get() && bytes.size in 1..16384) {
-            val copia = bytes.copyOf(); actor.execute { modelo.enviar(ref, copia) }
-        }
+    fun enviar(ref: GeneracionCanalCp2, bytes: ByteArray): Boolean {
+        if (cerrado.get() || !ref.activa || bytes.size !in 1..16384) return false
+        val copia = bytes.copyOf()
+        return try { actor.execute { modelo.enviar(ref, copia) }; true } catch (_: java.util.concurrent.RejectedExecutionException) { false }
     }
     override fun close() {
         if (!cerrado.compareAndSet(false, true)) return

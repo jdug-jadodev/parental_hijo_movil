@@ -4,6 +4,17 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class SesionAdultoTest {
+    @Test fun `conexion cp2 exige codigo fresco y no renueva marco original`() {
+        s.reanudar(); assertNull(s.solicitar(FinAdulto.CONECTAR_CP2))
+        val entrada = s.solicitar(FinAdulto.ENTRAR)!!
+        s.completar(entrada, ResultadoAdulto(TipoAdulto.AUTENTICADO, revision = 9))
+        tiempo += 100000
+        val t = s.solicitar(FinAdulto.CONECTAR_CP2)!!
+        assertFalse(s.accionVigente(t)); assertEquals(entrada.limite, t.limite)
+        assertTrue(s.autorizarAccion(t, ResultadoAdulto(TipoAdulto.AUTENTICADO, revision = 9)))
+        val marco = s.marcoAcreditado(t)!!
+        tiempo += 20000; assertFalse(s.marcoVigente(marco)); assertFalse(s.accionVigente(t))
+    }
     @Test fun `marco pair no revive tras fondo ni reentrada ni codigo fresco tardio`() {
         s.reanudar(); val e = s.solicitar(FinAdulto.ENTRAR)!!
         s.completar(e, ResultadoAdulto(TipoAdulto.AUTENTICADO, revision = 9))

@@ -1,5 +1,27 @@
 # CP/2 parcial — fuente local suministrada
 
+## Estado actual E2E01 / STATE01-PILOTO (15 de octubre de 2026)
+
+Fuente JSONSTATE suministrada íntegra en conversación, copiada separada
+`state-piloto.schema.json`, SHA256UTF8/LFfinal
+`bf6c04c3614010932233b2ca052d5a5eb2605361f9b35e764000975198027809`.
+No repo externo leído/commit remoto verificado;5testsRender reportados, no
+ejecutados aquí. CP1 y fixtures congelados intactos; CP2 no congelación completa.
+
+Codec/firmante CHILD STATE01/proyección y recorrido MAIN UIadulta→TLS-WSS/AUTH→
+guardia→escritorCONTROLdurable→UsoRed/Bloqueo→STATEfirmado conectados EN CÓDIGO;
+no física. Historia/avisosnull=NO DISPONIBLE/no0. LOCKED/ALLOWED sólo tras callback
+de ESA revisión y observación actual compatible; Keyguard/PINNED/firma no prueban
+efecto. PEER_UNAVAILABLE es informativo, no ACK ni resultado de aplicación, sin
+depender de PEER_STATUS paraAUTH/SYNC. Primerplano/sesiónoriginal120s, sin promesa
+de background/appmuerta ni reanudación de permiso/reintento autónomo. NORMAL10s
+desde negativaAndroid/reconectarnoabre; OFFLINE sólo decisiónlocalexplícita.
+
+**E2E01 abierta: falta fuente exacta ACK§7/9**, no incluida en este schemaSTATE.
+No inventar ACK ni reutilizar CP1; UI muestra esa limitación. Evidencia actual
+`pruebas/EVIDENCIA_HIJO_E2E01.md`. Las entregas siguientes son HISTÓRICAS; su
+conexiónAUTH/órdenes deshabilitada describe versiones previas, no el avance actual.
+
 HIJO-PAIR01, 2026-10-14. Copia del texto íntegro de
 `contrato-cp2/vinculacion.schema.json`, suministrado por el propietario como
 FUENTE CP2-V01 Render `4ac4962`; README de esa fuente también suministrado íntegro

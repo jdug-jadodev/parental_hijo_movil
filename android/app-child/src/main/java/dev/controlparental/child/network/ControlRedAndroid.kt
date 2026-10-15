@@ -46,7 +46,7 @@ internal object ControlRedAndroid {
     private var generacionCp2: GeneracionOrdenCp2? = null
     private var permisoControlRef: Long? = null
     private var actividadCp2: WeakReference<Activity>? = null
-    private var cambioCp2: (() -> Unit)? = null
+    private var cambioCp2: (() -> Boolean)? = null
     private var retenidaCp2: ((RemotoControl?) -> Unit)? = null
     private var vigenteCanalCp2: (() -> Boolean)? = null
     private var secuenciaState = 0L
@@ -320,7 +320,7 @@ internal object ControlRedAndroid {
         controlCp2 = w
         return w.abrir(autoridad)
     }
-    fun iniciarCp2(a: Activity, autoridad: () -> Boolean, cambio: () -> Unit,
+    fun iniciarCp2(a: Activity, autoridad: () -> Boolean, cambio: () -> Boolean,
         retenida: (RemotoControl?) -> Unit, entregar: (Boolean) -> Unit) {
         ejecutor.execute {
             if (!autoridad() || !listo || modelo == null || !ArranquePilotoAndroid.enrolado) {
@@ -339,7 +339,13 @@ internal object ControlRedAndroid {
                     val canal = vigenteCanalCp2 ?: error("Sin generación de canal")
                     check(canal())
                     val d = w.remoto(preparacion) ?: error("Conflicto CONTROL; requiere SYNC nuevo")
-                    cambioCp2?.invoke()
+                    if (cambioCp2?.invoke() != true) {
+                        w.confirmar(d.revision, false)
+                        permisoControlRef = null; modelo?.bloquear { true }
+                        modelo?.let { publicar(it, "RESPUESTA_FIRMADA_NO_DISPONIBLE") }
+                        ArranquePilotoAndroid.exigirBloqueo(app)
+                        error("No se pudo preparar/enfilar respuesta firmada; no ampliar permiso")
+                    }
                     val actividad = actividadCp2?.get() ?: error("Piloto sin Activity foreground")
                     if (d.action == AccionOrdenCp2.LOCK) {
                         permisoControlRef = null

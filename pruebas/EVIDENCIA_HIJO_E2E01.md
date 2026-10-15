@@ -3,6 +3,66 @@
 15 de octubre de 2026. Base `9ddce88`; primer bloque `d507df8`.
 **EN CURSO. No hay recorrido funcional E2E entregable ni APK listo para ensayo.**
 
+## Resultado actual — STATE vertical conectado, ACK exacto pendiente
+
+Bloques `d507df8`, `897cfe7`, `647d138` y commit que incorpora este avance.
+**Existe recorrido MAIN callable real**: código adulto fresco/sesión original120s
+→ WSS/TLSnormal/AUTHCHILD → SYNC/SET_POLICY PARENT verificados con clave esperada
+→ guardia/controlador durable CE → actor UsoRed/Bloqueo reversible → STATE firmado
+por la identidad CHILD existente y en la misma generación. No sustitución por
+ControlOrdenNoDisponible ni fábrica de autoridad RAM. Fuente STATE ya completa,
+sin esperar otro schema STATE. **Lo que falta es la definición ACK§7/9 exacta**:
+no aparece en la fuente STATE/PEER_UNAVAILABLE suministrada; no emitir un ACK
+inventado ni reutilizar CP1. UI declara ACK no emitido. E2E01 NO se marca cerrada.
+
+Pruebas nuevas totales contra ORD01: **7core+27app distintos** (writer11,
+UsoIntegrado3, canal6, proyección3, sesión1, verticalSTATE3). Las verticales usan
+claves PADRE/HIJO efímeras diferentes, firmas reales, ClienteAuthHijo/ClienteCanalCp2/
+GuardiaOrdenCp2/EscritorControlCp2/UsoRedLocal/ProyeccionStateCp2/codecs reales y
+glue del ensayo con disco/reloj/socket/enforcement **FALSOS**. Recorren AUTH-SYNC-
+LOCK/ALLOW/ALLOW_FOR, pending firmado antes del efecto falso, resultado APPLIED
+sólo callback falso correlacionado, replay retenido sin reaplicar/renovar, pérdida
+de red10s/STATE NETWORK_LOST sin reapertura al reconectar, IO ambiguo sin permiso.
+Esto NO ejecuta Activity/DeviceOwner/KeystoreAndroid/TLS/relay real ni acredita
+observación física. Revisar esos bordes con autorización posterior específica.
+
+Endurecimiento de código limitado al canal y coherencia del piloto: cabecera de
+subprotocolo debe ser única y exactamentecp.v2; timerfixedDelay no acumula ráfagas;
+expiración de marco original120s comprobada en primer plano aunque otro ticket
+local cambie el límite de sesión; no reintento/autogrant. Si no se puede firmar y
+enfilar STATEpendiente en la MISMA generación, writer confirma fallo/bloquea en vez
+de ampliar uso. **Enfilar no equivale a entregar**, ACK relay ni enforcement.
+
+Último full con comando offline--rerun de abajo: **SUCCESS2m40s/131tareas131ejecutadas/
+0UPTODATE**, XML **200core/487debug/432release0fallos/errores**; lintRelease
+**0errores12avisos**. AndroidTest compilado/empaquetado, NOinstrumentado.
+Intento inmediatamente anterior **FAILED2m31s/106tareas106ejecutadas** por
+`QrOfertaCp2Test.matrizConMargenEscaneableConservaBytesOriginales` preexistente con
+datos aleatorios (`NotFoundException`). **No se alteró la prueba**: repetir el
+conjunto pasó. Queda anotada la inestabilidad sintética, no resuelta ni cámara
+ensayada. Primer pase vertical **FAILED21s9exec41UPTODATE** por recursión accidental
+en el puerto falso de consolidación, corregido a `this@Lab.consolidar`;
+posterior **SUCCESS21s4exec48UPTODATE** (corecached/appambasejecutadas), y después
+el fullforzado ya indicado. No sumar pruebas del pase fallido como aprobadas.
+
+Inspección dirigida python-B/ZipFile: clasesMAINwriter/canal/PilotoE2eAndroid/
+CodecStateCp2/CriptografiaStateCp2 presentes; ControlOrdenNoDisponible/tests nuevos/
+vectoresfuente-vueltas/schemasausentes; rollbacksoloDEBUG/ignoreFGSúnicoigual;
+hashesORD ySTATEexactos. No auditoríaAPKexhaustiva ni verificadoreshistóricos resueltos.
+
+APKs compilados actuales **NOINSTALADOS y NO listos como unidad E2E completa**:
+- Debug `android/app-child/build/outputs/apk/debug/app-child-debug.apk`, SHA256
+  `e3807734deae91d5e349aecb8ca8b7b03bbed12e1eea6960a439a17dfa88bc7a`.
+- Releaseunsigned `android/app-child/build/outputs/apk/release/app-child-release-unsigned.apk`,
+  SHA256 `9c1ee3385fa7e9314dbab2e103650573b9c2a8c45472901132c812a257249f4b`.
+- Sin ADB/A13/A56/install/QRreales/altas/pareja/credencial/Owner/PIN/protecciones/
+  redapp-router/CA/push/deploy/otrosrepos/subagentes/prompts. Últimoinstalado sigue
+  PAIR01histórico sin consultar. Historia/avisos NO DISPONIBLE/null, no cero.
+- Siguiente trabajo **MISMA E2E01**, no nueva tarea: ACK exacto y correlación/tests/
+  fullfinal/entrega cuando exista fuente. No suponer campos/reasons/resultados.
+
+El resto del archivo conserva el historial de avances y hashes anteriores.
+
 ## Avance STATE01 posterior — misma E2E01, fuente recibida
 
 FuenteSTATE01JSON exacta y enumreason recibidos después de la consulta al usuario,

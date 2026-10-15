@@ -1,5 +1,28 @@
 # Relevo de coordinación — padre, hijo y WebSocket CP/1
 
+## E2E01 / STATE01 actual — avance vertical real compilado, ACK pendiente
+
+2026-10-15. Bloquesd507df8/897cfe7/647d138 y commit de este relevo. STATE01JSON
+íntegro copiado/enumreason exacto implementado/SHA256UTF8LFfinalbf6c04c3614010932233b2ca052d5a5eb2605361f9b35e764000975198027809.
+No esperar otrafuenteSTATE. MAINcallable UIadultafresca/marco120s→WSS-TLSnormal/
+AUTHCHILD→guardiaPARENT→writerCEdurable/actorUsoRed-Bloqueo→STATEfirmado/ESAgeneración.
+No más ControlOrdenNoDisponible. No ACKinventado: **falta ACK§7/9 exacto**, fuente
+STATE/PEER_UNAVAILABLE no lo define. UIindica ACKnoemitido, E2E01 NOcerrada ni
+APK listo para recorrido completo. Completar ACK en MISMAunidad, no nuevatarea.
+VerticalesJVM firmasPADRE-HIJOreales/puertosdisco-clock-socket-enforcementFAKE,
+PENDINGantesefectoFAKE/APPLIEDconcorrrelación/replaynoefecto/red10sNETWORK_LOST/
+reconectarnoabre/IOambiguosinpermiso. FullforzadoofflineSUCCESS2m40s131ejecutadas
+0UPTODATE/200core-487debug-432release0fallos/7core+27appnuevosdistintos/lint0errores
+12avisos. PrevioFAILED2m31s106exec por QR sintéticoaleatorioNotFoundException,
+pruebapreexistentenoalterada/reintento pasó/inestabilidadpendiente nofísica.
+APKdebugNOinstaladoSHAe3807734deae91d5e349aecb8ca8b7b03bbed12e1eea6960a439a17dfa88bc7a;
+unsigned9c1ee3385fa7e9314dbab2e103650573b9c2a8c45472901132c812a257249f4b.
+InspecciónAPKdirigidaMAINpilot-STATE-writer-canalpresentes/tests-vectores-schema
+ausentes/ignoreFGSúnicoigual/rollbackDEBUG/schemahashintactos. SinADB/teléfonos/
+install/QRreal/altas/Owner/PIN/protecciones/redapp-router/push/otrosrepos/subagentes.
+Detalle/límites/pasadasfallidas `pruebas/EVIDENCIA_HIJO_E2E01.md`. Entradas siguientes
+son avances/historial anteriores.
+
 ## HIJO-E2E01 — avance EN CURSO, no entrega funcional
 
 2026-10-15, base9ddce88/bloquewriterd507df8. Evidencia `pruebas/EVIDENCIA_HIJO_E2E01.md`: escritorCONTROL CE real/reserva-readback/revisiónpropia/seq-últimoresultado, puente callable al actorControlRedAndroid local-remoto/red/timer, WSS callable OkHttp4.12.0/AUTHCHILDreal/TLSnormal/cp.v2/generaciones/sinreintento. ControlOrdenNoDisponible retiradoMAIN. **Faltan STATE/ACKemisores y conexiónUI/lifecycle-transporte-writer; NOE2Efuncional ni APKlisto.** Bloqueo específico fuenteACKschema§7/9 prometida para siguiente mensaje y enumexactoeffective.reason§9 no recibidos. Explicado al usuario que basta copiar fuenteRender, no claves/datosdel teléfono. Último full offline--rerun SUCCESS4m11s131ejecutadas0UPTODATE,193core/479debug/424release0fallos/19appnuevosdistintos,JVM-fakes sinAndroidreal/lint0errores12avisos. APKPARCIALdebugSHAae8b7661…b822e1/unsigned87bae7db…414c39, NOinstalados. SinADB/teléfonos/redreal/push/otrosrepos/subagentes. Completar SOLOE2E01 al recibirfuentes, no cerrar ni iniciar otraunidad. Historial/pasadas/límites en evidencia; entradas siguientes previas.

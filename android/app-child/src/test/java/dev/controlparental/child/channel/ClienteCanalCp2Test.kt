@@ -77,4 +77,12 @@ class ClienteCanalCp2Test {
         l.autenticar(nueva); l.canal.recibir(antigua, ByteArray(17000)); assertTrue(l.canal.vigente(nueva)); assertEquals(0, l.mensajes)
         l.canal.fallo(nueva); assertFalse(nueva.activa); assertEquals(0, l.mensajes)
     }
+    @Test fun peerUnavailableInformativoNoEsAckNiCierraAuthNiDespachaOrden() {
+        val l = Lab(); val ref = l.abrir(); l.autenticar(ref)
+        for (valor in listOf("null", "\"$id\"")) {
+            l.canal.recibir(ref, "{\"kind\":\"PEER_UNAVAILABLE\",\"reason\":\"PEER_OFFLINE\",\"refCommandId\":$valor,\"v\":2}".toByteArray())
+            assertTrue(l.canal.vigente(ref)); assertEquals(0, l.mensajes)
+        }
+        assertTrue(l.estados.last().contains("no es ACK"))
+    }
 }
