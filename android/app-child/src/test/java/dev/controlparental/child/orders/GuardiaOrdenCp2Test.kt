@@ -18,9 +18,10 @@ class GuardiaOrdenCp2Test {
         var pareja: ParejaOrdenCp2? = ParejaOrdenCp2(id, publica, publica, "registro1", 5)
         var control: ControlOrdenCp2? = ControlOrdenCp2(5, id, id, 7, 10)
         var alConsolidar: () -> Unit = {}; var alVerificar: () -> Unit = {}; var alDecidir: () -> Unit = {}
-        var decisiones = 0; var consolidaciones = 0; var entropia = 0
+        var decisiones = 0; var consolidaciones = 0; var entropia = 0; var consultasRetenidas = 0
         val escritor = object : EscritorControlOrdenCp2 {
             override fun consolidar(): ControlOrdenCp2? { consolidaciones++; alConsolidar(); return control }
+            override fun consultarRetenida(orden: OrdenVerificadaCp2) { consultasRetenidas++ }
             override fun entregarParaDecision(preparacion: PreparacionOrdenCp2) { decisiones++; alDecidir() }
         }
         val guardia = GuardiaOrdenCp2({ tiempo }, { pareja }, escritor, { ByteArray(32) { (++entropia).toByte() } },
@@ -48,6 +49,7 @@ class GuardiaOrdenCp2Test {
     @Test fun nuevoSyncMismaRevisionReemplazaYConsultaNullAnula() {
         val l = Lab(); val ref = l.guardia.iniciar()!!; val vieja = l.sync(ref)!!.reto!!
         val nueva = l.sync(ref)!!.reto!!; assertNotEquals(vieja.nonce, nueva.nonce)
+        assertTrue(nueva.generacion > vieja.generacion); assertEquals(vieja.revision, nueva.revision)
         assertNull(l.preparar(ref, vieja)); assertNull(l.sync(ref, null)!!.reto); assertNull(l.preparar(ref, nueva))
     }
     @Test fun caducaExactamenteTreintaSegundosORelojRetrocedeSinRejuvenecer() {
@@ -102,5 +104,62 @@ class GuardiaOrdenCp2Test {
     @Test fun sinEscritorDurableNoDisponibleSinAutoridadMainAlternativa() {
         val l = Lab(); val g = GuardiaOrdenCp2({ l.tiempo }, { l.pareja }, ControlOrdenNoDisponible)
         assertNull(g.iniciar()); l.control = null; assertNull(l.guardia.iniciar())
+    }
+    @Test fun bootSesionIdentidadProcesoYContadoresNoRetroceden() {
+        for (caso in 0..6) {
+            val l = Lab(); val ref = l.guardia.iniciar()!!; val r = l.sync(ref)!!.reto!!; val p = l.preparar(ref, r)!!
+            when (caso) {
+                0 -> l.control = l.control!!.copy(boot = 6)
+                1 -> l.control = l.control!!.copy(childSessionId = "12345678-1234-4234-8234-123456789abc")
+                2 -> l.pareja = l.pareja!!.copy(publicaHijo = "otra")
+                3 -> l.control = l.control!!.copy(revisionControl = 6)
+                4 -> l.control = l.control!!.copy(lastAcceptedSeq = 9)
+                5 -> l.control = l.control!!.copy(bootId = "12345678-1234-4234-8234-123456789abc")
+                6 -> l.pareja = null
+            }
+            assertEquals(EntregaOrdenCp2.RECHAZADA, l.guardia.entregar(ref, p)); assertEquals(0, l.decisiones)
+            val otro = GuardiaOrdenCp2({ l.tiempo }, { l.pareja }, l.escritor)
+            assertEquals(EntregaOrdenCp2.RECHAZADA, otro.entregar(ref, p))
+        }
+    }
+    @Test fun syncNullReentranteMismaGeneracionHaceObsoletoCallbackCripto() {
+        val l = Lab(); val ref = l.guardia.iniciar()!!; val r = l.sync(ref)!!.reto!!
+        l.alVerificar = { l.alVerificar = {}; assertNull(l.sync(ref, null)!!.reto) }
+        assertNull(l.preparar(ref, r)); assertEquals(0, l.decisiones)
+    }
+    @Test fun reentranciaConsolidacionNoBorraRetoNuevoNiEntregaDosVeces() {
+        val l = Lab(); val ref = l.guardia.iniciar()!!; val r = l.sync(ref)!!.reto!!; val p = l.preparar(ref, r)!!
+        var siguiente: RetoOrdenCp2? = null
+        l.alConsolidar = { l.alConsolidar = {}; siguiente = l.sync(ref)!!.reto!! }
+        assertEquals(EntregaOrdenCp2.RECHAZADA, l.guardia.entregar(ref, p))
+        assertNotNull(l.preparar(ref, siguiente!!)); assertEquals(0, l.decisiones)
+    }
+    @Test fun frontera29999YLongMaxNoInventanSeqNiRevision() {
+        val l = Lab(); l.control = l.control!!.copy(revisionControl = Long.MAX_VALUE, lastAcceptedSeq = Long.MAX_VALUE - 1)
+        val ref = l.guardia.iniciar()!!; val r = l.sync(ref)!!.reto!!; l.tiempo += 29999
+        val p = l.guardia.prepararPolitica(ref, l.frame(l.politica(r).copy(seq = Long.MAX_VALUE)))!!
+        assertEquals(Long.MAX_VALUE, p.orden.seq); assertEquals(Long.MAX_VALUE, p.orden.expectedRevision)
+        assertEquals(EntregaOrdenCp2.ENTREGADA_AL_PUERTO_NO_APPLIED, l.guardia.entregar(ref, p))
+        l.control = l.control!!.copy(lastAcceptedSeq = Long.MAX_VALUE)
+        val nuevo = l.sync(ref)!!.reto!!
+        assertNull(l.guardia.prepararPolitica(ref, l.frame(l.politica(nuevo).copy(seq = Long.MAX_VALUE))))
+        assertEquals(1, l.consultasRetenidas)
+    }
+    @Test fun retenidaSeConsultaPorHashSinReaplicarNiSustituirReto() {
+        val l = Lab(); val ref = l.guardia.iniciar()!!; val r = l.sync(ref)!!.reto!!
+        assertNull(l.guardia.prepararPolitica(ref, l.frame(l.politica(r).copy(seq = 10))))
+        assertEquals(1, l.consultasRetenidas); assertEquals(0, l.decisiones)
+        assertNotNull(l.preparar(ref, r)) // Consultar no produce otro nonce ni permiso ni reset de seq.
+    }
+    @Test fun entropiaReentranteORepetidaNoRejuveneceReto() {
+        val l = Lab(); lateinit var g: GuardiaOrdenCp2; var cancelar = true
+        g = GuardiaOrdenCp2({ l.tiempo }, { l.pareja }, l.escritor, {
+            if (cancelar) g.cerrar()
+            ByteArray(32) { 1 }
+        })
+        val r = g.iniciar()!!; assertNull(g.recibirSync(r, l.frame(SyncOrdenCp2(id, nonce, AccionOrdenCp2.LOCK))))
+        cancelar = false; val nueva = g.iniciar()!!
+        assertNotNull(g.recibirSync(nueva, l.frame(SyncOrdenCp2(id, nonce, AccionOrdenCp2.LOCK))))
+        assertNull(g.recibirSync(nueva, l.frame(SyncOrdenCp2(id, nonce, AccionOrdenCp2.LOCK))))
     }
 }

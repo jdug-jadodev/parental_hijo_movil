@@ -73,6 +73,10 @@ class OrdenesCp2Test {
         val s = CodecOrdenCp2.leerSobre(frame(politica()))
         rechaza { CodecOrdenCp2.escribirSobre(s.copy(sigB64 = s.sigB64 + "=")) }
         rechaza { CodecOrdenCp2.escribirSobre(s.copy(sigB64 = Base64Cp1.codificar(ByteArray(64)))) }
+        for (firma in listOf(ByteArray(7), ByteArray(73), byteArrayOf(0x30, 6, 2, 1, 0, 2, 1, 1)))
+            rechaza { CodecOrdenCp2.escribirSobre(s.copy(sigB64 = Base64Cp1.codificar(firma))) }
+        for (n in listOf(nonce.dropLast(1) + "B", Base64Cp1.codificar(ByteArray(31))))
+            rechaza { CodecOrdenCp2.escribirPayload(politica().copy(commandNonce = n)) }
     }
     @Test fun claveDominioFirmaYBytesAlteradosNoVerifican() {
         val otra = KeyPairGenerator.getInstance("EC").run { initialize(256); generateKeyPair() }

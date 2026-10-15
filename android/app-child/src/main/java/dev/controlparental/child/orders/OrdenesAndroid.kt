@@ -7,6 +7,7 @@ import dev.controlparental.child.pairing.*
 /** Sin escritor CONTROL CP2 durable todavía: no usar revisión adulta/CP1 ni autoridad RAM alternativa. */
 internal object ControlOrdenNoDisponible : EscritorControlOrdenCp2 {
     override fun consolidar(): ControlOrdenCp2? = null
+    override fun consultarRetenida(orden: dev.controlparental.protocol.cp2.OrdenVerificadaCp2) { error("NO_DISPONIBLE: falta transacción durable de duplicados") }
     override fun entregarParaDecision(preparacion: PreparacionOrdenCp2) { error("NO_DISPONIBLE: falta escritor CONTROL CP2 durable") }
 }
 internal object OrdenesAndroid {

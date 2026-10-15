@@ -12,13 +12,15 @@ internal data class ControlOrdenCp2(val boot: Int, val bootId: String, val child
 internal interface EscritorControlOrdenCp2 {
     /** Consolida boot, expiración y revocación ANTES de devolver contexto. null = NO_DISPONIBLE. */
     fun consolidar(): ControlOrdenCp2?
+    /** Sólo consulta de bytes/hash retenidos en futura transacción durable, NUNCA reaplicación. */
+    fun consultarRetenida(orden: OrdenVerificadaCp2)
     /** Punto futuro de CAS/transacción durable: esta guardia NO autoriza APPLIED ni implementa dicho escritor. */
     fun entregarParaDecision(preparacion: PreparacionOrdenCp2)
 }
 internal class GeneracionOrdenCp2 internal constructor(val numero: Long, internal val pareja: ParejaOrdenCp2,
     internal val bootId: String, internal val childSessionId: String)
 internal class RetoOrdenCp2 internal constructor(internal val referencia: GeneracionOrdenCp2,
-    internal val control: ControlOrdenCp2, val nonce: String, val action: AccionOrdenCp2,
+    internal val control: ControlOrdenCp2, val generacion: Long, val nonce: String, val action: AccionOrdenCp2,
     val revision: Long, val issuedElapsedMs: Long, val expiresElapsedMs: Long)
 internal class SyncConsolidadoCp2 internal constructor(val reto: RetoOrdenCp2?)
 internal class PreparacionOrdenCp2 internal constructor(internal val reto: RetoOrdenCp2, val verificada: OrdenVerificadaCp2) {
@@ -34,6 +36,7 @@ internal class GuardiaOrdenCp2(private val ahora: () -> Long, private val pareja
     private val entropia: () -> ByteArray = { ByteArray(32).also(SecureRandom()::nextBytes) },
     private val cripto: VerificadorOrdenCp2 = VerificadorOrdenCp2(CriptografiaOrdenCp2::verificar)) {
     private var generacion = 0L
+    private var generacionSync = 0L // Etiqueta RAM, nunca revisión CONTROL ni secuencia aceptada.
     private var referencia: GeneracionOrdenCp2? = null
     private var epoca = Any()
     private var reto: RetoOrdenCp2? = null
@@ -41,10 +44,12 @@ internal class GuardiaOrdenCp2(private val ahora: () -> Long, private val pareja
     private var observado: ControlOrdenCp2? = null
     private var ultimo = -1L
     private val emitidos = mutableSetOf<String>()
+    private val uuid = Regex("^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$")
     @Synchronized fun cerrar() { epoca = Any(); referencia = null; reto = null; preparada = null; observado = null }
     private fun consolidado(): Pair<ParejaOrdenCp2, ControlOrdenCp2>? = try {
         val p = pareja(); val c = escritor.consolidar()
-        if (p == null || c == null || pareja() != p || c.boot != p.boot || c.boot < 0 || c.revisionControl < 0 || c.lastAcceptedSeq < 0) null
+        if (p == null || c == null || pareja() != p || c.boot != p.boot || c.boot < 0 || c.revisionControl < 0 || c.lastAcceptedSeq < 0 ||
+            !uuid.matches(c.bootId) || !uuid.matches(c.childSessionId)) null
         else p to c
     } catch (_: Exception) { null }
     @Synchronized fun iniciar(): GeneracionOrdenCp2? {
@@ -85,19 +90,29 @@ internal class GuardiaOrdenCp2(private val ahora: () -> Long, private val pareja
         return synchronized(this) {
             if (referencia !== ref || epoca !== sello || vigente(ref) != control || epoca !== sello) return@synchronized null
             epoca = Any(); reto = null; preparada = null // TODO SYNC válido sustituye el reto anterior, incluido null.
+            if (generacionSync == Long.MAX_VALUE) return@synchronized null
+            val etiqueta = ++generacionSync
             val action = sync.requestedAction ?: return@synchronized SyncConsolidadoCp2(null)
             val token = epoca; val inicio = ultimo
             val nonce = try { val b = entropia(); require(b.size == 32); Base64Cp1.codificar(b) } catch (_: Exception) { return@synchronized null }
             val fin = try { Math.addExact(inicio, 30_000) } catch (_: Exception) { return@synchronized null }
             if (epoca !== token || referencia !== ref || vigente(ref) != control || epoca !== token || ultimo >= fin || nonce in emitidos || emitidos.size >= 128) return@synchronized null
             emitidos.add(nonce)
-            RetoOrdenCp2(ref, control, nonce, action, control.revisionControl, inicio, fin)
+            RetoOrdenCp2(ref, control, etiqueta, nonce, action, control.revisionControl, inicio, fin)
                 .also { reto = it }.let(::SyncConsolidadoCp2)
         }
     }
     fun prepararPolitica(ref: GeneracionOrdenCp2, bytes: ByteArray): PreparacionOrdenCp2? {
         val (v, control, sello) = verificar(ref, bytes) ?: return null
         val orden = v.mensaje as? PoliticaOrdenCp2 ?: return null
+        if (orden.seq <= control.lastAcceptedSeq) {
+            val consultar = synchronized(this) {
+                referencia === ref && epoca === sello && vigente(ref) == control && epoca === sello &&
+                    orden.bootId == ref.bootId && orden.childSessionId == ref.childSessionId
+            }
+            if (consultar) try { escritor.consultarRetenida(v) } catch (_: Exception) { /* Sin resultado ni reto nuevo. */ }
+            return null // La guardia no puede decidir si es duplicado exacto, conflicto o ya descartado.
+        }
         return synchronized(this) {
             val r = reto ?: return@synchronized null
             if (referencia !== ref || epoca !== sello || preparada != null || vigente(ref) != control || epoca !== sello || reto !== r ||

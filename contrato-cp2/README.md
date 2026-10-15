@@ -120,3 +120,41 @@ del recursoNode967ae05a…a964ec por codec/cripto reales. Vuelta NUEVA autorizad
 de8campos en `pruebas/interop_auth_cp2_jvm_publica.json`, pública/efímeraJVM,
 sin sobrescribir vectorPAIR6campos. Verificación Render de esta nueva vuelta
 pendiente; no Androidreal/Keystorefísico/canal/ceremonia por pruebasJVM.
+
+## ORD01 — recepción MESSAGE y retos internos, sin escritor CONTROL
+
+Fuente íntegra CP2-O01 Render `4481c92` suministrada por el propietario,
+`ordenes.schema.json` conservado exacto con LF/saltofinal; SHA256 local
+`e5acd941ea0739ad875dcd493ea6685a2a3ec9d07a440f1c89a578fc064e8906`.
+No lectura de repositorio externo ni cambio CP1. Listas normativas
+SYNC6/SET_POLICY12/SIGNED-MESSAGE5. Nuevo borde corecp2/OrdenesCp2 valida
+PARENT/MESSAGE con pública padre esperada externa, firma SHA256ECDSA P256DER
+sobre UTF8(CPv2/MESSAGE + LF real) y bytes originales. Canonicidad/camposcerrados/
+Base64/UUID/nonce/depth6/8192payload-16384frame; seq C+ y expectedRevision C
+como strings decimales canónicos hasta LongMAX. ALLOW_FOR60..86400 múltiplo60;
+LOCK/ALLOW duraciónnull, sin LOCK_FOR/deferredAllow/WAITING_ALLOW/fallbackCP1.
+
+GuardiaOrdenCp2 solicita al puerto escritor consolidar boot/expiración/revocación
+antes de emitir/validar/entregar. **ControlOrdenNoDisponible devuelve null en
+MAIN**: todavía NO hay escritor CONTROL durable CP2 ni revisiones fabricadas
+desde credencial/bootrecordCP1. OrdenesAndroid es callable con snapshotpareja
+real validado, pero iniciar falla cerrado; UI órdenes deshabilitada/sin socket.
+
+Sólo con fuente disponible (falsa en JVM): generaciónRAM y contador de SYNC
+distintos de CONTROL, referencias por identidad, reto SecureRandom32/30s
+elapsed, acción/revisión/issued/expires internos para futuro STATE (no trama
+nueva). SYNCnull consulta y anula, cada nuevoSYNC sustituye aunque misma revisión.
+Snapshot/identidades/bootId/childSession/controlrevision-seq se consolidan antes
+y después de cripto; preparación inmutable con bytes/hash NO equivale a permiso.
+Consumo RAM antes del puerto de decisión; errores/reentrancia no restauran nonce.
+Seq ya retenida sólo se consulta por bytes/hash en futuro escritor durable,
+sin clasificar/aplicar duplicado en RAM, generar otro reto o reiniciar contador.
+No exactly-once real, persistencia de orden/historial ni transacción implementada.
+El escritor futuro deberá validar de nuevo su CAS/autoridad/contexto durable;
+la entrega al puerto NO es APPLIED ni autorización de usar preparación tras cierre.
+
+Sin enlace a UsoRed/enforcer/credencial/DP ni emisión STATE/ACK/órdenes remotas.
+NORMAL sigue con gracia10s desde señal Android negativa y reconexión no abre;
+EXCEPCION_OFFLINE sólo autorización local explícita. WSS/PONG/AUTH no sustituyen
+Android ni autorizan REMOTE_OFFLINE. Boot/proceso invalidan permisos RAM; esta
+unidad no cambia reenforcement/protecciones/LOCAL07/LOCAL08 ni esas reglas.
