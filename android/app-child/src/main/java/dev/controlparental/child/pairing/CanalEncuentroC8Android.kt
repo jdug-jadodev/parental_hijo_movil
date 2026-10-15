@@ -18,12 +18,13 @@ internal class CanalEncuentroC8Android(c: Context, origen: String, ref: Referenc
     private val actor = ScheduledThreadPoolExecutor(1).apply { removeOnCancelPolicy = true }
     private val cerrado = AtomicBoolean()
     private val vivo = AtomicBoolean(true)
-    val disponible get() = vivo.get() && !cerrado.get()
+    val disponible: Boolean get() = vivo.get() && !cerrado.get() && SystemClock.elapsedRealtime() < modelo.limiteVigencia
     private val pendientes = AtomicInteger()
     private var ws: WebSocket? = null
     private val cliente = OkHttpClient.Builder().retryOnConnectionFailure(false)
         .followRedirects(false).followSslRedirects(false)
-        .addInterceptor { cadena -> cadena.proceed(cadena.request().newBuilder().removeHeader("Sec-WebSocket-Extensions").build()) }
+        .addInterceptor { cadena -> cadena.proceed(cadena.request().newBuilder()
+            .removeHeader("Sec-WebSocket-Extensions").removeHeader("Origin").build()) }
         .dns(object : Dns {
             override fun lookup(hostname: String): List<java.net.InetAddress> = Dns.SYSTEM.lookup(hostname).also { ips ->
                 check(ips.isNotEmpty() && ips.none { ip -> ip.isAnyLocalAddress || ip.isLoopbackAddress || ip.isLinkLocalAddress ||
@@ -31,7 +32,7 @@ internal class CanalEncuentroC8Android(c: Context, origen: String, ref: Referenc
             }
         }).build()
     private val existente = FirmanteAndroidKeystore(c.applicationContext, IdentidadOfertaAndroid.ALIAS)
-    private val modelo = ClienteEncuentroC8(SystemClock::elapsedRealtime, origen, ref, marcoLimite,
+    private val modelo: ClienteEncuentroC8 = ClienteEncuentroC8(SystemClock::elapsedRealtime, origen, ref, marcoLimite,
         { disponible && vigente() }, object : FirmanteAuthCp2 {
             override val publica get() = existente.clavePublica.base64
             override fun firmar(bytes: ByteArray): ByteArray {
@@ -66,7 +67,8 @@ internal class CanalEncuentroC8Android(c: Context, origen: String, ref: Referenc
                 }
                 override fun onMessage(webSocket: WebSocket, text: String) {
                     if (!disponible) return
-                    if (text.length > 16384 || text.any { it.code !in 32..126 } || pendientes.incrementAndGet() > 64) { fallo(); return }
+                    if (text.length > 16384 || text.any { it.code !in 32..126 }) { fallo(); return }
+                    if (pendientes.incrementAndGet() > 64) { pendientes.decrementAndGet(); fallo(); return }
                     ejecutar { try { modelo.recibir(text.toByteArray(Charsets.US_ASCII)) } finally { pendientes.decrementAndGet() } }
                 }
                 override fun onMessage(webSocket: WebSocket, bytes: ByteString) { fallo() }

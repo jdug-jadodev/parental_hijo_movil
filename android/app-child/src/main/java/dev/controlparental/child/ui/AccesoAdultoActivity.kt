@@ -530,7 +530,7 @@ class AccesoAdultoActivity : ComponentActivity() {
         val ref = referenciaPair ?: return
         val n = consulta.incrementAndGet()
         trabajoOferta.execute {
-            // Solo integridad con candidata del QR: no autoridad ni confirmación humana implícita.
+            // Solo integridad con candidata recibida: no autoridad ni confirmación humana implícita.
             val candidata = try {
                 val s = dev.controlparental.protocol.cp2.CodecPairCp2.leerSobre(frame)
                 val a = dev.controlparental.protocol.cp2.CodecPairCp2.leerPayload(dev.controlparental.protocol.Base64Cp1.decodificar(s.payloadB64, 8192))

@@ -1,5 +1,46 @@
 # Relevo de coordinación — padre, hijo y WebSocket CP/1
 
+## HIJO-C8-I01 — MAIN sin cámara entregado en código/JVM, NO instalado
+
+Fuente EXACTA R1 copiada a `contrato-c8/CONTRATO_C8_1.md`, UTF8/LFfinal SHA256
+**089e0b6299ec6db3d312596e5929452321cbb60e3fb4646cceb4669b9492adde** confirmado.
+Compatibilidad declarada sin wire alternativo ni cambio CP1/CP2PAIR/firmas.
+Bloque1d388ef8 y cierre encommitdeesterelevo; evidencia completa
+`pruebas/EVIDENCIA_HIJO_C8_I01.md`. MAIN UI GenerarCódigo8→OfertasRamreal sinQR→
+WSSreal /pair-c8.v1/PROOFCHILDidentidadKeystoreexistente→CODE/CLAIMED→PAIRoriginal
+→confirmaciónhumana/VALIDAR→GUARDAR/PairAndroiddurable enwriteradulto/readback.
+No fakesMAIN, inicializaciónclave, relajaciónlegado/reservas ni autoalta.
+HuellaHIJOLOCAL completa/origen LOCAL ANTES de abrir canal; expectativaPADRE
+desde identidadLOCAL de padre conocido, origen independiente noautollenadoPAIR.
+Código8/PoP no familia/autoridad; códigosGENERAR-VALIDAR-GUARDAR/marcooriginal120s.
+
+Budget despuésCHALLENGE/alPUBLISH limitado marco/ref/120s, tope local adicional
+CHALLENGE+120s; servidor ancla SUchallenge comoR1, sin cruzar elapsed. Remaining
+sóloacorta, deadlinevolatile en disponibilidad bloqueacommit sin esperar timer
+ni invertir cerrojos; cierre fija0 antesdecallbacks. Firma consume reto antescrypto,
+no READY reentrante, reauth/republicación/reentrega. Fondocancelacióndeadline/
+contexto/remotecierre invalidan candidata; cierretrascommit no borraestado,
+incierto conserva reservas; guardado siguePENDIENTE_CANAL_Y_RECUPERACION/noUSO.
+TLSnormal/sinOrigin-compresión-binarios-retry-redirects/CA/trustAll/query/logbody;
+slot/cuotasglobales/tombstones servidor segúnR1 no implementados en app.
+
+Nuevos5core+16appdistintos/firmasJCA-casosKotlinreales/clock-socket-disco-adultoFAKE.
+Final offline--rerun **SUCCESS3m43s/131ejecutadas0UPTODATE/210core-506debug-451release
+0fallos/lint0errores12avisos**. FullintermedioFAILED1m32s90exec por inferencia
+recursivaKotlin al endurecer deadline, corregido con tiposexplícitos; no oculto.
+AndroidTestcompiladoNOinstrumentado/UIAndroid-Keystore-TLShandshakerealNOprobados.
+InspecciónAPKdirigida C8-PAIR-CONTROL-STATE-ACKpresentes/tests-vectores-contratos
+ausentes/rollbackDEBUG/ignoreFGSúnicoigual/firmaAPKcertificadohistóricoigual.
+APKdebugNOinstalado SHA256
+**6221f3f52a7bdfbe4a4da19627c00821598fb2b2f9a59989a82e846e28250751**;
+unsigned **029d4e2dd876f87c061f4bace6e2fb4fbaaad76dddcdd5ae5116b7f5a285b3b4**.
+Últimoinstalado sigue E2E01fc7a5bd8…83108ed/F03histórico, no consultado ahora.
+SinADB/dispositivos/install/QR-código8real/privadas/reposajenos/agentes/servicios/
+bootstrap/push/deploy. No endpointC8desplegado; no prueba interopNode ejecutada.
+**Entregar y detener**, sin siguiente tarea automática. Configuración/despliegue
+posteriores e instalación/ceremonia requieren autorizaciones específicas nuevas.
+C8/READY/SENT no STATE ni parejaACTIVO ni enforcement; CP2posterior autenticado.
+
 ## HIJO-C8-R0 — revisión cerrada, sin implementación ni permisos físicos
 
 Informe de15líneas y evidencia `pruebas/HIJO_C8_R0_REVISION.md`. **APTO** como
