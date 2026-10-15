@@ -159,7 +159,7 @@ class ValidacionPairRamTest {
     @Test fun codigoFrescoTardioNoExtiendeVidaDeOfertaDeSesionOriginal() {
         val l = Laboratorio(); val ref = l.oferta(); l.tiempo += 119999
         val t = l.ticket(); val c = l.caso.confirmar(ref, t, l.datos())!!
-        l.tiempo++; assertTrue(l.sesion.accionVigente(t)) // Código reciente aún vigente.
+        l.tiempo++; assertFalse(l.sesion.accionVigente(t)) // PAIR03 también acota ticket al marco original.
         assertNull(l.caso.validar(c, l.frame(l.aceptacion(ref)))) // Oferta de la sesión original ya no.
     }
     @Test fun procesoNuevoNoReconstruyeConfirmacionNiResultado() {

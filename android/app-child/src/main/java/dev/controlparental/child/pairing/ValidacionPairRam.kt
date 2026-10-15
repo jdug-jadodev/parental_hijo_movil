@@ -7,11 +7,12 @@ import dev.controlparental.protocol.cp2.*
 internal data class DatosConfirmadosPair(val publicaPadreEsperada: String, val huellaPadre: String,
     val huellaHijo: String, val origen: String)
 internal class ConfirmacionPair internal constructor(internal val referencia: ReferenciaOferta,
-    internal val ticket: TicketAdulto, internal val datos: DatosConfirmadosPair)
+    internal val ticket: TicketAdulto, internal val datos: DatosConfirmadosPair, internal val marco: MarcoSesionAdulto)
 
 /** Snapshot inmutable de validación; NO PREPARADO/activo, permiso, escritura ni commit de pareja. */
 internal class ValidacionPair internal constructor(val integridad: IntegridadPairCp2,
-    val boot: Int, val generacionOferta: Long) {
+    val boot: Int, val generacionOferta: Long, internal val referencia: ReferenciaOferta,
+    internal val consentimiento: DatosConfirmadosPair, internal val marco: MarcoSesionAdulto) {
     val aceptacion get() = integridad.aceptacion
     val payloadSha256B64 get() = integridad.payloadSha256B64
     fun bytesPayload() = integridad.bytesPayload()
@@ -36,14 +37,16 @@ internal class ValidacionPairRam(private val ofertas: OfertasRam, private val se
         epoca = Any(); confirmacion = null; resultado = null; ocupado = false
         // Conserva la marca de consumo RAM: cancelar no permite validar otra vez el mismo nonce.
     }
-    private fun vigente(c: ConfirmacionPair): Boolean = c.ticket.fin == FinAdulto.VALIDAR_PAIR &&
-        c.ticket.boot == c.referencia.contexto.boot && sesion.accionVigente(c.ticket) && ofertas.vigente(c.referencia)
+    private fun vigente(c: ConfirmacionPair, soloSesion: Boolean = false): Boolean = c.ticket.fin == FinAdulto.VALIDAR_PAIR &&
+        c.ticket.boot == c.referencia.contexto.boot && sesion.marcoVigente(c.marco) &&
+        (soloSesion || sesion.accionVigente(c.ticket)) && ofertas.vigente(c.referencia)
 
     /** El llamador aún debe ofrecer una UI humana segura; no hay recepción operativa cableada. */
     @Synchronized fun confirmar(ref: ReferenciaOferta, ticket: TicketAdulto, datos: DatosConfirmadosPair): ConfirmacionPair? {
         cancelar()
         val token = epoca
-        val nueva = ConfirmacionPair(ref, ticket, datos)
+        val marco = sesion.marcoAcreditado(ticket) ?: return null
+        val nueva = ConfirmacionPair(ref, ticket, datos, marco)
         val valida = try {
             CodecPairCp2.origenExacto(datos.origen)
             datos.huellaPadre == CodecPairCp2.huellaPublica(datos.publicaPadreEsperada) &&
@@ -75,14 +78,15 @@ internal class ValidacionPairRam(private val ofertas: OfertasRam, private val se
             ocupado = false
             if (!valida) { resultado = null; return@synchronized null }
             consumida = c.referencia // Una sola validación RAM por oferta; no consumo durable ni commitpair.
-            ValidacionPair(integridad!!, c.referencia.contexto.boot, c.referencia.generacion).also { resultado = it }
+            ValidacionPair(integridad!!, c.referencia.contexto.boot, c.referencia.generacion,
+                c.referencia, c.datos, c.marco).also { resultado = it }
         }
     }
     /** Nunca reconstruye un resultado caducado ni transforma el snapshot en autoridad durable. */
     @Synchronized fun resultadoActual(): ValidacionPair? {
         val c = confirmacion ?: return null
         val token = epoca
-        val valida = vigente(c)
+        val valida = vigente(c, soloSesion = true)
         if (epoca !== token || confirmacion !== c) return null // Un callback viejo no borra resultado nuevo.
         if (!valida) { resultado = null; return null }
         return resultado

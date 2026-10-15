@@ -2,8 +2,12 @@
 
 Última actualización: 14 de octubre de 2026
 Commit de partida: ac7d801 (C01 completada)
-Tarea actual: HIJO-PAIR02 — validar PAIR_ACCEPT CP/2 contra oferta actual, solo RAM y sin commit
-Estado: CERRADA_VALIDACION_RAM_PROBADA_SIN_COMMIT_NI_FISICA — core182/416debug/361release JVM0fallos (13core+15app nuevos), lintRelease0errores11avisos; confirmaciones independientes/ticketfresh/ofertaactual/replayRAM/byteshashinmutables. UI recepción deshabilitada, sin commitpair/ADB/install/oferta real ni migración; identidad PAIR01 intacta/no reinicializada.
+Tarea actual: HIJO-PAIR03 — integrar recepción/confirmación y almacenamiento seguro CP2 MAIN
+Estado: EN_CURSO_BLOQUE1 — marco de sesión original sin renovación por propósito, reserva durable/registro versionado separado con readback y cámara propia Camera2+ZXing existente. Pendiente cablear UI MAIN en bloque siguiente de esta misma unidad. Sin ADB/física/instalación/identidad nueva.
+
+## PAIR03 — progreso de la unidad autorizada
+
+Bloque1: SesionAdulto/OfertasRam/ValidacionPairRam separan vida de sesión120s de ticketfresh por operación GENERAR/VALIDAR/GUARDAR, sin ampliar la oferta5min. AlmacenPairCp2/PairAndroid nuevos usan reserva/intento durable y registro AtomicFile CE noBackup separado; originalPAIR/hash/candidata/consentimiento/noncehashconsumido, restauración verificada y error cerrado. Camera2+ImageReader/ZXing existente sin SDK nuevo, CAMERA runtime con deny-safe (diálogo y UI siguientes). No acciones sobre CP1/legado/enforcement/Keystore. TestsAlmacenPair7JVM nuevos firmasreales/clavesefímeras/fakeIO-crash-reentrancia/readback. Comando completo core:test/appJVMdebug-release/assembleDebug-AndroidTest-release/lintRelease SUCCESS55s/34ejecutadas97UPTODATE; core:testUPTODATE, appJVM ejecutados, AndroidTest solo compilación/noinstrumentación; lintRelease0errores11avisos reporteUPTODATE. Antes bloque1 hubo pasada appJVM/lint exitosa sin builds; no prueba física. Próximo trabajo autorizado solo completar esta unidad MAIN/UI/pruebas/evidencia/relevo y detener.
 Commit de partida de H03: 499b31f.
 Primer commit H03: 80e1cb4. Commit de cierre: «Cerrar H03 con pruebas de mantenimiento y evidencia».
 C02 comprobada en JVM/Node y Android/Keystore. Commit de esta unidad: «Validar C02 en el A13 y excluir expresamente el A56».

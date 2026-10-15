@@ -67,7 +67,8 @@ internal class ReferenciaOferta(val generacion: Long, val contexto: ContextoOfer
 
 /** Una sola referencia RAM; el puerto de autoridad nunca es un permiso parental. */
 internal class OfertasRam(private val ahora: () -> Long, private val contexto: () -> ContextoOferta?,
-    private val autorizada: () -> Boolean, private val entropia: EntropiaOferta = EntropiaSegura()) {
+    private val autorizada: () -> Boolean, private val entropia: EntropiaOferta = EntropiaSegura(),
+    private val vidaSesion: () -> Boolean = autorizada) {
     private var generacion = 0L
     private var actual: ReferenciaOferta? = null
     private var ultimo = -1L
@@ -95,7 +96,7 @@ internal class OfertasRam(private val ahora: () -> Long, private val contexto: (
         val n = ahora()
         val contextoActual = try { contexto() } catch (_: Exception) { null }
         val valida = actual === ref && ref.generacion == generacion && n >= ultimo && n >= ref.inicio &&
-            n < ref.limite && autorizada() && contextoActual == ref.contexto
+            n < ref.limite && vidaSesion() && contextoActual == ref.contexto
         ultimo = n
         if (!valida && actual === ref) cancelar()
         return valida
