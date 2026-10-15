@@ -1,5 +1,41 @@
 # Relevo de coordinación — padre, hijo y WebSocket CP/1
 
+## HIJO-F03-PREPARACION — local terminada, esperando habilitación directa
+
+15-10-2026. Guía/evidencia `pruebas/HIJO_F03_PREPARACION.md`. No builds/tests
+repetidos: E2E01 sigue cerrada en código/JVM. APKdebugfc7a5bd8…83108ed recomprobado;
+firmaAPKverificada, certificadoSHA256
+`39f25d28e10a93f18fbdabac0223e917c9668d58a6d7ca28af40227946a9f439`;
+paquete dev.controlparental.child/versión1-0.1.0 coinciden con configuraciónPAIR01.
+NO comparación con certificado instalado: compatibilidad definitiva pendiente de
+permiso directo ADB en ESTA sesión. No presumir que hash histórico la demuestra.
+
+Checklist preparado UNA futura install-r-t, sólo A13SM-A135M/adb-s por operación;
+A56absolutamenteexcluido. Ante firma/versión/legado incompatible o estado incierto,
+detener sin uninstall/clear/reset/migración/alta automática. BotónA13averiado:
+cero reboot/cortesred-energía/Owner/PIN/protecciones; preservar salida/emergencia.
+Pedir permiso directo limitado de compatibilidad/actualización y esperar; no ADB
+ni inventario antes. Actualización no incluye QR: pedir autorización separada.
+
+Guía óptica manual futura/mismo padre/origenREAL
+`https://parental-0j3o.onrender.com`; identidad existente/noINICIALIZAR, códigos
+GENERAR-VALIDAR-GUARDAR sólo teléfonos y frescos, marcooriginal120s/huellasambas y
+origen independientes. No claves/QR ahora, capturas/códigos por chat ni eludir
+caducidad con regeneración. Incierto/pending no limpiar/reintentar. ReadbackPAIR03
+dejaPENDIENTE_CANAL_Y_RECUPERACION/noNORMAL-USO. No CONECTAR_CP2/AUTH/órdenes:
+bootstrap público sigue sin relayCP2 habilitado. Primerpiloto futuro foreground120s,
+no appcerrada/uso habitual. Sin LOCK/ALLOW/red/boot/LOCAL07-08.
+
+REPORTADO por coordinación, no consultado aquí: RenderCP2-P01 2fb1ea6/189tests/
+Nodecompilado RenderSIMULADO-ambosAUTH, bootstrapaa2bfbb/keepalive200-health503-
+cp.v1rechazado503-cp.v2rechazado400. Perfilpúblicofuturo exige mismaPUBLIC_ORIGIN,
+ACTIVE_PAIR_IDminúsculo y ambas públicas reales de ESAaceptación; exportadorpadre
+PAIR_ID→RenderACTIVE_PAIR_ID. Sin clavesreales no relay; autodeployactivo/no push
+ni deploy, timer/perfil aún locales. Ningún permiso físico transferido por reporte.
+Sólo documentación/preflightlocal; sin instalación/ADB/dispositivos/QR/remoto/
+otrosrepos/subagentes/prompts/secretos. Próximo paso es habilitación DIRECTA del
+propietario en esta sesión; sin respuesta no ejecutar ni ampliar unidad.
+
 ## Actualización posterior — MISMA E2E01, reporte Node externo sin Android
 
 Propietario reporta RenderSTATEpiloto `d2fddc4`/SHA256UTF8LFfinal

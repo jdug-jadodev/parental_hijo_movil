@@ -2,8 +2,16 @@
 
 Última actualización: 15 de octubre de 2026
 Commit de partida: ac7d801 (C01 completada)
-Tarea actual: HIJO-E2E01 — integración vertical piloto CONTROL durable / control local / canal CP2
-Estado: CERRADA_IMPLEMENTACION_VERTICAL_PILOTO_COMPILADA_PROBADA_JVM_SIN_FISICA — UIadultaforeground→WSS-TLS/AUTH→PARENTMESSAGEguardia→writerCONTROLCEreal→UsoRed/Bloqueo→STATE/ACKCHILDfirmados conectados MAIN. Último fullforzadooffline205core/490debug/435release0fallos,lint0errores12avisos/131tareas131ejecutadas. ACKRenderK01 exacto integrado14/5campos. Sin teléfono/canalreal/parejareal/instalación: listo EN CÓDIGO para ensayo posterior coordinado, NO producto final ni efecto físico acreditado. Entregar y detener, sin otra tarea automática.
+Tarea actual: HIJO-F03-PREPARACION — preflight local y guía de actualización/ceremonia futura
+Estado: PREPARACION_LOCAL_TERMINADA_ESPERANDO_PERMISO_DIRECTO_EN_ESTA_SESION — sin ADB/inventario/dispositivos/instalación/QR/remoto. Evidencia/checklist en `pruebas/HIJO_F03_PREPARACION.md`. E2E01 permanece cerrada en código/JVM, no repetir builds/tests ni atribuir efectos físicos.
+
+## F03 — preparación local, sin habilitación física heredada
+
+- APKdebug existente SHA256 `fc7a5bd82e6bfdcb0ae0434ce2d88be03eac2cc1390d73a339c9eb52c83108ed` recomprobado; `apksigner verify --print-certs` verifica firma y certificadoSHA256 `39f25d28e10a93f18fbdabac0223e917c9668d58a6d7ca28af40227946a9f439`; `aapt dump badging` confirma paquete `dev.controlparental.child`, versionCode1/versionName0.1.0/minSdk31/targetSdk36/debug-testOnly. Configuración PAIR01 en git71e4e2a coincide; NO certificado instalado comparado ni compatibilidad definitiva: falta permiso ADB y comprobar instalación actual. No APKPAIR01 local recuperado; búsqueda temporal recursiva terminó con accesos denegados/timeout, no se amplió ni reintentó.
+- Preparado checklist UNA futura `install -r -t`, sólo A13SM-A135M/selector `adb -s` por operación tras permisoDIRECTO. A56excluido. Parar por firma/versión/legado incompatibles o incertidumbre, sin uninstall/clear/reset/migración/crearidentidad. Botónfísicoaveriado: cero reboot/cortesred-energía/Owner/PIN/proteccionesnuevas; emergencia/salida local preservadas. Instalar no autoriza QR: ceremonia requiere autorización explícita separada.
+- Guía manual MAINPAIR03 con mismo padre/origen `https://parental-0j3o.onrender.com`, identidadKeystoreexistente, HUELLAS/ORIGENindependientes/códigosfrescos GENERAR-VALIDAR-GUARDAR sólo teléfonos/marcooriginal120s. Sin renovar/regenerar para eludirvencimiento; incertidumbre/pending no limpiar/reintentar. Guardado=PENDIENTE_CANAL_Y_RECUPERACION/noUSO. No QR/claves creados en preparación.
+- Coordinación REPORTADA: RenderCP2-P01 `2fb1ea6`/189tests/Nodecompilado RenderSIMULADO-ambosAUTH; públicoaúnbootstrapaa2bfbb/keepalive200-health503-cp.v1rechazado503-cp.v2rechazado400. No consultas propias. Perfil público futuro misma PUBLIC_ORIGIN/ACTIVE_PAIR_IDminúsculo/ambaspúblicasdeESAaceptación (exportadorpadrePAIR_ID→RenderACTIVE_PAIR_ID). Sin clavesreales no relay; no WSS/AUTH/órdenes ahora. Autodeployactivo/no push-deploy; timer/perfil siguen locales reportados.
+- Rutas modificadas: `pruebas/HIJO_F03_PREPARACION.md`, `ESTADO.md`, `COORDINACION_PADRE_HIJO_RENDER.md`. Sólo documentación/preflightlocal, sin código/APK/builds/suites/otrosrepos/subagentes/serviciosremotos. Próximo paso: solicitar permiso DIRECTO en esta sesión para inventario mínimo/compatibilidad y UNA actualización conservadora si compatible; esperar sin ejecutar. E2E01 y hashes/resultados anteriores se mantienen.
 
 ## E2E01 — progreso y cierre de la unidad vertical autorizada
 
