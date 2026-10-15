@@ -2,8 +2,14 @@
 
 Última actualización: 15 de octubre de 2026
 Commit de partida: ac7d801 (C01 completada)
-Tarea actual: HIJO-C8-X01 — interoperabilidad local CHILD JVM/Node real
-Estado: CERRADA_CRUCE_LOCAL_TLS_NODE_EXIT0_SIN_ANDROID — opt-in -PrutaRelay ejecutado de verdad/2tests0omitidos0fallos, AUTH-PUBLISH-CLAIM-PAIR/readback1,3eventosNode/exit0; hashPAIRframe X28PLtkh_Zv4nf-pqACF5Xe8bx21xZ0MTnNmdYsGOww igual ambos lados. PuenteOkHttpTEST/modeloJVMreal, contraparteNodePARENTsintética; NO wrapperAndroid/dosAPKs/Keystore/IOAndroid/enforcer. R1/APKs iguales/sin recompilar. Evidencia `pruebas/EVIDENCIA_HIJO_C8_X01.md`; entregar y detener sin otra tarea automática.
+Tarea actual: HIJO-C8-F04 — preparación local de actualización conservadora
+Estado: PREPARACION_TERMINADA_ESPERANDO_PERMISO_DIRECTO_ANTES_ADB — APKC8debug6221f3…250751/hashR1exacto/firma pública verificados localmente, sin rebuild/tests/ADB/inventario. Solicitar permisoDIRECTO en esta sesión para A13SM-A135M/compatibilidad/UNAinstall-r-t si compatible. Confirmación NUEVA pantalla/acceso adulto/salida-emergencia obligatoria antesdeinstalar; no heredar F03. Actualización no autoriza ceremonia. Evidencia `pruebas/HIJO_C8_F04_PREPARACION.md`.
+
+## C8-F04 — preflight local cerrado, ejecución física NO iniciada
+
+- APKdebug existente SHA2566221f3f52a7bdfbe4a4da19627c00821598fb2b2f9a59989a82e846e28250751 recomprobado; firmaapksigner válida/certificadoSHA25639f25d28e10a93f18fbdabac0223e917c9668d58a6d7ca28af40227946a9f439 históricoigual; aapt paquete dev.controlparental.child/versión1-0.1.0/min31-target36/debugtestOnly. R1hash089e0b6299ec6db3d312596e5929452321cbb60e3fb4646cceb4669b9492adde intacto. Últimoinstalado F03fc7a5bd8…83108ed no consultado ni reinstalado; compatibilidad definitiva pendiente de lectura autorizada. Sin APKnuevo/builds/tests.
+- Checklist UNA futura install-r-t al únicoA13SM-A135M/adb-s por operación; A56excluido. No ADB incluso inventario antes de síDIRECTO aquí. Antesdeinstalar confirmar NUEVAMENTE pantalla/acceso adulto/salidaemergencia por botón físicoaveriado; cero reboot/cortesred/Owner/PIN/protecciones. Si firma/versión/legado/incierto incompatibles detener sin uninstall/clear/reset/migración. Preservar todos datos/identidad/keys/vínculos/CP1/pending/Owner/protecciones. Después UI manual propietario sin códigos/capturas porchat; permisoQR-C8-ceremonia separado no otorgado.
+- Reportado coordinación: Render9c14372/217tests/C8públicoNOdesplegado/origenfuturo https://parental-0j3o.onrender.com; AutoDeploycommitACTIVO/healthcheckkeepalive/1instancia MCPverificadoRender NOhijo. Propietario debe desactivar AutoDeploy antespush; apps no hacen push/deploy/remotos. Crucespadre-hijo son ensayos separados JVM/Nodecontrapartesintética/noAndroid, no repetidos. Sólo docs/checklist/ESTADO/relevo; solicitar autorización y esperar, sin ofertas/C8/QR/aceptaciones/conexión/otrosrepos/agentes.
 
 ## C8-X01 — cierre local, no ensayo físico
 

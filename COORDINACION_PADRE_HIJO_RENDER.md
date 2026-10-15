@@ -1,5 +1,31 @@
 # Relevo de coordinación — padre, hijo y WebSocket CP/1
 
+## HIJO-C8-F04 — preparación local terminada, permiso DIRECTO pendiente
+
+Evidencia/checklist `pruebas/HIJO_C8_F04_PREPARACION.md`, base7fd1ffa.
+APKdebug6221f3f52a7bdfbe4a4da19627c00821598fb2b2f9a59989a82e846e28250751/hashR1
+089e0b6299ec6db3d312596e5929452321cbb60e3fb4646cceb4669b9492adde recomprobados.
+FirmaAPKverificada/certificado39f25d28…a9f439 históricoigual; paquete
+dev.controlparental.child/versión1-0.1.0/debugtestOnly/min31-target36 confirmados.
+ÚltimoinstaladoF03fc7a5bd8…83108ed NO consultado ni reinstalado. No rebuild/tests.
+Solicitar permiso DIRECTO aquí antes de ADB/inventario: sóloA13SM-A135M/adb-s por
+operación/compatibilidad y UNAinstall-r-t si compatible. A56excluido. Confirmación
+NUEVA de pantalla/acceso adulto/salidaemergencia antesdeinstalar por botón físico
+averiado; no heredar F03. Ante firma/versión/legado/incierto incompatibles detener
+sin uninstall/clear/reset/migración. Sin reboot/red/Owner/PIN/proteccionesnuevas,
+preservar datos/identidad/keys/vínculos/CP1/pending. UIposterior manual propietario
+sin capturas/códigos. Actualización no autoriza ceremonia: no ofertas/C8/QR/PAIR.
+
+REPORTADO coordinación: Render9c14372/217tests/preparado/C8públicoNOdesplegado,
+MCPAutoDeploycommitACTIVO/healthcheckkeepalive/1instancia, no verificadodesdeapp.
+Propietario debe desactivar AutoDeploy antespush; app no push/deploy/remotos.
+Origenfuturo https://parental-0j3o.onrender.com, no contactar ahora. Cruces NodeJVM
+son independientes con contraparteNode sintética, no dosAPKs/Android. Hashpadre
+rJ7mi56D-qJF-iHGKrX2pk9IAz0UB0qIQLMqvTQAYZw reportado; hijoX28PLtkh_Zv4nf-
+pqACF5Xe8bx21xZ0MTnNmdYsGOww históricoX01 propio/no repetido. Sólo documentación/
+inspecciónlocal, sin ADB/teléfonos/install/secretos/otrosrepos/agentes/sesiones.
+Cerrar preparación/commitdocumental/pedirpermisoDIRECTO y esperar sin ejecutar.
+
 ## HIJO-C8-X01 — cruce local CHILD JVM ↔ Node real, exit0; sin APK nuevas
 
 Base625af90/cierre encommitdeesterelevo. Evidencia
