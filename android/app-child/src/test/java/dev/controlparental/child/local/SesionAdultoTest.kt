@@ -4,6 +4,22 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class SesionAdultoTest {
+    @Test fun `validar pair exige otro codigo revision proposito y contexto no respuesta recuperacion`() {
+        s.reanudar(); assertNull(s.solicitar(FinAdulto.VALIDAR_PAIR))
+        val recuperar = s.solicitar(FinAdulto.RECUPERAR)!!
+        s.completar(recuperar, ResultadoAdulto(TipoAdulto.RESPUESTA_VALIDA, revision = 9))
+        assertNull(s.solicitar(FinAdulto.VALIDAR_PAIR))
+        s.reanudar(); val entrada = s.solicitar(FinAdulto.ENTRAR)!!
+        s.completar(entrada, ResultadoAdulto(TipoAdulto.AUTENTICADO, revision = 9))
+        val t = s.solicitar(FinAdulto.VALIDAR_PAIR)!!
+        assertFalse(s.accionVigente(t))
+        assertFalse(s.autorizarAccion(t, ResultadoAdulto(TipoAdulto.AUTENTICADO, revision = 8)))
+        assertFalse(s.autorizarAccion(t, ResultadoAdulto(TipoAdulto.RESPUESTA_VALIDA, revision = 9)))
+        assertTrue(s.autorizarAccion(t, ResultadoAdulto(TipoAdulto.AUTENTICADO, revision = 9)))
+        val otro = s.solicitar(FinAdulto.VALIDAR_PAIR)!!; assertFalse(s.accionVigente(t))
+        s.autorizarAccion(otro, ResultadoAdulto(TipoAdulto.AUTENTICADO, revision = 9))
+        boot++; assertFalse(s.accionVigente(otro)); s.cerrar(); assertFalse(s.accionVigente(otro))
+    }
     @Test fun `oferta cinco minutos no elude sesion adulta dos minutos`() {
         s.reanudar(); val entrada = s.solicitar(FinAdulto.ENTRAR)!!
         s.completar(entrada, ResultadoAdulto(TipoAdulto.AUTENTICADO, revision = 7))

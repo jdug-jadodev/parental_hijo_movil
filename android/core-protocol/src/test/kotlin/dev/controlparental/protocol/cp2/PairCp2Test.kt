@@ -134,4 +134,17 @@ class PairCp2Test {
             byteArrayOf(0x30, 7, 2, 2, 0, 1, 2, 1, 1), byteArrayOf(0x30, 0x81.toByte(), 6, 2, 1, 1, 2, 1, 1)))
             rechaza { CodecPairCp2.leerSobre(frame(p, s)) }
     }
+    @Test fun firmaMutadaOCambioEnPayloadNoSeAutorizaPorHash() {
+        val p = CodecPairCp2.escribirPayload(aceptacion()); val sig = firma(p)
+        val mutada = sig.copyOf().also { it[it.lastIndex] = (it.last().toInt() xor 1).toByte() }
+        rechaza { CriptografiaPairCp2.verificarIntegridad(frame(p, mutada), publica(padre)) }
+        val otroPayload = CodecPairCp2.escribirPayload(aceptacion().copy(pairId = "abcdefab-1234-4234-8234-abcdefabcdef"))
+        rechaza { CriptografiaPairCp2.verificarIntegridad(frame(otroPayload, sig), publica(padre)) }
+    }
+    @Test fun limitesEnVerificadorAntesDeCopiarYFrameCanonicalidad() {
+        for (bytes in listOf(byteArrayOf(), ByteArray(16385))) rechaza { CriptografiaPairCp2.verificarIntegridad(bytes, publica(padre)) }
+        val f = frame().toString(Charsets.US_ASCII)
+        for (alterado in listOf(f.replace(",", ", "), f.replace("{", "{\"v\":2,"), f.replace("SIGNED", "S\\u0049GNED")))
+            rechaza { CriptografiaPairCp2.verificarIntegridad(alterado.toByteArray(), publica(padre)) }
+    }
 }

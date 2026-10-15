@@ -82,7 +82,9 @@ internal class ValidacionPairRam(private val ofertas: OfertasRam, private val se
     @Synchronized fun resultadoActual(): ValidacionPair? {
         val c = confirmacion ?: return null
         val token = epoca
-        if (!vigente(c) || epoca !== token || confirmacion !== c) { resultado = null; return null }
+        val valida = vigente(c)
+        if (epoca !== token || confirmacion !== c) return null // Un callback viejo no borra resultado nuevo.
+        if (!valida) { resultado = null; return null }
         return resultado
     }
 }

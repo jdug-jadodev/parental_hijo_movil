@@ -14,9 +14,10 @@ class ValidacionPairRamTest {
     private inner class Laboratorio(verificador: VerificadorIntegridadPair? = null) {
         var tiempo = 10L; var boot = 5; var publicaHijo = publica(clave())
         val padre = clave(); val publicaPadre = publica(padre)
+        var alLeerContexto: () -> Unit = {}
         val sesion = SesionAdulto({ tiempo }, { boot })
         private var limiteOfertaSesion = 0L
-        val ofertas = OfertasRam({ tiempo }, { ContextoOferta(boot, publicaHijo) },
+        val ofertas = OfertasRam({ tiempo }, { alLeerContexto(); ContextoOferta(boot, publicaHijo) },
             { sesion.estado() == AutoridadAdulto.ADMINISTRAR && tiempo < limiteOfertaSesion })
         val caso = if (verificador == null) ValidacionPairRam(ofertas, sesion) else ValidacionPairRam(ofertas, sesion, verificador)
         init { entrar() }
@@ -120,5 +121,63 @@ class ValidacionPairRamTest {
             val ref = l.oferta(); val c = l.caso.confirmar(ref, l.ticket(), l.datos())!!
             assertNull(l.caso.validar(c, l.frame(l.aceptacion(ref)))); assertNull(l.caso.resultadoActual())
         }
+    }
+    @Test fun callbackViejoNoBorraConfirmacionNuevaNiPublicaLaAnterior() {
+        lateinit var l: Laboratorio; var nueva: ConfirmacionPair? = null; var reemplazar = true
+        l = Laboratorio(VerificadorIntegridadPair { f, p ->
+            val v = CriptografiaPairCp2.verificarIntegridad(f, p)
+            if (reemplazar) {
+                reemplazar = false
+                val ref = l.oferta(); nueva = l.caso.confirmar(ref, l.ticket(), l.datos())!!
+            }
+            v
+        })
+        val ref = l.oferta(); val vieja = l.caso.confirmar(ref, l.ticket(), l.datos())!!
+        assertNull(l.caso.validar(vieja, l.frame(l.aceptacion(ref))))
+        val actual = nueva!!; val f = l.frame(l.aceptacion(actual.referencia))
+        assertNotNull(l.caso.validar(actual, f)); assertNotNull(l.caso.resultadoActual())
+        assertNull(l.caso.validar(vieja, f)); assertNotNull(l.caso.resultadoActual())
+    }
+    @Test fun bytesEntradaCopiadosAntesDeProveedorYSnapshotNoEsAutoridadTrasCaducar() {
+        lateinit var entrada: ByteArray
+        val l = Laboratorio(VerificadorIntegridadPair { f, p ->
+            entrada.fill(0); CriptografiaPairCp2.verificarIntegridad(f, p)
+        })
+        val ref = l.oferta(); val c = l.caso.confirmar(ref, l.ticket(), l.datos())!!
+        entrada = l.frame(l.aceptacion(ref)); val v = l.caso.validar(c, entrada)!!
+        assertEquals(0.toByte(), entrada[0]); assertEquals(v.aceptacion, CodecPairCp2.leerPayload(v.bytesPayload()))
+        l.tiempo += 120000; assertNull(l.caso.resultadoActual())
+        // El snapshot histórico sigue inmutable: no es permiso/commit ni se revalida por conservar sus bytes.
+        assertEquals(v.aceptacion, CodecPairCp2.leerPayload(v.bytesPayload()))
+    }
+    @Test fun confirmarOrigenDiferenteAunqueFirmaValidaNoConfiaEnElMensaje() {
+        val l = Laboratorio(); val ref = l.oferta(); val d = l.datos().copy(origen = "https://confirmado.invalid")
+        val c = l.caso.confirmar(ref, l.ticket(), d)!!
+        val f = l.frame(l.aceptacion(ref)); assertNotNull(CriptografiaPairCp2.verificarIntegridad(f, l.publicaPadre))
+        assertNull(l.caso.validar(c, f)); assertNull(l.caso.resultadoActual())
+    }
+    @Test fun codigoFrescoTardioNoExtiendeVidaDeOfertaDeSesionOriginal() {
+        val l = Laboratorio(); val ref = l.oferta(); l.tiempo += 119999
+        val t = l.ticket(); val c = l.caso.confirmar(ref, t, l.datos())!!
+        l.tiempo++; assertTrue(l.sesion.accionVigente(t)) // Código reciente aún vigente.
+        assertNull(l.caso.validar(c, l.frame(l.aceptacion(ref)))) // Oferta de la sesión original ya no.
+    }
+    @Test fun procesoNuevoNoReconstruyeConfirmacionNiResultado() {
+        val l = Laboratorio(); val ref = l.oferta(); val c = l.caso.confirmar(ref, l.ticket(), l.datos())!!
+        val nuevo = ValidacionPairRam(l.ofertas, l.sesion)
+        assertNull(nuevo.validar(c, l.frame(l.aceptacion(ref)))); assertNull(nuevo.resultadoActual())
+        val ofertaNueva = OfertasRam({ l.tiempo }, { ContextoOferta(l.boot, l.publicaHijo) }, { true })
+        assertFalse(ofertaNueva.vigente(ref))
+    }
+    @Test fun consultaViejaReentranteNoBorraResultadoNuevo() {
+        val l = Laboratorio(); val ref = l.oferta(); val c = l.caso.confirmar(ref, l.ticket(), l.datos())!!
+        assertNotNull(l.caso.validar(c, l.frame(l.aceptacion(ref))))
+        var nuevo: ValidacionPair? = null
+        l.alLeerContexto = {
+            l.alLeerContexto = {} // Evitar recursión de la fuente inyectada de laboratorio.
+            val siguiente = l.oferta(); val confirmacion = l.caso.confirmar(siguiente, l.ticket(), l.datos())!!
+            nuevo = l.caso.validar(confirmacion, l.frame(l.aceptacion(siguiente)))!!
+        }
+        assertNull(l.caso.resultadoActual()); assertNotNull(nuevo); assertSame(nuevo, l.caso.resultadoActual())
     }
 }

@@ -116,6 +116,7 @@ object CodecPairCp2 {
 object CriptografiaPairCp2 {
     /** El llamador aporta la candidata esperada INDEPENDIENTE del frame; aún no confianza. */
     fun verificarIntegridad(bytes: ByteArray, publicaPadreEsperada: String): IntegridadPairCp2 {
+        require(bytes.size in 1..CodecPairCp2.MAX_FRAME) // Antes incluso de la copia defensiva.
         val frame = bytes.copyOf()
         val clave = ClavePublicaCp1.leer(publicaPadreEsperada)
         val sobre = CodecPairCp2.leerSobre(frame)
