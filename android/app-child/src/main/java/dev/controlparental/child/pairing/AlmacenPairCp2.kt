@@ -74,7 +74,10 @@ internal object CodecRegistroPair {
 /** Un escritor por ruta en Android. No reemplazo/reintento tras reserva, aunque el frame sea idéntico. */
 internal class AlmacenPairCp2(private val archivos: ArchivosPairCp2) {
     private var escribiendo = false
-    @Synchronized fun cargar(publicaPadreEsperada: String? = null): CargaPairCp2 = try {
+    private var falloIncierto = false
+    @Synchronized fun cargar(publicaPadreEsperada: String? = null): CargaPairCp2 =
+        if (escribiendo || falloIncierto) CargaPairCp2.Incierta else cargarInterno(publicaPadreEsperada)
+    private fun cargarInterno(publicaPadreEsperada: String? = null): CargaPairCp2 = try {
         val reserva = archivos.leerReserva(); val registro = archivos.leerRegistro()
         when {
             reserva == null && registro == null -> CargaPairCp2.Ausente
@@ -90,10 +93,10 @@ internal class AlmacenPairCp2(private val archivos: ArchivosPairCp2) {
 
     @Synchronized fun guardar(v: ValidacionPair, consentimiento: ConsentimientoPair,
         vigente: () -> Boolean): ResultadoGuardarPair {
-        if (escribiendo) return ResultadoGuardarPair.RECHAZADO
+        if (escribiendo || falloIncierto) return ResultadoGuardarPair.RECHAZADO
         escribiendo = true
         try {
-            if (cargar() !is CargaPairCp2.Ausente || !vigente()) return ResultadoGuardarPair.RECHAZADO
+            if (cargarInterno() !is CargaPairCp2.Ausente || !vigente()) return ResultadoGuardarPair.RECHAZADO
             require(consentimiento.datos == v.consentimiento && consentimiento.boot == v.boot &&
                 consentimiento.generacion == v.generacionOferta && consentimiento.revisionAdulta == v.marco.revision)
             val bytes = CodecRegistroPair.escribir(v.integridad, consentimiento)
@@ -105,10 +108,10 @@ internal class AlmacenPairCp2(private val archivos: ArchivosPairCp2) {
             if (!vigente()) return ResultadoGuardarPair.INCIERTO
             archivos.escribirRegistro(bytes) // Punto irreversible: autoridad comprobada justo antes de IO.
             check(archivos.leerRegistro()?.contentEquals(bytes) == true)
-            val leido = cargar(v.aceptacion.parentPublicKeyB64) as? CargaPairCp2.Guardado ?: error("Readback CP2 falló")
+            val leido = cargarInterno(v.aceptacion.parentPublicKeyB64) as? CargaPairCp2.Guardado ?: error("Readback CP2 falló")
             check(leido.snapshot.integridad.payloadSha256B64 == v.payloadSha256B64)
             return if (vigente()) ResultadoGuardarPair.GUARDADO else ResultadoGuardarPair.GUARDADO_SIN_SESION
-        } catch (_: Exception) { return ResultadoGuardarPair.INCIERTO }
+        } catch (_: Exception) { falloIncierto = true; return ResultadoGuardarPair.INCIERTO }
         finally { escribiendo = false }
     }
 }

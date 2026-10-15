@@ -4,6 +4,23 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class SesionAdultoTest {
+    @Test fun `marco pair no revive tras fondo ni reentrada ni codigo fresco tardio`() {
+        s.reanudar(); val e = s.solicitar(FinAdulto.ENTRAR)!!
+        s.completar(e, ResultadoAdulto(TipoAdulto.AUTENTICADO, revision = 9))
+        val generar = s.solicitar(FinAdulto.GENERAR_OFERTA)!!
+        s.autorizarAccion(generar, ResultadoAdulto(TipoAdulto.AUTENTICADO, revision = 9))
+        val marco = s.marcoAcreditado(generar)!!
+        val validar = s.solicitar(FinAdulto.VALIDAR_PAIR)!!
+        assertFalse(s.accionVigente(generar)); assertTrue(s.marcoVigente(marco)); assertFalse(s.accionVigente(validar))
+        s.autorizarAccion(validar, ResultadoAdulto(TipoAdulto.AUTENTICADO, revision = 9))
+        val guardar = s.solicitar(FinAdulto.GUARDAR_PAIR)!!
+        assertEquals(marco.limite, guardar.limite)
+        assertFalse(s.autorizarAccion(guardar, ResultadoAdulto(TipoAdulto.AUTENTICADO, revision = 10)))
+        s.cerrar(); s.reanudar(); assertFalse(s.marcoVigente(marco)); assertFalse(s.accionVigente(guardar))
+        val nuevo = s.solicitar(FinAdulto.ENTRAR)!!
+        s.completar(nuevo, ResultadoAdulto(TipoAdulto.AUTENTICADO, revision = 9))
+        assertFalse(s.marcoVigente(marco)); assertFalse(s.accionVigente(validar))
+    }
     @Test fun `validar pair exige otro codigo revision proposito y contexto no respuesta recuperacion`() {
         s.reanudar(); assertNull(s.solicitar(FinAdulto.VALIDAR_PAIR))
         val recuperar = s.solicitar(FinAdulto.RECUPERAR)!!

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="confirmar_identidad_pair">He confirmado personalmente pública candidata, ambas huellas y origen en el padre conocido. No basta una firma válida.</string>
     <string name="oferta_cp2_restante">Oferta: %1$d s restantes. La sesión adulta puede caducar antes; no se renueva.</string>
     <string name="confirmar_offline_local">Confirmo explícitamente la EXCEPCIÓN OFFLINE LOCAL y uso sin internet validada</string>
     <string name="app_name">Control parental — dispositivo administrado</string>

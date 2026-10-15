@@ -49,3 +49,38 @@ sesión; el futuro puente de ciclo de vida UI requiere una unidad explícita.
 PAIR02 prueba el caso puro con OfertasRam/SesionAdulto reales y puertos JVM
 controlados, acotando la vida de oferta a la sesión original120s además del
 límite modelo300000ms. No ceremonia real/CP2completo/migración por esta entrega.
+
+## PAIR03 — integración MAIN, compilada sin ceremonia física
+
+El límite de UI anterior queda resuelto en código: MarcoSesionAdulto mantiene
+la sesión ORIGINAL120s por identidad de objeto/revisión/boot; GENERAR_OFERTA,
+VALIDAR_PAIR y GUARDAR_PAIR tienen tickets propios/código fresco, acotados al
+mismo marco. OfertasRam separa autorización de generar y vida de sesión sin
+ampliar su plazo5min ni recrearla al volver del fondo. ValidacionPairRam sigue
+siendo el único caso de validación de contexto; el snapshot RAM no es permiso.
+
+AccesoAdultoActivity conecta Camera2/ImageReader y ZXing existente, sin intentos
+externos, archivos de cámara, clipboard o SDK nuevo. CAMERA es runtime/peligroso:
+diálogo explícito, pedir/negar retira oferta, nunca autoescanea tras el permiso.
+Dos pasos RAM: integridad de candidata (NO confianza), luego comparación humana
+de pública/ambas huellas/origen con el padre conocido, huella padre y origen
+esperados introducidos independientemente/sin predeterminar, casilla y otro
+código para validar. Otro código GUARDAR_PAIR consiente el guardado irreversible.
+
+Registro LOCAL versionado1/perfilcp.v2 en CE/noBackup `vinculo-cp2-v1`, separado
+de CP1/adulto/boot/consumos. `.intento` exclusivo+sync precede reserva AtomicFile;
+reserva SHA256 del registro y registro AtomicFile con PAIR original/hash,
+consentimiento versionado/pública esperada/huellas/origen/revisión/boot/generación,
+nonceconsumidoSHA256. Datos de pareja/recoveryHashes exactos se derivan únicamente
+de ese PAIR verificado. Readback exacto y verificación criptográfica antes de
+publicar. Resto/parcial/incoherencia nunca autoriza reemplazo; sin reparación,
+rotación, migración o reintento automático. No segunda alta si ya está guardado.
+
+Estado honesto `VINCULO_CP2_GUARDADO_PENDIENTE_CANAL_Y_RECUPERACION`; getter
+PairAndroid.cargar para transporte futuro revalida firma con candidata ESPERADA
+del consentimiento guardado y compatibilidad de identidad/legado, no con una
+clave nueva de un mensaje. No órdenes/STATE/ACK/recibo nuevo/canal ni activación
+de recuperación CP1 por estos hashes. Sin escrituraDP/permisos/credenciales.
+JVM y builds/lint comprobados; cámara/diálogo/ceremonia/IO Android/commit real
+NO ejecutados en teléfono. PadrePAIR02/firma-persistencia nueva sigue pendiente
+según coordinación reportada, no integración externa acreditada.

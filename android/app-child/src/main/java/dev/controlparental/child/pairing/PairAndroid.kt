@@ -13,13 +13,17 @@ internal object PairAndroid {
     private val almacenes = mutableMapOf<String, AlmacenPairCp2>()
     @Synchronized fun almacen(contexto: Context): AlmacenPairCp2 {
         val app = contexto.applicationContext
+        check(!app.isDeviceProtectedStorage)
         check(app.getSystemService(UserManager::class.java)?.isUserUnlocked == true)
         val base = File(app.noBackupFilesDir, "vinculo-cp2-v1").canonicalFile
         return almacenes.getOrPut(base.path) { AlmacenPairCp2(ArchivosPairAndroid(base)) }
     }
-    fun cargar(contexto: Context): CargaPairCp2 = try { almacen(contexto).cargar() } catch (_: Exception) { CargaPairCp2.Incierta }
-    fun contextoParaOferta(contexto: Context): ContextoOferta? =
-        if (cargar(contexto) is CargaPairCp2.Ausente) IdentidadOfertaAndroid(contexto).leer().contexto else null
+    fun cargar(contexto: Context): CargaPairCp2 = try {
+        val carga = almacen(contexto).cargar()
+        if (carga is CargaPairCp2.Guardado &&
+            IdentidadOfertaAndroid(contexto).leer().contexto?.identidad != carga.snapshot.publicaHijo) CargaPairCp2.Incierta
+        else carga
+    } catch (_: Exception) { CargaPairCp2.Incierta }
 
     fun guardar(contexto: Context, caso: ValidacionPairRam, v: ValidacionPair, sesion: SesionAdulto,
         ticket: TicketAdulto): ResultadoGuardarPair {
@@ -35,6 +39,8 @@ internal object PairAndroid {
 internal class ArchivosPairAndroid(private val base: File) : ArchivosPairCp2 {
     private fun leer(ruta: File): ByteArray? {
         val restos = listOf(ruta, File(ruta.path + ".bak"), File(ruta.path + ".new")).any { it.exists() }
+        // openRead puede retirar .new: conservarlo si es el único resto para no fabricar virginidad.
+        check(!restos || ruta.exists() || File(ruta.path + ".bak").exists())
         val entrada = try { AtomicFile(ruta).openRead() } catch (e: FileNotFoundException) {
             if (restos || !ruta.parentFile!!.isDirectory || !ruta.parentFile!!.canRead()) throw e
             return null
