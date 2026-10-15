@@ -57,7 +57,7 @@ class ClienteAuthHijoTest {
         }
     }
     @Test fun caducaDiezSegundosRelojRetrocedeYCambioSnapshotBootIdentidadRevision() {
-        for (caso in 0..5) {
+        for (caso in 0..8) {
             val l = Lab(); val r = l.cliente.iniciar()!!; val e = l.cliente.recibirReto(r, reto)!!
             when (caso) {
                 0 -> l.tiempo += 10000
@@ -66,6 +66,9 @@ class ClienteAuthHijoTest {
                 3 -> l.contexto = l.contexto!!.copy(publicaHijo = "otra")
                 4 -> l.contexto = l.contexto!!.copy(revisionRegistro = "revision2")
                 5 -> l.contexto = null
+                6 -> l.contexto = l.contexto!!.copy(publicaPadre = "otra")
+                7 -> l.contexto = l.contexto!!.copy(pairId = "otro")
+                8 -> l.contexto = l.contexto!!.copy(origen = "https://otro.example")
             }
             assertFalse(l.cliente.confirmarEnvio(r, e, true)); assertFalse(l.cliente.recibirOk(r, ok))
         }
@@ -103,5 +106,12 @@ class ClienteAuthHijoTest {
         l.alLeer = { l.alLeer = {}; nueva = l.cliente.iniciar() }
         assertNull(l.cliente.iniciar()); assertNotNull(nueva)
         assertEquals(FaseAuthHijo.ESPERANDO_RETO, l.cliente.estado(nueva!!))
+    }
+    @Test fun copiaTicketNoConfirmaEnvioYOkAlLimiteExactoNoAutentica() {
+        val l = Lab(); val r = l.cliente.iniciar()!!; val e = l.cliente.recibirReto(r, reto)!!
+        assertFalse(l.cliente.confirmarEnvio(r, EnvioAuthHijo(r, e.bytesFrame()), true))
+        val otro = Lab(); val ref = otro.cliente.iniciar()!!; val envio = otro.cliente.recibirReto(ref, reto)!!
+        otro.tiempo += 9999; assertTrue(otro.cliente.confirmarEnvio(ref, envio, true))
+        otro.tiempo++; assertFalse(otro.cliente.recibirOk(ref, ok))
     }
 }

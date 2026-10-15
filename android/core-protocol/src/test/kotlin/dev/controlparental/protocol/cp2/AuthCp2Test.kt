@@ -49,6 +49,9 @@ class AuthCp2Test {
             rechaza { CriptografiaAuthCp2.verificar(CodecAuthCp2.escribir(SobreAuthCp2(Base64Cp1.codificar(p), Base64Cp1.codificar(sig))), publica, RolAuthCp2.CHILD) }
         }
         rechaza { CodecPairCp2.leerSobre(f) }
+        val sobre = CodecAuthCp2.leer(f) as SobreAuthCp2
+        val alterado = CodecAuthCp2.escribirPrueba(prueba(RolAuthCp2.PARENT))
+        rechaza { CriptografiaAuthCp2.verificar(CodecAuthCp2.escribir(sobre.copy(payloadB64 = Base64Cp1.codificar(alterado))), publica, RolAuthCp2.PARENT) }
     }
     @Test fun canonicalAsciiUtf8DuplicadosVersionTimeoutProtocolYTipos() {
         val b = CodecAuthCp2.escribir(RetoAuthCp2(id, nonce)); val texto = b.toString(Charsets.UTF_8)

@@ -84,3 +84,39 @@ de recuperación CP1 por estos hashes. Sin escrituraDP/permisos/credenciales.
 JVM y builds/lint comprobados; cámara/diálogo/ceremonia/IO Android/commit real
 NO ejecutados en teléfono. PadrePAIR02/firma-persistencia nueva sigue pendiente
 según coordinación reportada, no integración externa acreditada.
+
+## AUTH01 — borde CHILD compilado sin red
+
+Fuente separada `autenticacion.schema.json`: texto íntegro CP2-A01 Render
+`d99ddac` suministrado por el propietario, LF/saltofinal; hashlocal
+`db96b66ec81a379836751491244bb498a3b45ad75428593d9ea2c8755e0dd17a`.
+No acceso al repositorio externo ni modificación de CP1/schemaPAIR.
+Codec/DTO/criptoAUTH en corecp2: CHALLENGE5/AUTH_PROOF7/AUTH_OK4/PING-PONG3/
+SIGNED-AUTH5, dominio `UTF8("CPv2/AUTH\n")` LF real y payloadoriginal,
+canonicalidadASCII/UTF8/camposcerrados/profundidad6/Base64/UUIDv4/nonce32/
+P256DERr,s/8192payload-16384frame, sin alg/key del mensaje ni fallbackv1.
+Emisión productiva sólo CHILD; verificación de ambos roles con pública esperada.
+
+`AuthAndroid.crear` construye cliente callable con puertos reales PairAndroid/
+identidadCE/privateSigning existente; no genera/importa/rota/exporta clave ni
+modifica registros. `iniciar` es intención explícita del futuro transporte,
+NO abre socket. Revalida snapshot completo/revisiónhash/boot/identidad, reto10s
+monotónico y referenciasRAM por generación; ticket de bytes no es envío hasta
+confirmar ESTE objeto y éxito, AUTH_OK sólo después/mismoconnectionId/vigencia.
+Callbacks viejos/cambio snapshot/errores/replay cierran sin afectar generación
+nueva. Hasta64retos retenidos RAM, sin evicción; capacidad agotada rechaza.
+PING/PONG no autentican ni conceden uso; PONG exige nonce pendiente.
+
+La acción de conexión MAIN permanece DESHABILITADA hasta transporteTLS/canal
+compatible; no boot/panel/socket automático. AUTH_OK sin firma sólo sería
+aceptable del canal TLS correcto futuro, que esta unidad NO crea ni acredita.
+Estado AUTENTICADO_TRANSPORTE no acredita permiso, estado de enforcement,
+recuperación operativa, padre activo ni liveness/canal compatible. No órdenes,
+STATE/ACK/SYNC, recuperación, ALLOW ni cambio de snapshot pendiente por AUTH.
+Caducidad se comprueba en cada operación/consulta, sin scheduler/socket nuevo.
+
+INTEROP01 queda histórico AUTH_NO_EVALUADO; AUTH01 ahora verifica los dos AUTH
+del recursoNode967ae05a…a964ec por codec/cripto reales. Vuelta NUEVA autorizada
+de8campos en `pruebas/interop_auth_cp2_jvm_publica.json`, pública/efímeraJVM,
+sin sobrescribir vectorPAIR6campos. Verificación Render de esta nueva vuelta
+pendiente; no Androidreal/Keystorefísico/canal/ceremonia por pruebasJVM.
