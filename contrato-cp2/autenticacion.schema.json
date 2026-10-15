@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://control-parental.invalid/cp2/autenticacion.schema.json",
+  "oneOf": [
+    { "$ref": "#/$defs/reto" }, { "$ref": "#/$defs/prueba" },
+    { "$ref": "#/$defs/aceptada" }, { "$ref": "#/$defs/latido" }, { "$ref": "#/$defs/sobreAuth" }
+  ],
+  "$defs": {
+    "uuid": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" },
+    "nonce": { "type": "string", "minLength": 43, "maxLength": 43, "pattern": "^[A-Za-z0-9_-]+$" },
+    "reto": {
+      "type": "object", "additionalProperties": false,
+      "required": ["v", "kind", "connectionId", "nonce", "timeoutSec"],
+      "properties": {
+        "v": { "const": 2 }, "kind": { "const": "CHALLENGE" },
+        "connectionId": { "$ref": "#/$defs/uuid" }, "nonce": { "$ref": "#/$defs/nonce" },
+        "timeoutSec": { "const": 10 }
+      }
+    },
+    "prueba": {
+      "type": "object", "additionalProperties": false,
+      "required": ["v", "kind", "pairId", "role", "connectionId", "nonce", "protocol"],
+      "properties": {
+        "v": { "const": 2 }, "kind": { "const": "AUTH_PROOF" }, "protocol": { "const": "cp.v2" },
+        "pairId": { "$ref": "#/$defs/uuid" }, "role": { "enum": ["PARENT", "CHILD"] },
+        "connectionId": { "$ref": "#/$defs/uuid" }, "nonce": { "$ref": "#/$defs/nonce" }
+      }
+    },
+    "aceptada": {
+      "type": "object", "additionalProperties": false,
+      "required": ["v", "kind", "connectionId", "protocol"],
+      "properties": {
+        "v": { "const": 2 }, "kind": { "const": "AUTH_OK" }, "protocol": { "const": "cp.v2" },
+        "connectionId": { "$ref": "#/$defs/uuid" }
+      }
+    },
+    "latido": {
+      "type": "object", "additionalProperties": false,
+      "required": ["v", "kind", "nonce"],
+      "properties": {
+        "v": { "const": 2 }, "kind": { "enum": ["PING", "PONG"] },
+        "nonce": { "$ref": "#/$defs/nonce" }
+      }
+    },
+    "sobreAuth": {
+      "type": "object", "additionalProperties": false,
+      "required": ["v", "kind", "purpose", "payloadB64", "sigB64"],
+      "properties": {
+        "v": { "const": 2 }, "kind": { "const": "SIGNED" }, "purpose": { "const": "AUTH" },
+        "payloadB64": { "type": "string", "minLength": 1, "maxLength": 10923, "pattern": "^[A-Za-z0-9_-]+$" },
+        "sigB64": { "type": "string", "minLength": 11, "maxLength": 96, "pattern": "^[A-Za-z0-9_-]+$" }
+      }
+    }
+  }
+}

@@ -293,6 +293,7 @@ class AccesoAdultoActivity : ComponentActivity() {
         }
         boton("INICIALIZAR IDENTIDAD — solo alta presencial separada") { confirmarOferta(true) }
         for (s in listOf("Red remota — pendiente", "Otras políticas de Ajustes — pendiente")) boton(s, false)
+        boton("Conexión AUTH CP/2 — deshabilitada hasta transporte TLS/canal compatible", false)
         boton("Cerrar sesión") { cerrarAutoridad(); sesion.reanudar(); consultar() }
     }
     private fun confirmarOferta(inicializar: Boolean) {

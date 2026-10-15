@@ -2,8 +2,12 @@
 
 Última actualización: 15 de octubre de 2026
 Commit de partida: ac7d801 (C01 completada)
-Tarea actual: HIJO-INTEROP01 — interoperabilidad PAIR pública local Node→JVM y vuelta pública JVM
-Estado: CERRADA_NODE_PAIR_ACEPTADO_JVM_VUELTA_PUBLICA_REVALIDADA_NODE_PENDIENTE — codecs/oferta/PAIR/cripto reales, fuente exacta967ae05a…a964ec, salida6camposSHAfa04fc86…b36bf6. JVM433debug/378release0fallos/5casosnuevosdistintos. AUTH_NO_EVALUADO_HIJO. Solo tests/recursos/docs, sin producción/rebuildAPK/lint/Nodeverificador/teléfonos/alta real.
+Tarea actual: HIJO-AUTH01 — borde cliente CHILD y autenticación CP2 sin conexión de red
+Estado: EN_CURSO_BLOQUE1 — codec/DTO/firmaAUTHCHILD/bordeAuthAndroidpuertosreales y máquina por generación/reto10s/envíoticket implementados. Acción conexiónUI deshabilitada, sin sockets/enforcer. Pruebas iniciales correctas; pendientes interop2AUTH/vuelta8campos/revisiónfinal/evidencia/cierre de esta misma unidad. Sin física.
+
+## AUTH01 — progreso de la unidad autorizada
+
+Fuente schemaCP2-A01 Renderd99ddac recibida íntegra y copiada separada `contrato-cp2/autenticacion.schema.json`, hashlocaldb96b66ec81a379836751491244bb498a3b45ad75428593d9ea2c8755e0dd17a; no CP1. Nuevo corecp2/AuthCp2 DTO/codec canonicalASCII-UTF8/depth6/8192payload16384frame/closedfields/base64UUIDnonce/P256DERdomCPv2AUTHLF; emisiónMAINsolamenteCHILD con puerto, no alg/key de frames. Nuevo appauth/ClienteAuthHijo+AuthAndroid usan snapshotPairAndroid validado/revisiónregistro/identidadboot/publicaprivatesigningexistente(sincrear), estadoRAMporrefconexión/retoplazo10s/replay/confirmarenvíoantesOK/callbackold/latidos sinALLOWeffect. UI acciónAUTHdeshabilitada, no abre red. Tests5core+8borde nuevos de firmasrealesJVM/contextofake/sinAndroidKeystorefísico. Fullcore:test/appJVMdebug-release/builddebug-test-release/lintReleaseSUCCESS1m29s35ejecutadas96UPTODATE/core187/app433-378 sinfallos/lintreporteUPTODATE0errores11avisos; APKtestcompiladono instrumentado. PasebordeFAILED8s por paréntesisextra test corregido, no testsacreditados; paseposterior core:test/appJVM SUCCESS21s6ejecutadas46UPTODATE/corecached/app441-386. Render reporta vueltaPAIRhijo hashfa04fc86…b36bf6 y padre hashfb830c79…65d4b aceptados localmente, no ejecutados hijo ni prueba de identidadhumana/ceremonia. Continuar SOLO mismaunidad pruebasinteropAUTH/vuelta nueva/evidencia/cierre y detener.
 
 ## INTEROP01 — entrega criptográfica local sin autoridad
 
