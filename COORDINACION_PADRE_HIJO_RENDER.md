@@ -1,5 +1,22 @@
 # Relevo de coordinación — padre, hijo y WebSocket CP/1
 
+## Actualización posterior — MISMA E2E01, reporte Node externo sin Android
+
+Propietario reporta RenderSTATEpiloto `d2fddc4`/SHA256UTF8LFfinal
+bf6c04c3614010932233b2ca052d5a5eb2605361f9b35e764000975198027809,
+recomprobado sólo el hash de copia local/no repo ni commit remoto leído.
+Routinglocal169tests/CP1esquema28-13/vectores10-78 y dos socketsNodeauténticos/
+clavesefímeras SYNC→STATE→LOCK→ACKpending→ACKapplied preservandobytes:
+**REPORTADO, no ejecutado hijo; hijoSIMULADO, no bloqueoAndroid**. Peer ausente
+PEER_UNAVAILABLE/noACKrelay/nopresenciaespontánea. CLI conserva perfil previo y
+endpoint público aún pendiente. MAINhijo ya conectado/compilado en a02e9d6,
+sin fuentes pendientes ni ControlOrdenNoDisponible; no nueva propuesta/puertos.
+Impedimentos concretos para ensayo real: endpointTLS público y aprobación física
+específica instalación/pareja/teléfono. Esta entrada no los autoriza. Sin contactar
+endpoint supuesto/CLIperfilprevio, deploy/push/dispositivos/otrosrepos/nuevaunidad.
+Sólo documentación de la misma E2E01: sin nuevo build/test/APK; evidencia y hashes
+del cierre de código se mantienen. No atribuir NodeSIMULADO a Androidreal.
+
 ## CIERRE HIJO-E2E01 — recorrido MAIN STATE/ACK, compilado/JVM sin física
 
 2026-10-15. Bloquesd507df8/897cfe7/647d138/61eccca+cierre encommitdeesterelevo.

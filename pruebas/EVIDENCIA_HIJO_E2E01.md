@@ -1,9 +1,37 @@
-# HIJO-E2E01 — avance, NO cierre
+# HIJO-E2E01 — implementación vertical piloto, evidencia y límites
 
 15 de octubre de 2026. Base `9ddce88`; primer bloque `d507df8`.
 **CERRADA IMPLEMENTACIÓN VERTICAL PILOTO / COMPILADA Y PROBADA JVM / SIN FÍSICA.**
 APK preparado en código para un ensayo posteriormente autorizado; no producto final,
 pareja/canal reales, enforcement Android ni recuperación acreditados.
+
+## Actualización de coordinación posterior al cierre de código — misma E2E01
+
+Propietario comunica STATE piloto Render `d2fddc4`, SHA256UTF8/LFfinal
+`bf6c04c3614010932233b2ca052d5a5eb2605361f9b35e764000975198027809`.
+`Get-FileHash` local volvió a comprobar ese SHA exacto. No se leyó ni verificó
+el commit/repo remoto. Schema local sin cambios; no hacen falta más fuentes.
+
+**Resultados externos REPORTADOS, no ejecutados hijo**: routing local con169tests
+correctos; CP1esquema28/13 y vectores10/78; dos sockets Node auténticos con claves
+efímeras recorrieron SYNC→STATE→LOCK→ACKpending→ACKapplied conservando bytes.
+El hijo de ese ensayo es **SIMULADO**: no prueba bloqueo/readback Android,
+Keystore/CE reales, emergencia, pareja real ni canal público. Peer ausente usa
+PEER_UNAVAILABLE/noACKrelay/no presencia espontánea. CLI normal mantiene perfil
+previo y endpoint público aún pendiente, según el reporte.
+
+La rama MAIN del hijo ya existe en `a02e9d6`: UI→PilotoE2eAndroid→WSS/AUTH→
+ControlRedAndroid/guardia/writerCE→UsoRed/Bloqueo→STATE/ACK firmados. Inspección de
+rutas confirmó llamadas productivas de UI/recepción/emisión y ausencia de
+ControlOrdenNoDisponible en MAIN; no equivale a prueba nueva de ejecución.
+No se añadió un modelo/puerto sustituto ni se modificó código por este reporte.
+
+**Impedimentos concretos del siguiente ensayo real**: endpoint TLS público aún
+pendiente y falta aprobación específica para teléfono/instalación/pareja real.
+No interpretar el ensayo Node ni esta actualización como tales permisos; no
+probar el perfil CLI previo ni contactar un endpoint supuesto. No despliegue,
+push, dispositivos, otros repos ni nueva unidad. Sólo documentación/procedencia:
+sin nuevo build/test; los resultados y hashesAPK del cierre de código se mantienen.
 
 ## Cierre con ACKRenderK01 — estado final de la misma E2E01
 
