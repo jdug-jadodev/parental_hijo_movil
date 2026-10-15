@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://control-parental.invalid/cp2/ordenes.schema.json",
+  "oneOf": [
+    { "$ref": "#/$defs/sync" }, { "$ref": "#/$defs/orden" }, { "$ref": "#/$defs/sobreMessage" }
+  ],
+  "$defs": {
+    "uuid": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" },
+    "nonce": { "type": "string", "minLength": 43, "maxLength": 43, "pattern": "^[A-Za-z0-9_-]+$" },
+    "contador": { "type": "string", "pattern": "^(0|[1-9][0-9]{0,18})$" },
+    "secuencia": { "type": "string", "pattern": "^[1-9][0-9]{0,18}$" },
+    "sync": {
+      "type": "object", "additionalProperties": false,
+      "required": ["v", "kind", "pairId", "sender", "syncNonce", "requestedAction"],
+      "properties": {
+        "v": { "const": 2 }, "kind": { "const": "SYNC_REQUEST" }, "sender": { "const": "PARENT" },
+        "pairId": { "$ref": "#/$defs/uuid" }, "syncNonce": { "$ref": "#/$defs/nonce" },
+        "requestedAction": { "enum": [null, "LOCK", "ALLOW", "ALLOW_FOR"] }
+      }
+    },
+    "orden": {
+      "type": "object", "additionalProperties": false,
+      "required": ["v", "kind", "sender", "pairId", "bootId", "childSessionId", "commandId", "seq", "expectedRevision", "commandNonce", "action", "durationSec"],
+      "properties": {
+        "v": { "const": 2 }, "kind": { "const": "SET_POLICY" }, "sender": { "const": "PARENT" },
+        "pairId": { "$ref": "#/$defs/uuid" }, "bootId": { "$ref": "#/$defs/uuid" },
+        "childSessionId": { "$ref": "#/$defs/uuid" }, "commandId": { "$ref": "#/$defs/uuid" },
+        "seq": { "$ref": "#/$defs/secuencia" }, "expectedRevision": { "$ref": "#/$defs/contador" },
+        "commandNonce": { "$ref": "#/$defs/nonce" }, "action": { "enum": ["LOCK", "ALLOW", "ALLOW_FOR"] },
+        "durationSec": { "type": ["integer", "null"] }
+      },
+      "allOf": [{
+        "if": { "properties": { "action": { "const": "ALLOW_FOR" } } },
+        "then": { "properties": { "durationSec": { "type": "integer", "minimum": 60, "maximum": 86400, "multipleOf": 60 } } },
+        "else": { "properties": { "durationSec": { "type": "null" } } }
+      }]
+    },
+    "sobreMessage": {
+      "type": "object", "additionalProperties": false,
+      "required": ["v", "kind", "purpose", "payloadB64", "sigB64"],
+      "properties": {
+        "v": { "const": 2 }, "kind": { "const": "SIGNED" }, "purpose": { "const": "MESSAGE" },
+        "payloadB64": { "type": "string", "minLength": 1, "maxLength": 10923, "pattern": "^[A-Za-z0-9_-]+$" },
+        "sigB64": { "type": "string", "minLength": 11, "maxLength": 96, "pattern": "^[A-Za-z0-9_-]+$" }
+      }
+    }
+  }
+}

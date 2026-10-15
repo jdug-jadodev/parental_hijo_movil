@@ -2,8 +2,12 @@
 
 Última actualización: 15 de octubre de 2026
 Commit de partida: ac7d801 (C01 completada)
-Tarea actual: HIJO-AUTH01 — borde cliente CHILD y autenticación CP2 sin conexión de red
-Estado: CERRADA_AUTH_CHILD_COMPILADA_Y_PROBADA_JVM_SIN_CANAL_NI_ANDROID_REAL — codecAUTH/core/bordeAuthAndroidsnapshot-Keystoreexistente; generación/reto10s/ticketenvíoantesOK/errores-callbacks-contexto/latidos sinALLOW. JVM187core/445debug/390release0fallos (5core+12appnuevosdistintos), lintRelease0errores11avisos; 2AUTHNodeverificados/vueltaNUEVA8campos14ad8921…60c289autoverificadaJVM/Renderpendiente. Sin sockets/física/instalación/credencialnueva/enforcer.
+Tarea actual: HIJO-ORD01 — recepción/validación PARENT MESSAGE y retos internos, sin escritor CONTROL durable
+Estado: EN_CURSO_BLOQUE1 — DTO/codec/cripto6SYNC-12POLICY-5sobre y guardia30s/capturaCAS/nonce/tokens/consumoprevio a puerto implementados. BordeAndroidcallable explícitamenteNO_DISPONIBLE por escritorCONTROLausente; UI deshabilitada, no socket/enforcer/permiso. Pendientes revisión/casoslímite/evidencia/relevo/cierre en esta misma unidad.
+
+## ORD01 — progreso de la unidad autorizada
+
+Fuente schemaCP2-O01 Render4481c92 recibida íntegra y copiada `contrato-cp2/ordenes.schema.json`, hashUTF8LFe5acd941ea0739ad875dcd493ea6685a2a3ec9d07a440f1c89a578fc064e8906 exacto/conlistas6-12-5. Corecp2/OrdenesCp2 no cambiaCP1, firma PARENTMESSAGE/CPv2MESSAGE-LFreal/canonicalidad/DER/camposcerrados/contadorescanónicosLongMAX/duración. Apporders/GuardiaOrdenCp2 no inventaCONTROL: puerto consolidarboot-expiración-revocación antes emitir/validar/entregar; snapshot-pareja, propiaidentidad/revisiónregistro/bootId-childSession/revisiónCONTROL-seq desde escritor; retos30selapsed ySyncnullanula/nuevoSyncsustituye/tokenstale/CAS-contextobeforeaftercrypto/preparacióninmutable/consumoANTESpuerto. ControlOrdenNoDisponible consolidarnull en MAIN y acciónórdenesdeshabilitada; pruebas concontrolfake sin autoridadMAINalternativa. Tests6core+9guardia nuevos firmasJCAefímerasRAM. Primera pasadafullFAILED54s7exec81UPTODATE por smartcast de requestedAction entre módulos, corregido a val local; no builds acreditados allí. Segunda full core:test/appJVM/builddebug-test-release/lintRelease SUCCESS1m15s32exec99UPTODATE, JVM193core/454debug/399release0fallos/lintRelease0errores11avisos(reporteUPTODATE), APKtestsolo compilación sininstrumentación. Render reporta nueva vueltaAUTH14ad8921…60c289 aceptada Node y padreORD01/Render153tests/NodeAUTHsocketlocal: resultados externos REPORTADOS, no ejecución hijo ni canalAndroidreal. No push adicional; seguir sólo revisión/pruebas/evidencia/cierre de ORD01 y detener.
 
 ## AUTH01 — progreso de la unidad autorizada
 
