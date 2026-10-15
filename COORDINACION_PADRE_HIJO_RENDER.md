@@ -1,5 +1,19 @@
 # Relevo de coordinación — padre, hijo y WebSocket CP/1
 
+## F03 — permiso DIRECTO recibido, compatibilidad APK confirmada, aún sin instalar
+
+Propietario respondió sí en ESTA sesión al alcance limitado de identificarA13,
+comprobar compatibilidad y UNA actualización conservadora si compatible. ÚnicoA13
+anunciado/confirmado SM-A135M; operaciones con adb-s al mismo destino; A56sin
+consultas dirigidas. APKinstalado copiado sólo a temporal local: hash0d363886…4344e9
+igualPAIR01, certificadoSHA39f25d28…a9f439 verificado/igualcandidato, paquete y
+versión1-0.1.0 compatibles. DeviceOwnerChildAdminReceiver confirmado; políticas
+uninstall/no_control_apps presentes en lectura filtrada, no aún valores efectivos.
+Sin datosCE/DP/Keystore/secretos/cambios. **Sin instalar todavía**: por botón físico
+averiado, falta confirmación humana de pantalla/acceso adulto/salida-emergencia
+accesibles. No probar llamada/reboot; no códigos por chat. QR/canal/órdenes
+siguen fuera del permiso. Detener en esta puerta, no ampliar ni heredar permisos.
+
 ## HIJO-F03-PREPARACION — local terminada, esperando habilitación directa
 
 15-10-2026. Guía/evidencia `pruebas/HIJO_F03_PREPARACION.md`. No builds/tests

@@ -2,6 +2,43 @@
 
 ## Estado y alcance
 
+### Habilitación directa posterior y comprobaciones previas a instalar
+
+El propietario respondió **«sí» en esta sesión** a identificar sólo A13SM-A135M,
+comprobar compatibilidad y UNA actualización conservadora si todo coincide.
+No incluye QR/canal/órdenes/reboot/cambios de protecciones. Se ejecutó inventario
+ADB permitido y se seleccionó único A13 por modelo anunciado, confirmado después
+mediante getprop en ese destino. Cada operación posterior empleó `adb -s` al mismo
+A13. Otro equipo anunciado en inventario no recibió ninguna consulta dirigida.
+Sin números de serie en esta evidencia.
+
+Comprobaciones realmente realizadas, **aún sin instalación**:
+- Paquete instalado `dev.controlparental.child`, versionCode1/versionName0.1.0,
+  minSdk31/targetSdk36; instalado/habilitado, no oculto ni suspendido.
+- Se copió sólo APK instalado a temporal local privado, no datos de aplicación.
+  SHA256 `0d363886e50f908e88188a4e5b9e40ea5aa7c57569b0e7e80aa63db2124344e9`:
+  coincide exactamente con PAIR01 acreditado.
+- `apksigner verify --print-certs` verificó ese APK y certificadoSHA256
+  `39f25d28e10a93f18fbdabac0223e917c9668d58a6d7ca28af40227946a9f439`,
+  idéntico al candidato. Paquete/versión/firma compatibles con reemplazo `-r -t`,
+  sin downgrade. No equivale a validación física del legado o de la identidad.
+- Lectura filtrada de device_policy confirma Device Owner
+  `dev.controlparental.child.admin.ChildAdminReceiver`; aparecen políticas
+  packageUninstallBlocked del hijo y userRestriction_no_control_apps. Su presencia
+  en el dump no acredita por sí sola su valor efectivo. Sin cambiar políticas,
+  consultar datos CE/DP/Keystore ni exportar secretos. Baseline filtrado local
+  temporal para comparación posterior; no dump integral guardado en repositorio.
+
+**Pausa de seguridad antes de instalar:** falta confirmación presencial del
+propietario de que puede operar la pantalla, entrar a acceso adulto y utilizar
+salida local/emergencia, con botón físico averiado. No pedir código por chat ni
+ensayar llamada/reboot. Si no puede confirmarlo, detener sin instalar. La
+autorización de actualización ya recibida no se extiende a otra operación.
+
+El resto del documento conserva el preflight inicial y la guía; donde indica
+esperar permiso de actualización es histórico, ya concedido como se detalla aquí.
+La ceremonia sigue requiriendo autorización separada.
+
 15 de octubre de 2026. Preparación local terminada; **esperando habilitación
 DIRECTA del propietario en esta sesión**. No ADB, inventario, consulta de teléfono,
 instalación, QR, cámara, aceptación real, AUTH, órdenes ni contacto remoto.
