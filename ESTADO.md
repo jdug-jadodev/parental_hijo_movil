@@ -2,8 +2,12 @@
 
 Última actualización: 15 de octubre de 2026
 Commit de partida: ac7d801 (C01 completada)
-Tarea actual: HIJO-ORD01 — recepción/validación PARENT MESSAGE y retos internos, sin escritor CONTROL durable
-Estado: CERRADA_CODEC_GUARDIA_PROBADOS_JVM_BORDE_MAIN_NO_DISPONIBLE_SIN_CONTROL_DURABLE — listas6/12/5/firmaPARENTMESSAGE/retos30s/contadoresLongMAX/preparaciónsinpermiso/consultaRetenida-decisióndelegadas; no autoridadCONTROLalternativa. JVM193core/460debug/405release0fallos(6core+15appnuevosdistintos), lintRelease0errores11avisos. No socket/enforcer/persistenciaorden/nuevoSTATE-ACK/física/push.
+Tarea actual: HIJO-E2E01 — integración vertical piloto CONTROL durable / control local / canal CP2
+Estado: EN_CURSO — escritor CE/reserva/readback y pruebas transaccionales añadidos; integración productiva con actor local, transporte y emisores pendiente. NO entregar como recorrido completo ni repetir NO_DISPONIBLE como solución.
+
+## E2E01 — unidad vertical autorizada en curso
+
+Base `9ddce88`. Primer bloque `orders/EscritorControlCp2.kt`, `ArchivosControlAndroid.kt`, `EscritorControlCp2Test.kt`: revisión CONTROL propia, intención/seq/resultado pendiente durables antes de efectos; reserva por transacción/readback, corrupción/restos no se resetean; reapertura conserva seq/último resultado y renueva sesión sin restaurar permiso. Pruebas JVM transaccionales firmas reales, IO fallido/reserva, boot/proceso, local-remoto CAS, duplicados/conflictos/callback antiguo, fallo enforcement. Comando `:app-child:testDebugUnitTest :app-child:testReleaseUnitTest --console=plain` SUCCESS28s/10ejecutadas40UPTODATE, ambas suites ejecutadas; no builds/lint/física acreditados en este pase. Fuente STATE01-PILOTO recibida en conversación/listas suministradas, JSONschema STATE/ACK y enum reason exacto §9 aún pendientes; no inventarlos. Sin dispositivos/ADBs/conexiones de red reales/push/otrosrepos/subagentes. Continuar dentro de E2E01, no otra unidad.
 
 ## ORD01 — progreso de la unidad autorizada
 
