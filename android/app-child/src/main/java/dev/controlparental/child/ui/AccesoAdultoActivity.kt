@@ -42,6 +42,8 @@ import dev.controlparental.child.network.MinutosUso
 import dev.controlparental.child.pairing.*
 import android.graphics.Bitmap
 import android.widget.ImageView
+import androidx.core.graphics.createBitmap
+import androidx.core.graphics.set
 import java.util.concurrent.Executors
 import dev.controlparental.child.R
 import java.util.concurrent.atomic.AtomicBoolean
@@ -92,6 +94,7 @@ class AccesoAdultoActivity : ComponentActivity() {
         entradas.forEach { it.text.clear() }; entradas.clear(); columna.removeAllViews()
     }
     private fun cerrarAutoridad() {
+        imagenOferta?.setImageDrawable(null)
         ofertas?.cancelar(); ofertas = null
         consulta.incrementAndGet(); bootstrap.set(false); alta = null
         prompt?.cancel(); prompt = null; sesion.cerrar(); handler.removeCallbacksAndMessages(null)
@@ -302,9 +305,9 @@ class AccesoAdultoActivity : ComponentActivity() {
                                 base("CHILD_OFFER CP/2 — no firmado, no vinculado")
                                 texto("Escaneo presencial futuro desde otra cámara. Recepción PAIR_ACCEPT deshabilitada. No QR Android de aprovisionamiento.")
                                 val lado = matriz.width * 6
-                                val bitmap = Bitmap.createBitmap(lado, lado, Bitmap.Config.ARGB_8888)
+                                val bitmap = createBitmap(lado, lado, Bitmap.Config.ARGB_8888)
                                 for (y in 0 until lado) for (x in 0 until lado)
-                                    bitmap.setPixel(x, y, if (matriz[x / 6, y / 6]) android.graphics.Color.BLACK else android.graphics.Color.WHITE)
+                                    bitmap[x, y] = if (matriz[x / 6, y / 6]) android.graphics.Color.BLACK else android.graphics.Color.WHITE
                                 imagenOferta = ImageView(this).apply {
                                     isSaveEnabled = false; isSaveFromParentEnabled = false
                                     setImageBitmap(bitmap); adjustViewBounds = true
@@ -338,7 +341,7 @@ class AccesoAdultoActivity : ComponentActivity() {
                 if (!activa || consulta.get() != n || ofertas !== controlador) return@runOnUiThread
                 if (restante == null || sesion.estado() == AutoridadAdulto.CERRADA) cerrarOferta("Oferta caducada o contexto no disponible.")
                 else {
-                    etiqueta.text = "Oferta: ${(restante + 999) / 1000}s restantes. Sesión adulta: puede caducar antes; no se renueva."
+                    etiqueta.text = getString(R.string.oferta_cp2_restante, (restante + 999) / 1000)
                     handler.postDelayed({ actualizarOferta(controlador, ref, etiqueta, n) }, 1000)
                 }
             }

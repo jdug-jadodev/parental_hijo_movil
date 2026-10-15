@@ -18,6 +18,13 @@ import java.security.spec.ECGenParameterSpec
 internal enum class EstadoIdentidadOferta { DISPONIBLE, NO_DISPONIBLE, INCIERTA }
 internal data class LecturaIdentidadOferta(val estado: EstadoIdentidadOferta, val contexto: ContextoOferta? = null)
 
+/** Ausencia de clave con artefacto de creación/pública nunca permite inicializar otra. */
+internal fun clasificarIdentidadOferta(clave: Boolean, registro: Boolean, coherente: Boolean): EstadoIdentidadOferta = when {
+    !clave && !registro -> EstadoIdentidadOferta.NO_DISPONIBLE
+    !clave || !coherente -> EstadoIdentidadOferta.INCIERTA
+    else -> EstadoIdentidadOferta.DISPONIBLE
+}
+
 /** No promueve PREPARACION, no modifica datos, consumos ni vínculo CP/1. */
 internal fun estadoCompatibleOferta(carga: CargaEstado, boot: Int, ahora: Long): Boolean {
     val e = (carga as? CargaEstado.Disponible)?.estado ?: return false
@@ -39,24 +46,24 @@ internal class IdentidadOfertaAndroid(contexto: Context) {
         estadoCompatibleOferta(EstadoAndroid.obtener(app).cargar(),
             Settings.Global.getInt(app.contentResolver, Settings.Global.BOOT_COUNT, -1), android.os.SystemClock.elapsedRealtime())
 
-    @Synchronized fun leer(): LecturaIdentidadOferta = try {
+    fun leer(): LecturaIdentidadOferta = synchronized(monitor) { try {
         if (!compatible()) LecturaIdentidadOferta(EstadoIdentidadOferta.INCIERTA)
         else {
             val almacen = k()
-            if (!almacen.containsAlias(ALIAS)) LecturaIdentidadOferta(
-                if (restos()) EstadoIdentidadOferta.INCIERTA else EstadoIdentidadOferta.NO_DISPONIBLE)
+            if (!almacen.containsAlias(ALIAS)) LecturaIdentidadOferta(clasificarIdentidadOferta(false, restos(), false))
             else {
                 val publica = FirmanteAndroidKeystore(app, ALIAS).clavePublica.base64
                 // Identidad existente sin este registro se conserva; jamás reemplazarla/importarla.
-                if (restos()) check(leerRegistro().contentEquals(publica.toByteArray(Charsets.US_ASCII)))
-                LecturaIdentidadOferta(EstadoIdentidadOferta.DISPONIBLE, ContextoOferta(
-                    Settings.Global.getInt(app.contentResolver, Settings.Global.BOOT_COUNT, -1), publica))
+                val estado = clasificarIdentidadOferta(true, restos(), !restos() ||
+                    leerRegistro().contentEquals(publica.toByteArray(Charsets.US_ASCII)))
+                LecturaIdentidadOferta(estado, if (estado == EstadoIdentidadOferta.DISPONIBLE) ContextoOferta(
+                    Settings.Global.getInt(app.contentResolver, Settings.Global.BOOT_COUNT, -1), publica) else null)
             }
         }
-    } catch (_: Exception) { LecturaIdentidadOferta(EstadoIdentidadOferta.INCIERTA) }
+    } catch (_: Exception) { LecturaIdentidadOferta(EstadoIdentidadOferta.INCIERTA) } }
 
     /** Acción inicial SEPARADA de generar oferta; exige código fresco y confirmación presencial. */
-    @Synchronized fun inicializar(autorizada: () -> Boolean): Boolean = try {
+    fun inicializar(autorizada: () -> Boolean): Boolean = synchronized(monitor) { try {
         check(autorizada() && compatible() && leer().estado == EstadoIdentidadOferta.NO_DISPONIBLE)
         check(!restos() && !k().containsAlias(ALIAS))
         escribirRegistro("CREACION_INICIADA".toByteArray(Charsets.US_ASCII)) // Antes de mutar Keystore.
@@ -72,7 +79,7 @@ internal class IdentidadOfertaAndroid(contexto: Context) {
         escribirRegistro(publica.toByteArray(Charsets.US_ASCII))
         check(autorizada() && leer().contexto?.identidad == publica)
         true
-    } catch (_: Exception) { false } // No borrar marca/clave ni reintentar ante fallo parcial.
+    } catch (_: Exception) { false } } // No borrar marca/clave ni reintentar ante fallo parcial.
 
     private fun leerRegistro(): ByteArray = registro.openRead().use {
         val salida = java.io.ByteArrayOutputStream()
@@ -88,5 +95,8 @@ internal class IdentidadOfertaAndroid(contexto: Context) {
         catch (e: Exception) { registro.failWrite(salida); throw e }
         check(leerRegistro().contentEquals(bytes))
     }
-    companion object { const val ALIAS = "privateSigning" }
+    companion object {
+        const val ALIAS = "privateSigning"
+        private val monitor = Any() // Todas las Activities comparten exclusión; nunca sobrescribir por carrera.
+    }
 }

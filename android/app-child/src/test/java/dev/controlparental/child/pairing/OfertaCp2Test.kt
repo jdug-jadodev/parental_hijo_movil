@@ -120,4 +120,29 @@ class OfertaCp2Test {
             assertFalse(estadoCompatibleOferta(CargaEstado.Disponible(e.copy(provisioningStage = etapa)), 5, 10))
         assertFalse(estadoCompatibleOferta(CargaEstado.Disponible(e.copy(recoveryConsumed = setOf(PropositoRecuperacionLocal.RETIRE))), 5, 10))
     }
+    @Test fun perdidaClaveRegistroOCreacionInterrumpidaNoSonVirgen() {
+        assertEquals(EstadoIdentidadOferta.NO_DISPONIBLE, clasificarIdentidadOferta(false, false, false))
+        assertEquals(EstadoIdentidadOferta.INCIERTA, clasificarIdentidadOferta(false, true, false))
+        assertEquals(EstadoIdentidadOferta.INCIERTA, clasificarIdentidadOferta(true, true, false))
+        assertEquals(EstadoIdentidadOferta.DISPONIBLE, clasificarIdentidadOferta(true, true, true))
+        assertEquals(EstadoIdentidadOferta.DISPONIBLE, clasificarIdentidadOferta(true, false, true)) // Pública existente conservada.
+    }
+    @Test fun cancelacionDuranteGeneracionNoPublicaReferencia() {
+        lateinit var ram: OfertasRam
+        ram = OfertasRam({ 10 }, { ContextoOferta(5, publicaFija) }, { true }, EntropiaOferta { n ->
+            ram.cancelar(); ByteArray(n)
+        })
+        rechaza { ram.generar() }
+    }
+    private val publicaFija by lazy { publica() }
+    @Test fun generacionDemoradaNoRenuevaCincoMinutos() {
+        var t = 10L
+        val ram = OfertasRam({ t }, { ContextoOferta(5, publicaFija) }, { true }, EntropiaOferta { n -> t += 150_000; ByteArray(n) })
+        rechaza { ram.generar() }
+    }
+    @Test fun errorPuertoIdentidadRetiraOfertaSinRestaurarla() {
+        var error = false
+        val ram = OfertasRam({ 10 }, { if (error) error("Fuente no disponible") else ContextoOferta(5, publicaFija) }, { true })
+        val r = ram.generar(); error = true; assertFalse(ram.vigente(r)); error = false; assertFalse(ram.vigente(r))
+    }
 }

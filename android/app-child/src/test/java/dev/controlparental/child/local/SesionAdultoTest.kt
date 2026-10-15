@@ -4,6 +4,20 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class SesionAdultoTest {
+    @Test fun `oferta cinco minutos no elude sesion adulta dos minutos`() {
+        s.reanudar(); val entrada = s.solicitar(FinAdulto.ENTRAR)!!
+        s.completar(entrada, ResultadoAdulto(TipoAdulto.AUTENTICADO, revision = 7))
+        val t = s.solicitar(FinAdulto.GENERAR_OFERTA)!!
+        assertTrue(s.autorizarAccion(t, ResultadoAdulto(TipoAdulto.AUTENTICADO, revision = 7)))
+        val publica = java.security.KeyPairGenerator.getInstance("EC").run {
+            initialize(java.security.spec.ECGenParameterSpec("secp256r1")); generateKeyPair().public.encoded
+        }
+        val ram = dev.controlparental.child.pairing.OfertasRam({ tiempo },
+            { dev.controlparental.child.pairing.ContextoOferta(boot, dev.controlparental.protocol.Base64Cp1.codificar(publica)) },
+            { s.accionVigente(t) })
+        val ref = ram.generar(); tiempo += 119999; assertTrue(ram.vigente(ref))
+        tiempo++; assertFalse(ram.vigente(ref)); assertFalse(s.accionVigente(t))
+    }
     @Test fun `oferta e inicializacion son propositos separados con codigo revision boot y plazo`() {
         for (fin in listOf(FinAdulto.GENERAR_OFERTA, FinAdulto.INICIALIZAR_IDENTIDAD)) {
             s.reanudar(); assertNull(s.solicitar(fin))

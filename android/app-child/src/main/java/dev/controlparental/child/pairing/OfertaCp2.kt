@@ -74,6 +74,7 @@ internal class OfertasRam(private val ahora: () -> Long, private val contexto: (
     @Synchronized fun cancelar() { generacion++; actual = null }
     @Synchronized fun generar(): ReferenciaOferta {
         cancelar()
+        val solicitada = generacion
         check(autorizada())
         val c = contexto() ?: error("Identidad/contexto no disponible")
         check(c.boot >= 0)
@@ -84,8 +85,10 @@ internal class OfertasRam(private val ahora: () -> Long, private val contexto: (
         val nonce = entropia.bytes(32); require(nonce.size == 32)
         val o = OfertaCp2(c.identidad, UUID(mitad(0), mitad(8)).toString(), Base64Cp1.codificar(nonce))
         CodecOfertaCp2.validar(o)
-        check(autorizada() && contexto() == c && ahora() >= n)
-        return ReferenciaOferta(generacion, c, n, Math.addExact(n, 300_000), o).also { actual = it }
+        val limite = Math.addExact(n, 300_000)
+        check(autorizada() && contexto() == c && generacion == solicitada)
+        val fin = ahora(); check(fin >= n && fin < limite); ultimo = fin
+        return ReferenciaOferta(solicitada, c, n, limite, o).also { actual = it }
     }
     @Synchronized fun vigente(ref: ReferenciaOferta): Boolean {
         if (actual !== ref || ref.generacion != generacion) return false
