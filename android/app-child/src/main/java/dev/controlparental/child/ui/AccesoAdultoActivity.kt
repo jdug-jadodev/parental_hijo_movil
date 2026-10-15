@@ -73,6 +73,8 @@ class AccesoAdultoActivity : ComponentActivity() {
     private var casoPair: ValidacionPairRam? = null
     private var camaraPair: CamaraPairCp2? = null
     private var framePair: ByteArray? = null
+    @Volatile private var canalC8: dev.controlparental.child.pairing.CanalEncuentroC8Android? = null
+    private var origenC8Confirmado: String? = null
     private val trabajoOferta = Executors.newSingleThreadExecutor { Thread(it, "oferta-local") }
     private val caducidad = object : Runnable {
         override fun run() {
@@ -102,6 +104,8 @@ class AccesoAdultoActivity : ComponentActivity() {
         entradas.forEach { it.text.clear() }; entradas.clear(); columna.removeAllViews()
     }
     private fun cerrarAutoridad() {
+        ofertas?.cancelar()
+        canalC8?.close(); canalC8 = null; origenC8Confirmado = null
         pilotoCp2?.close(); pilotoCp2 = null; estadoCanalCp2 = null
         camaraPair?.close(); camaraPair = null
         framePair?.fill(0); framePair = null; casoPair?.cancelar(); casoPair = null; referenciaPair = null
@@ -279,6 +283,7 @@ class AccesoAdultoActivity : ComponentActivity() {
         boton("PROTEGER APP — gestión global de aplicaciones", !ProteccionAndroid.estado.snapshot) { confirmarBloqueo(FinAdulto.PROTEGER_APP) }
         boton("RESTAURAR PROTECCIÓN — baseline de ensayo", ProteccionAndroid.estado.snapshot) { confirmarBloqueo(FinAdulto.RESTAURAR_APP) }
         boton("GENERAR OFERTA CP/2 — no vincula ni concede uso") { confirmarOferta(false) }
+        boton("GENERAR CÓDIGO8 — sin cámara, sólo encuentro C8/1") { confirmarOferta(false, c8 = true) }
         boton("Consultar vínculo CP/2 local — no canal ni permiso") {
             base("Estado local CP/2")
             val n = consulta.incrementAndGet()
@@ -328,15 +333,21 @@ class AccesoAdultoActivity : ComponentActivity() {
             }
         }
     }
-    private fun confirmarOferta(inicializar: Boolean) {
+    private fun confirmarOferta(inicializar: Boolean, c8: Boolean = false) {
         if (sesion.estado() != AutoridadAdulto.ADMINISTRAR) { consultar(); return }
         ofertas?.cancelar(); ofertas = null
         base(if (inicializar) "Inicialización presencial de identidad" else "Generar oferta CP/2 local")
         texto("Requiere código fresco. Generar no vincula, no migra CP/1, no concede uso ni cambia políticas. Recibir/confirmar/guardar exigen pasos separados.")
         texto(if (inicializar) "Solo ausencia inicial coherente, sin vínculo ni restos. Crea privateSigning P-256 no exportable una vez; no repara claves perdidas. Requiere autorización física concreta antes de usar este botón. No genera QR."
             else "Oferta RAM hasta5 minutos; la sesión adulta de2 minutos puede cerrarla antes. Fondo, salir, cancelar, caducidad o contexto incierto retiran QR. No compartir/capturar/copiar. Requiere autorización física concreta para mostrarla.")
+        val origenLocal = if (c8) campo("Origen HTTPS local acordado, no desde PAIR", secreto = false, maximo = 200) else null
+        if (c8) texto("C8 requiere servicio de enrolamiento habilitado posteriormente. No conectar al bootstrap sin ese despliegue autorizado. No crea identidad ni usa cámara. Si no puedes leer/comparar huellas completas, detente.")
         val codigo = campo("Código adulto fresco", codigo = true)
         boton("Confirmar operación separada con mi código") {
+            val origen = origenLocal?.text?.toString()
+            if (c8 && try { dev.controlparental.protocol.cp2.CodecPairCp2.origenExacto(origen!!); false } catch (_: Exception) { true }) {
+                texto("Origen HTTPS local inválido; no se abre transporte."); return@boton
+            }
             val fin = if (inicializar) FinAdulto.INICIALIZAR_IDENTIDAD else FinAdulto.GENERAR_OFERTA
             val t = sesion.solicitar(fin) ?: return@boton
             val secreto = codigo.text.toString(); base("Verificando autoridad…")
@@ -349,7 +360,7 @@ class AccesoAdultoActivity : ComponentActivity() {
                     val marco = sesion.marcoAcreditado(t)
                     val controlador = OfertasRam(SystemClock::elapsedRealtime, { identidad.leer().contexto },
                         { sesion.accionVigente(t) && PairAndroid.cargar(applicationContext) is CargaPairCp2.Ausente },
-                        vidaSesion = { marco != null && sesion.marcoVigente(marco) })
+                        vidaSesion = { marco != null && sesion.marcoVigente(marco) && (!c8 || canalC8?.disponible != false) })
                     ofertas = controlador
                     casoPair = ValidacionPairRam(controlador, sesion)
                     trabajoOferta.execute {
@@ -357,13 +368,18 @@ class AccesoAdultoActivity : ComponentActivity() {
                              sesion.accionVigente(t) && PairAndroid.cargar(applicationContext) is CargaPairCp2.Ausente
                          } else false
                         val ref = if (!inicializar) try { controlador.generar() } catch (_: Exception) { null } else null
-                        val matriz = try { ref?.let { QrOfertaCp2.crear(CodecOfertaCp2.escribir(it.oferta)) } } catch (_: Exception) { null }
+                        val matriz = if (c8) null else try { ref?.let { QrOfertaCp2.crear(CodecOfertaCp2.escribir(it.oferta)) } } catch (_: Exception) { null }
                         runOnUiThread {
                             if (!activa || consulta.get() != n || !sesion.accionVigente(t)) { controlador.cancelar(); return@runOnUiThread }
                             if (inicializar) cerrarOferta(if (creada) "Identidad inicializada con readback. Generar oferta exige otra autorización."
                                 else "NO_DISPONIBLE: estado incierto, identidad existente o creación no completada. No se reemplaza ninguna clave.")
-                            else if (ref == null || matriz == null) cerrarOferta("NO_DISPONIBLE: identidad ausente o vínculo/contexto incierto. Inicialización, si procede, es otra operación.")
+                            else if (ref == null || (!c8 && matriz == null)) cerrarOferta("NO_DISPONIBLE: identidad ausente o vínculo/contexto incierto. Inicialización, si procede, es otra operación.")
+                            else if (c8) {
+                                referenciaPair = ref
+                                prepararC8(ref, marco!!, origen!!)
+                            }
                             else {
+                                checkNotNull(matriz)
                                 referenciaPair = ref
                                 base("CHILD_OFFER CP/2 — no firmado, no vinculado")
                                 texto("Solo ceremonia presencial CP/2. No QR Android de aprovisionamiento. Guardar vínculo requiere autorización física nueva para ensayo; no usar sin coordinar.")
@@ -393,6 +409,54 @@ class AccesoAdultoActivity : ComponentActivity() {
             if (!aceptada) cerrarOferta("Otra operación en curso; no se ha generado oferta.")
         }
         boton("Cancelar") { cerrarOferta("Operación cancelada.") }
+    }
+    private fun prepararC8(ref: ReferenciaOferta, marco: MarcoSesionAdulto, origen: String) {
+        origenC8Confirmado = origen
+        base("Identidad LOCAL del hijo — antes de recibir candidata")
+        texto("Huella HIJO LOCAL completa: ${dev.controlparental.protocol.cp2.CodecPairCp2.huellaPublica(ref.contexto.identidad)}")
+        texto("Origen LOCAL elegido: $origen\nMuéstralos al propietario y al padre conocido. Código8/PoP no identifican personas ni familia. Si no pueden leer ambos textos, cancelar.")
+        boton("He mostrado mi huella LOCAL; abrir encuentro C8 explícitamente") {
+            if (!sesion.marcoVigente(marco) || ofertas?.vigente(ref) != true || canalC8 != null) {
+                cerrarOferta("Contexto no disponible; no se abre C8."); return@boton
+            }
+            base("Abriendo C8/1 — sin permiso de uso")
+            texto("Huella HIJO LOCAL: ${dev.controlparental.protocol.cp2.CodecPairCp2.huellaPublica(ref.contexto.identidad)}\nOrigen LOCAL: $origen")
+            texto("Esperando transporte. No hay reintento automático; la sesión original sigue corriendo.")
+            boton("Cancelar encuentro") { cerrarOferta("Encuentro cancelado; sin borrar pendientes.") }
+            lateinit var enlace: dev.controlparental.child.pairing.CanalEncuentroC8Android
+            fun vigente() = activa && referenciaPair === ref && canalC8 === enlace && enlace.disponible &&
+                sesion.marcoVigente(marco) && ofertas?.vigente(ref) == true
+            enlace = dev.controlparental.child.pairing.CanalEncuentroC8Android(applicationContext, origen, ref, marco.limite,
+                { referenciaPair === ref && sesion.marcoVigente(marco) && ofertas?.vigente(ref) == true },
+                { codigo8 -> runOnUiThread {
+                    if (!vigente()) return@runOnUiThread
+                    base("Código8 temporal — no es código adulto")
+                    texto("Huella HIJO LOCAL: ${dev.controlparental.protocol.cp2.CodecPairCp2.huellaPublica(ref.contexto.identidad)}\nOrigen LOCAL: $origen")
+                    TextView(this).apply {
+                        text = codigo8; textSize = 38f; isSaveEnabled = false; isSaveFromParentEnabled = false
+                        importantForAutofill = View.IMPORTANT_FOR_AUTOFILL_NO; setTextIsSelectable(false); columna.addView(this)
+                    }
+                    texto("El padre conocido lo escribe manualmente. No copiar, fotografiar ni enviar por chat. No concede confianza; comparar ambas huellas locales.")
+                    boton("Cancelar y retirar código8") { cerrarOferta("Encuentro cancelado.") }
+                } }, { runOnUiThread {
+                    if (!vigente()) return@runOnUiThread
+                    base("Código consumido — esperando candidata, NO identidad confirmada")
+                    texto("No generar otro código ni aceptación por un fallo. La sesión original no se renueva.")
+                    boton("Cancelar encuentro") { cerrarOferta("Encuentro cancelado; sin borrar pendientes.") }
+                } }, { bytes -> runOnUiThread {
+                    if (vigente()) {
+                        framePair = bytes.copyOf()
+                        autorizarPair(FinAdulto.VALIDAR_PAIR) { presentarCandidataPair() }
+                    }
+                    bytes.fill(0)
+                } }, { runOnUiThread {
+                    if (referenciaPair === ref && canalC8 === enlace)
+                        cerrarOferta("C8 cerrado/caducado. Candidata RAM invalidada; cualquier guardado o pendiente durable se conserva. No reintentar alta automáticamente.")
+                } })
+            canalC8 = enlace; enlace.conectar(); handler.postDelayed(caducidad, 100)
+        }
+        boton("Cancelar sin conectar") { cerrarOferta("Encuentro no iniciado.") }
+        handler.postDelayed(caducidad, 100)
     }
     private fun cerrarOferta(mensaje: String) {
         cerrarAutoridad(); limpiar(); sesion.reanudar(); mensajePublico = mensaje; consultar()
@@ -480,7 +544,7 @@ class AccesoAdultoActivity : ComponentActivity() {
                 val fh = dev.controlparental.protocol.cp2.CodecPairCp2.huellaPublica(ref.contexto.identidad)
                 texto("Integridad con clave candidata, NO identidad acreditada. Pública PADRE candidata: ${a.parentPublicKeyB64}")
                 texto("Huella PADRE: $fp\nHuella HIJO: $fh\nOrigen candidato: ${a.relayOrigin}")
-                texto("Compara presencialmente AMBAS huellas con el padre conocido. Introduce la huella PADRE y origen desde su pantalla independiente, no desde este QR. Si difieren, cancela.")
+                texto("Compara presencialmente AMBAS huellas con identidades LOCALES de los teléfonos conocidos, mostradas antes de recibir candidatas. Introduce huella PADRE desde su identidad LOCAL, no desde PAIR/C8/QR. Origen desde configuración local independiente. Si no son legibles o difieren, cancela.")
                 val esperada = campo("Huella PADRE esperada independiente (base64url43)", secreto = false, maximo = 43)
                 val origen = campo("Origen HTTPS esperado independiente", secreto = false, maximo = 200)
                 val confirmar = CheckBox(this).apply {
@@ -488,7 +552,8 @@ class AccesoAdultoActivity : ComponentActivity() {
                     isChecked = false; isSaveEnabled = false; columna.addView(this)
                 }
                 boton("Confirmar contexto humano y validar con otro código") {
-                    if (!confirmar.isChecked || esperada.text.toString() != fp || origen.text.toString() != a.relayOrigin) {
+                    if (!confirmar.isChecked || esperada.text.toString() != fp || origen.text.toString() != a.relayOrigin ||
+                        (origenC8Confirmado != null && origen.text.toString() != origenC8Confirmado)) {
                         texto("Confirmación ausente o distinta; no se confía en la candidata."); return@boton
                     }
                     val datos = DatosConfirmadosPair(a.parentPublicKeyB64, esperada.text.toString(), fh, origen.text.toString())

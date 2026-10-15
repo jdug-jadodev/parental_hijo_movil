@@ -2,8 +2,8 @@
 
 Última actualización: 15 de octubre de 2026
 Commit de partida: ac7d801 (C01 completada)
-Tarea actual: HIJO-C8-R0 — revisión corta de alternativa de vinculación sin cámara
-Estado: REVISION_DOCUMENTAL_CERRADA_APTO_COMO_TRANSPORTE_CON_OBJECIONES_BLOQUEANTES — informe15líneas/evidencia `pruebas/HIJO_C8_R0_REVISION.md`. No implementación antes de contratoC8/1 y ancla humana independiente acordados; detener sin otra tarea. QR pausado por pantalla manchada; preservar todos los datos/identidades/pendientes. Sin nueva habilitación física.
+Tarea actual: HIJO-C8-I01 — implementación vertical MAIN/cliente C8 sin cámara
+Estado: EN_CURSO_BLOQUE1_MAIN_CODEC_TRANSPORTE — R1 exacto copiado/hash confirmado089e0b62…492adde, resuelve bloqueos de revisión anterior. Codec/PROOF CHILD/máquina/WSS real/UIalternativa conectados en código. Focal5core nuevos0fallos y MAIN Kotlindebug compilado; falta probar recorrido/guardas/commit/cancelación y builds finales. Evidencia `pruebas/EVIDENCIA_HIJO_C8_I01.md`. Sin ADB/instalación/WSSreal/bootstrap ni claves nuevas. Continuar MISMA unidad, no otra revisión.
 
 ## C8-R0 — revisión corta final
 
