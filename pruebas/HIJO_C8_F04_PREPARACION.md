@@ -1,5 +1,45 @@
 # HIJO-C8-F04 — preparación de actualización conservadora
 
+## Ejecución posterior autorizada — APK actualizado, UI manual pendiente
+
+El propietario respondió **«sí» directamente en esta sesión** tanto a ADB/
+compatibilidad/UNA actualización como a la confirmación NUEVA de pantalla,
+acceso adulto y salida/emergencia accesibles. No se heredó autorizaciónF03.
+
+Operaciones realmente realizadas, todas las dirigidas al mismo A13 con `adb -s`:
+- Inventario tras permiso; único modelo anunciado SM-A135M, confirmado con getprop
+  antes de lecturas, de instalación y de verificación posterior. A56 sólo apareció
+  en inventario general, sin consultas dirigidas ni cambios. Sin seriales aquí.
+- Lectura mínima de paquete/políticas y copia únicamente del APK instalado a
+  temporal privado. SHA previo
+  `fc7a5bd82e6bfdcb0ae0434ce2d88be03eac2cc1390d73a339c9eb52c83108ed`,
+  igualF03 acreditado. Paquete `dev.controlparental.child`/versión1-0.1.0/min31-
+  target36; firma verificada/certificado39f25d28…a9f439 igual al candidato.
+  Ningún cambio/lectura de contenidos CE/DP/credencial/Keystore/vínculo/pending.
+- Reconfirmado hash candidato6221f3…250751 y modelo. **UNA install-r-t, Success**,
+  sin reintento, uninstall/clear/reset/downgrade ni reinstalarAPKantiguo.
+- APK posterior recuperado a temporal local, firma verificada y SHA exacto
+  **`6221f3f52a7bdfbe4a4da19627c00821598fb2b2f9a59989a82e846e28250751`**,
+  igual al preparado. CertificadoSHA256
+  `39f25d28e10a93f18fbdabac0223e917c9668d58a6d7ca28af40227946a9f439`
+  y paquete/versión iguales. No recompilación de APK.
+- DeviceOwner permanece `dev.controlparental.child.admin.ChildAdminReceiver`.
+  Políticas filtradas antes/después coinciden: uninstallBlocked hijo=false,
+  no_control_apps global sin administradores/valor resuelto null, lockTask lista
+  de paquetes vacía/flags16. Se preserva ese baseline, NO afirmar protecciones
+  activadas. Mismo ceDataInode/firstInstallTime y app instalada/habilitada/no
+  oculta ni suspendida. Esto acredita continuidad del directorio, **no validación
+  semántica de identidad/credencial/legado ni recuperación real**.
+
+Sin reboot/cortesred-energía/Owner/PIN/protecciones/otrasapps/enforcement,
+sin ofertas/código8/QR/aceptaciones/canalC8-AUTH/órdenes/remotos/push/deploy.
+No se lanzó UI por ADB ni se solicitaron capturas/secretos. **Pendiente siguiente
+paso**: propietario abre manualmente app/acceso adulto con código habitual sólo
+en teléfono y confirma salida/emergencia y ausencia de errores. Si hay identidad/
+legado incierto o solicitud de inicializar/reparar, detener sin ejecutar nada.
+No ceremonia por este permiso. No más comandos físicos sin necesidad/alcance
+autorizado, no otra instalación. Entradas inferiores conservan preparación previa.
+
 ## Resultado local y puerta de autorización
 
 Preparación terminada; **esperando permiso DIRECTO del propietario en esta

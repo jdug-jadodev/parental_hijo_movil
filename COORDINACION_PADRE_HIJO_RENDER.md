@@ -1,5 +1,27 @@
 # Relevo de coordinación — padre, hijo y WebSocket CP/1
 
+## HIJO-C8-F04 — APK actualizado con permiso DIRECTO; pendiente UI manual
+
+Propietario respondió «sí» DIRECTO en esta sesión al alcanceADB/UNAactualización
+y confirmación NUEVA de pantalla/acceso adulto/salida-emergencia. A13SM-A135M
+único anunciado/confirmado, cada operación dirigida por adb-s; A56 no consultado
+directamente. Antes APKfc7a5bd8…83108ed verificado/certificado39f25d28…a9f439 igual
+al candidato, paqueteversión compatibles. UNAinstall-r-t **Success**, sin retry.
+APKposterior recuperado/verificado SHA256
+**6221f3f52a7bdfbe4a4da19627c00821598fb2b2f9a59989a82e846e28250751**
+y certificado exactos; éste es ahora último APK instalado acreditado, no F03.
+DeviceOwnerChildAdminReceiver igual; baselinepolíticas antesdespués igual:
+uninstallBlocked=false/no_control_apps global sinadmins-null/lockTaskpaquetes
+vacíosflags16. No activar/cambiar protecciones. Mismo ceDataInode/firstInstallTime
+prueba continuidad de directorio, NO validación semántica de identidad/credencial/
+legado. Sin lecturas/exportación datosCE-DP/Keystore/secretos ni inicializar.
+Sin rebuild/tests/reboot/red/Owner/PIN/QR-código8-ofertas/aceptaciones/canalC8/
+AUTH-órdenes/remotos/push/deploy. No UI por ADB, sin capturas/códigos porchat.
+Próximo paso: propietario verifica manualmente acceso adulto habitual/salida-
+emergencia/ausencia de errores; detener ante incierto/sugerencia inicializar.
+Permisoactual NOautoriza ceremonia ni otra instalación. Evidencia actualizada:
+`pruebas/HIJO_C8_F04_PREPARACION.md`; entradas siguientes históricas de preparación.
+
 ## HIJO-C8-F04 — preparación local terminada, permiso DIRECTO pendiente
 
 Evidencia/checklist `pruebas/HIJO_C8_F04_PREPARACION.md`, base7fd1ffa.
