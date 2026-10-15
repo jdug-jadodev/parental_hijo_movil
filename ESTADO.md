@@ -2,8 +2,15 @@
 
 Última actualización: 15 de octubre de 2026
 Commit de partida: ac7d801 (C01 completada)
-Tarea actual: HIJO-F03-PREPARACION — preflight local y guía de actualización/ceremonia futura
-Estado: APK_ACTUALIZADO_UNA_VEZ_VERIFICADO_PENDIENTE_UI_HUMANA_SIN_QR — propietario confirmó pantalla/acceso adulto/salida-emergencia. UNA install-r-t Success, sólo A13SM-A135M/selector explícito por operación. APKinstalado SHAfc7a5bd8…83108ed y certificado coinciden con candidato; DeviceOwner/políticas consultadas/directorio de datos continuos. Falta comprobar acceso adulto/salida e identidad en UI, sin exportar secretos. QR/canal/órdenes/reboot/cambiosprotecciones no autorizados. Evidencia en `pruebas/HIJO_F03_PREPARACION.md`.
+Tarea actual: HIJO-C8-R0 — revisión corta de alternativa de vinculación sin cámara
+Estado: REVISION_DOCUMENTAL_CERRADA_APTO_COMO_TRANSPORTE_CON_OBJECIONES_BLOQUEANTES — informe15líneas/evidencia `pruebas/HIJO_C8_R0_REVISION.md`. No implementación antes de contratoC8/1 y ancla humana independiente acordados; detener sin otra tarea. QR pausado por pantalla manchada; preservar todos los datos/identidades/pendientes. Sin nueva habilitación física.
+
+## C8-R0 — revisión corta final
+
+- APTO para sustituir transporte óptico, NO autoridad/identidad familiar. Bloqueos: contratoexactoC8/1 (incluidos reto/PoP/socket/cancelación/consumo/TTL) y cotejo humano de huellas desde identidades locales independientes de PAIR/C8; confirmar disponibilidad de huella propia en padre, no leer otro repo. Código8 no sustituye código adulto5..10dígitos/ceros iniciales ni firma/auth familiar; jamás cp.v2 anónimo. No wireformat/API/codec implementado.
+- MAIN identificado: AccesoAdultoActivity.confirmarOferta331–388 hoy exige ref+matriz; separar generaciónOfertasRam de QR. RecepciónC8 futura sin recibirPairCAMERA434–461, bytes originales→framePair/presentarCandidataPair463→confirmaciónhumana→ValidacionPairRam→guardarPair513/PairAndroiddurable. Conservar GENERAR/VALIDAR/GUARDAR frescos/marcooriginal120s/identidadKeystoreexistente/ausenciacoherente/legado/reservas/readback. AuthAndroid exige pareja guardada, no sirve de bootstrap; PoP futura debe usar primitiva existente con dominioC8 separado y guardas, sin crear clave.
+- TTL Android min(marco.limite,ref.limite,ahora+120s) fijo/validado antes-despuésIO y cierre foreground/contexto; OfertasRam.restante5min no basta. Sin comparar elapsedNode/Android; duración enviada no prueba expiraciónservidor dentro del marco por tránsito: acordar inicio/descuento/cancelación exactos. UIcampo8grande-RAM/FLAG_SECURE/sin capturas-autofill-logs; cancelar/fondo/caducidad invalida sin reponer consumo. Pendiente/incierto sin borrar/reintentar, guardado noUSO/PENDIENTE_CANAL_Y_RECUPERACION.
+- Históricos físicos reportados en esta revisión: APKsambos instalados/UIadulta-emergencia sin errores según propietario/coordinación, NO reejecutados/nuevaevidenciaC8. Evidencia propia anterior de actualizaciónhijo se conserva en HIJO_F03_PREPARACION.md, no permiso nuevo. No ADB/dispositivos/QR/ofertas/aceptaciones/códigos8reales/servicios/claves/reposajenos/subagentes/builds-tests/push-deploy. Rutas modificadas: informeC8-R0/ESTADO/relevo. Commitdocumental/cierre/detener; no nueva instalación ni ceremonia.
 
 ## F03 — preparación local, sin habilitación física heredada
 

@@ -1,5 +1,35 @@
 # Relevo de coordinación — padre, hijo y WebSocket CP/1
 
+## HIJO-C8-R0 — revisión cerrada, sin implementación ni permisos físicos
+
+Informe de15líneas y evidencia `pruebas/HIJO_C8_R0_REVISION.md`. **APTO** como
+transporte sin cámara; **OBJECIONES BLOQUEANTES** antes de implementar/habilitar:
+contratoC8/1 exacto (PoP/socket/dominio/TTL/consumo/cancelación) y ancla humana
+independiente. Confirmar huella propia local del padre, no autoconfirmación
+desde PAIR/código8 ni confundir PoP con familia/identidad humana. AUTHcp.v2 intacto,
+WSS separado/perfil desactivado; sin familias preconfiguradas ficticias.
+
+RutaMAIN precisa: AccesoAdulto.confirmarOferta331–388 separar OfertasRam.generar
+del requisito matrizQR; recepción alternativa a recibirPair434–461 sinCAMERA,
+bytesPAIR→framePair/presentarCandidataPair463→confirmaciónhumana→ValidacionPairRam
+→guardarPair513/PairAndroid/reservas-readback. Mantener GENERAR/VALIDAR/GUARDAR
+frescos/marcooriginal120s/identidadexistente/guardaslegado. AuthAndroid exige pareja:
+no utilizarlo como bootstrap ni generar claves; primitivaKeystore existente sólo
+para futuro adaptadorC8 de propósito limitado tras acuerdo de bytes firmados.
+TTLlocal fijo min(marco.limite,ref.limite,ahora+120s), no usar restanteOfertas5min
+como marco. No comparar elapsedNode; tránsito impide prometer TTLservidor<=marco
+sólo con duración enviada: precisar inicio/descuento/cancelación en contrato.
+UIcampo8grande-RAM/foreground/FLAG_SECURE/sin capturas, invalidar al fondo/caducar;
+pending/incierto no limpiar/reintentar; guardado pendiente/noUSO. No wire inventado.
+
+QR pausado por pantalla manchada. Conservar datos/identidades/pendientes. APKsambos
+instalados/UIadulta-emergencia sin errores REPORTADOS en esta revisión, no nueva
+prueba física ni permiso; evidencia propia anterior hijo se mantiene sin repetir.
+Sólo doc/revisión estática, sin código/builds-tests/ADB/dispositivos/QR/ofertas/
+aceptaciones/códigos8reales/serviciosremotos/claves/otrosrepos/subagentes/push/deploy.
+**Cerrar y detener**; servidor prepara fuente exacta compartida después del acuerdo,
+no iniciar otra tarea automática ni desplegar por urgencia.
+
 ## F03 — UNA actualización Success, APK verificado, aún sin ceremonia
 
 Propietario confirmó directamente «sí, puedo hacerlo» sobre pantalla/acceso
