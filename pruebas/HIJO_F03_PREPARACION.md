@@ -2,6 +2,42 @@
 
 ## Estado y alcance
 
+### Actualización conservadora ejecutada — pendiente comprobación humana posterior
+
+Tras confirmar el propietario **«sí, puedo hacerlo»** respecto a pantalla/acceso
+adulto/salida-emergencia, se completó UNA actualización `install -r -t` al mismo
+A13SM-A135M, con selector explícito por operación. Antes de escribir se volvió a
+confirmar modelo y SHA del candidato; resultado de instalación: **Success**.
+Sin reintento, uninstall/clear/reset/downgrade, reinicio de teléfono, cambios
+Owner/PIN/protecciones/red, instrumentación, QR, WSS/AUTH u órdenes.
+
+Verificación posterior realmente ejecutada:
+- APK instalado recuperado a temporal local y SHA256 comprobado:
+  `fc7a5bd82e6bfdcb0ae0434ce2d88be03eac2cc1390d73a339c9eb52c83108ed`.
+  Coincide byte a byte por hash con candidato E2E01.
+- Firma verificada y certificadoSHA256
+  `39f25d28e10a93f18fbdabac0223e917c9668d58a6d7ca28af40227946a9f439`
+  igual antes/después. Paquete/versión1-0.1.0/min31-target36 sin cambios.
+- Device Owner sigue `dev.controlparental.child.admin.ChildAdminReceiver`.
+- Mismo ceDataInode y firstInstallTime antes/después; instalado/habilitado,
+  no oculto ni suspendido. Evidencia de continuidad del directorio de datos,
+  **no prueba semántica de credencial/Keystore/legado**; no se leyeron esos datos.
+- Lecturas filtradas de políticas antes/después coinciden: uninstallBlocked del
+  hijo resuelto false; no_control_apps global sin administradores/valor resuelto
+  null; lockTask con lista de paquetes vacía y flags16. Son el baseline observado,
+  no una declaración de protecciones activas ni permiso para activarlas.
+
+**Pendiente antes de cualquier ceremonia:** propietario debe abrir manualmente la
+app y confirmar que entra al acceso adulto con su código habitual y conserva
+salida local/emergencia. Código sólo en el teléfono; no pedir capturas ni llamada
+de prueba. No se lanzó UI por ADB ni se afirma identidad/credencial verificadas.
+Si aparece error de identidad/legado/estado incierto o solicitud de inicializar,
+detener sin inicializar, reparar, migrar ni borrar. QR requiere autorización
+directa separada, todavía NO concedida. No CONECTAR_CP2 ni armar pilotos.
+
+Esta actualización sustituye las indicaciones de espera previas para instalación;
+se conservan debajo como historia del permiso/preflight y guía futura.
+
 ### Habilitación directa posterior y comprobaciones previas a instalar
 
 El propietario respondió **«sí» en esta sesión** a identificar sólo A13SM-A135M,

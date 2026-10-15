@@ -1,5 +1,24 @@
 # Relevo de coordinación — padre, hijo y WebSocket CP/1
 
+## F03 — UNA actualización Success, APK verificado, aún sin ceremonia
+
+Propietario confirmó directamente «sí, puedo hacerlo» sobre pantalla/acceso
+adulto/salida-emergencia. UNA install-r-t al A13SM-A135M confirmado con adb-s:
+Success, sin reintentos. APKinstalado recuperado/verificado SHA256
+fc7a5bd82e6bfdcb0ae0434ce2d88be03eac2cc1390d73a339c9eb52c83108ed,
+certificado39f25d28…a9f439 y paquete/versión iguales al candidato. DeviceOwner
+ChildAdminReceiver igual. Datos con mismo ceDataInode/firstInstallTime; no leer
+CE/DP/Keystore/secretos ni afirmar validación semántica de credencial/identidad.
+Políticas consultadas antes/después sin cambios: uninstallBlocked=false,
+no_control_apps global sinadmins/resuelto null, lockTaskpaquetesvacíosflags16.
+No confundir baseline con protecciones activadas; ninguna protección modificada.
+Sin A56dirigido/reboot/red/Owner/PIN/QR/WSS-AUTH/órdenes/push/deploy/builds/tests.
+Pendiente comprobación humana POSTinstall: abrir app/acceso adulto con código
+habitual/salida-emergencia/ausencia errores, código sólo teléfono. No iniciar
+identidad/limpiar/reparar ante error. Después solicitar permisoQR separado, aún
+NO concedido; origen bootstrap no autoriza canal. Evidencia en
+`pruebas/HIJO_F03_PREPARACION.md`. Párrafos siguientes son estados anteriores.
+
 ## F03 — permiso DIRECTO recibido, compatibilidad APK confirmada, aún sin instalar
 
 Propietario respondió sí en ESTA sesión al alcance limitado de identificarA13,
