@@ -4,6 +4,18 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class SesionAdultoTest {
+    @Test fun `oferta e inicializacion son propositos separados con codigo revision boot y plazo`() {
+        for (fin in listOf(FinAdulto.GENERAR_OFERTA, FinAdulto.INICIALIZAR_IDENTIDAD)) {
+            s.reanudar(); assertNull(s.solicitar(fin))
+            val entrada = s.solicitar(FinAdulto.ENTRAR)!!
+            s.completar(entrada, ResultadoAdulto(TipoAdulto.AUTENTICADO, revision = 7))
+            val t = s.solicitar(fin)!!; assertFalse(s.accionVigente(t))
+            assertFalse(s.autorizarAccion(t, ResultadoAdulto(TipoAdulto.RESPUESTA_VALIDA, revision = 7)))
+            assertFalse(s.autorizarAccion(t, ResultadoAdulto(TipoAdulto.AUTENTICADO, revision = 8)))
+            assertTrue(s.autorizarAccion(t, ResultadoAdulto(TipoAdulto.AUTENTICADO, revision = 7)))
+            tiempo += 120_000; assertFalse(s.accionVigente(t))
+        }
+    }
     @Test fun `temporal normal y offline requieren proposito codigo revision boot vigentes`() {
         for (fin in listOf(FinAdulto.USO_TIEMPO_NORMAL, FinAdulto.USO_TIEMPO_OFFLINE)) {
             s.reanudar(); assertNull(s.solicitar(fin))

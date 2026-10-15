@@ -39,6 +39,10 @@ import dev.controlparental.child.network.ControlRedAndroid
 import dev.controlparental.child.network.UsoLocal
 import dev.controlparental.child.network.ValidacionRed
 import dev.controlparental.child.network.MinutosUso
+import dev.controlparental.child.pairing.*
+import android.graphics.Bitmap
+import android.widget.ImageView
+import java.util.concurrent.Executors
 import dev.controlparental.child.R
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
@@ -58,6 +62,9 @@ class AccesoAdultoActivity : ComponentActivity() {
     private val handler = Handler(Looper.getMainLooper())
     private var activa = false
     private var mensajePublico = ""
+    private var ofertas: OfertasRam? = null
+    private var imagenOferta: ImageView? = null
+    private val trabajoOferta = Executors.newSingleThreadExecutor { Thread(it, "oferta-local") }
     private val caducidad = object : Runnable {
         override fun run() {
             if (!activa) return
@@ -78,10 +85,14 @@ class AccesoAdultoActivity : ComponentActivity() {
     }
     override fun onResume() { super.onResume(); activa = true; sesion.reanudar(); consultar() }
     override fun onPause() { activa = false; cerrarAutoridad(); limpiar(); super.onPause() }
-    override fun onDestroy() { cerrarAutoridad(); super.onDestroy() }
+    override fun onDestroy() { cerrarAutoridad(); trabajoOferta.shutdown(); super.onDestroy() }
 
-    private fun limpiar() { entradas.forEach { it.text.clear() }; entradas.clear(); columna.removeAllViews() }
+    private fun limpiar() {
+        imagenOferta?.setImageDrawable(null); imagenOferta = null
+        entradas.forEach { it.text.clear() }; entradas.clear(); columna.removeAllViews()
+    }
     private fun cerrarAutoridad() {
+        ofertas?.cancelar(); ofertas = null
         consulta.incrementAndGet(); bootstrap.set(false); alta = null
         prompt?.cancel(); prompt = null; sesion.cerrar(); handler.removeCallbacksAndMessages(null)
     }
@@ -253,8 +264,85 @@ class AccesoAdultoActivity : ComponentActivity() {
         boton("FINALIZAR ENSAYO RED — cancelar observador, desarmar, restaurar", ControlRedAndroid.activo) { confirmarBloqueo(FinAdulto.FINALIZAR_RED) }
         boton("PROTEGER APP — gestión global de aplicaciones", !ProteccionAndroid.estado.snapshot) { confirmarBloqueo(FinAdulto.PROTEGER_APP) }
         boton("RESTAURAR PROTECCIÓN — baseline de ensayo", ProteccionAndroid.estado.snapshot) { confirmarBloqueo(FinAdulto.RESTAURAR_APP) }
+        boton("GENERAR OFERTA CP/2 — no vincula ni concede uso") { confirmarOferta(false) }
+        boton("INICIALIZAR IDENTIDAD — solo alta presencial separada") { confirmarOferta(true) }
         for (s in listOf("Red remota — pendiente", "Otras políticas de Ajustes — pendiente")) boton(s, false)
         boton("Cerrar sesión") { cerrarAutoridad(); sesion.reanudar(); consultar() }
+    }
+    private fun confirmarOferta(inicializar: Boolean) {
+        if (sesion.estado() != AutoridadAdulto.ADMINISTRAR) { consultar(); return }
+        ofertas?.cancelar(); ofertas = null
+        base(if (inicializar) "Inicialización presencial de identidad" else "Generar oferta CP/2 local")
+        texto("Requiere código fresco. No vincula, no migra CP/1, no concede uso ni cambia políticas. Recepción de aceptación deshabilitada.")
+        texto(if (inicializar) "Solo ausencia inicial coherente, sin vínculo ni restos. Crea privateSigning P-256 no exportable una vez; no repara claves perdidas. Requiere autorización física concreta antes de usar este botón. No genera QR."
+            else "Oferta RAM hasta5 minutos; la sesión adulta de2 minutos puede cerrarla antes. Fondo, salir, cancelar, caducidad o contexto incierto retiran QR. No compartir/capturar/copiar. Requiere autorización física concreta para mostrarla.")
+        val codigo = campo("Código adulto fresco", codigo = true)
+        boton("Confirmar operación separada con mi código") {
+            val fin = if (inicializar) FinAdulto.INICIALIZAR_IDENTIDAD else FinAdulto.GENERAR_OFERTA
+            val t = sesion.solicitar(fin) ?: return@boton
+            val secreto = codigo.text.toString(); base("Verificando autoridad…")
+            val n = consulta.incrementAndGet()
+            val aceptada = AdultoAndroid.ejecutar(applicationContext, { it.verificar(secreto, false) { sesion.vigente(t) } }) { r ->
+                runOnUiThread {
+                    if (!activa || consulta.get() != n) return@runOnUiThread
+                    if (!sesion.autorizarAccion(t, r)) { cerrarOferta("Operación no autorizada."); return@runOnUiThread }
+                    val identidad = IdentidadOfertaAndroid(applicationContext)
+                    val controlador = OfertasRam(SystemClock::elapsedRealtime, { identidad.leer().contexto }, { sesion.accionVigente(t) })
+                    ofertas = controlador
+                    trabajoOferta.execute {
+                        val creada = if (inicializar) identidad.inicializar { sesion.accionVigente(t) } else false
+                        val ref = if (!inicializar) try { controlador.generar() } catch (_: Exception) { null } else null
+                        val matriz = try { ref?.let { QrOfertaCp2.crear(CodecOfertaCp2.escribir(it.oferta)) } } catch (_: Exception) { null }
+                        runOnUiThread {
+                            if (!activa || consulta.get() != n || !sesion.accionVigente(t)) { controlador.cancelar(); return@runOnUiThread }
+                            if (inicializar) cerrarOferta(if (creada) "Identidad inicializada con readback. Generar oferta exige otra autorización."
+                                else "NO_DISPONIBLE: estado incierto, identidad existente o creación no completada. No se reemplaza ninguna clave.")
+                            else if (ref == null || matriz == null) cerrarOferta("NO_DISPONIBLE: identidad ausente o vínculo/contexto incierto. Inicialización, si procede, es otra operación.")
+                            else {
+                                base("CHILD_OFFER CP/2 — no firmado, no vinculado")
+                                texto("Escaneo presencial futuro desde otra cámara. Recepción PAIR_ACCEPT deshabilitada. No QR Android de aprovisionamiento.")
+                                val lado = matriz.width * 6
+                                val bitmap = Bitmap.createBitmap(lado, lado, Bitmap.Config.ARGB_8888)
+                                for (y in 0 until lado) for (x in 0 until lado)
+                                    bitmap.setPixel(x, y, if (matriz[x / 6, y / 6]) android.graphics.Color.BLACK else android.graphics.Color.WHITE)
+                                imagenOferta = ImageView(this).apply {
+                                    isSaveEnabled = false; isSaveFromParentEnabled = false
+                                    setImageBitmap(bitmap); adjustViewBounds = true
+                                    contentDescription = "Oferta CP/2 local protegida, no concede uso"
+                                    columna.addView(this)
+                                }
+                                val restante = TextView(this).also { columna.addView(it) }
+                                boton("Cancelar y retirar oferta") { cerrarOferta("Oferta retirada.") }
+                                boton("Nueva oferta explícita — requiere otra autenticación") {
+                                    cerrarOferta("Oferta retirada. Entra de nuevo para generar otra referencia.")
+                                }
+                                handler.postDelayed(caducidad, 1000)
+                                actualizarOferta(controlador, ref, restante, n)
+                            }
+                        }
+                    }
+                }
+            }
+            if (!aceptada) cerrarOferta("Otra operación en curso; no se ha generado oferta.")
+        }
+        boton("Cancelar") { cerrarOferta("Operación cancelada.") }
+    }
+    private fun cerrarOferta(mensaje: String) {
+        cerrarAutoridad(); limpiar(); sesion.reanudar(); mensajePublico = mensaje; consultar()
+    }
+    private fun actualizarOferta(controlador: OfertasRam, ref: ReferenciaOferta, etiqueta: TextView, n: Int) {
+        if (!activa || consulta.get() != n || ofertas !== controlador) return
+        trabajoOferta.execute {
+            val restante = controlador.restante(ref)
+            runOnUiThread {
+                if (!activa || consulta.get() != n || ofertas !== controlador) return@runOnUiThread
+                if (restante == null || sesion.estado() == AutoridadAdulto.CERRADA) cerrarOferta("Oferta caducada o contexto no disponible.")
+                else {
+                    etiqueta.text = "Oferta: ${(restante + 999) / 1000}s restantes. Sesión adulta: puede caducar antes; no se renueva."
+                    handler.postDelayed({ actualizarOferta(controlador, ref, etiqueta, n) }, 1000)
+                }
+            }
+        }
     }
     private fun confirmarBloqueo(fin: FinAdulto) {
         if (sesion.estado() != AutoridadAdulto.ADMINISTRAR) { consultar(); return }

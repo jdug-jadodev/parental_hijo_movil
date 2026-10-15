@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://control-parental.invalid/cp2/vinculacion.schema.json",
+  "oneOf": [
+    { "$ref": "#/$defs/oferta" },
+    { "$ref": "#/$defs/aceptacion" },
+    { "$ref": "#/$defs/sobrePair" }
+  ],
+  "$defs": {
+    "uuid": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" },
+    "hash": { "type": "string", "minLength": 43, "maxLength": 43, "pattern": "^[A-Za-z0-9_-]+$" },
+    "publica": { "type": "string", "minLength": 100, "maxLength": 200, "pattern": "^[A-Za-z0-9_-]+$" },
+    "recuperacion": {
+      "type": "object", "additionalProperties": false,
+      "required": ["MAINTENANCE", "RECOVER_PARENT", "RETIRE"],
+      "properties": {
+        "MAINTENANCE": { "$ref": "#/$defs/hash" },
+        "RECOVER_PARENT": { "$ref": "#/$defs/hash" },
+        "RETIRE": { "$ref": "#/$defs/hash" }
+      }
+    },
+    "oferta": {
+      "type": "object", "additionalProperties": false,
+      "required": ["v", "kind", "protocol", "childPublicKeyB64", "enrollId", "enrollNonce"],
+      "properties": {
+        "v": { "const": 2 }, "kind": { "const": "CHILD_OFFER" }, "protocol": { "const": "cp.v2" },
+        "childPublicKeyB64": { "$ref": "#/$defs/publica" },
+        "enrollId": { "$ref": "#/$defs/uuid" }, "enrollNonce": { "$ref": "#/$defs/hash" }
+      }
+    },
+    "aceptacion": {
+      "type": "object", "additionalProperties": false,
+      "required": ["v", "kind", "protocol", "pairId", "enrollId", "enrollNonce", "parentPublicKeyB64", "childPublicKeyB64", "relayOrigin", "recoveryHashes"],
+      "properties": {
+        "v": { "const": 2 }, "kind": { "const": "PAIR_ACCEPT" }, "protocol": { "const": "cp.v2" },
+        "pairId": { "$ref": "#/$defs/uuid" }, "enrollId": { "$ref": "#/$defs/uuid" },
+        "enrollNonce": { "$ref": "#/$defs/hash" }, "parentPublicKeyB64": { "$ref": "#/$defs/publica" },
+        "childPublicKeyB64": { "$ref": "#/$defs/publica" },
+        "relayOrigin": { "type": "string", "minLength": 9, "maxLength": 200, "pattern": "^https://[a-z0-9][a-z0-9.-]*(?::[0-9]{1,5})?$" },
+        "recoveryHashes": { "$ref": "#/$defs/recuperacion" }
+      }
+    },
+    "sobrePair": {
+      "type": "object", "additionalProperties": false,
+      "required": ["v", "kind", "purpose", "payloadB64", "sigB64"],
+      "properties": {
+        "v": { "const": 2 }, "kind": { "const": "SIGNED" }, "purpose": { "const": "PAIR" },
+        "payloadB64": { "type": "string", "minLength": 1, "maxLength": 10923, "pattern": "^[A-Za-z0-9_-]+$" },
+        "sigB64": { "type": "string", "minLength": 11, "maxLength": 96, "pattern": "^[A-Za-z0-9_-]+$" }
+      }
+    }
+  }
+}
