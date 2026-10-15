@@ -102,7 +102,12 @@ class GuardiaOrdenCp2Test {
         assertEquals(EntregaOrdenCp2.RECHAZADA, l.guardia.entregar(ref, p))
     }
     @Test fun sinEscritorDurableNoDisponibleSinAutoridadMainAlternativa() {
-        val l = Lab(); val g = GuardiaOrdenCp2({ l.tiempo }, { l.pareja }, ControlOrdenNoDisponible)
+        val l = Lab(); val noDisponible = object : EscritorControlOrdenCp2 {
+            override fun consolidar(): ControlOrdenCp2? = null
+            override fun consultarRetenida(orden: OrdenVerificadaCp2) = error("No debe consultarse")
+            override fun entregarParaDecision(preparacion: PreparacionOrdenCp2) = error("No debe entregarse")
+        }
+        val g = GuardiaOrdenCp2({ l.tiempo }, { l.pareja }, noDisponible)
         assertNull(g.iniciar()); l.control = null; assertNull(l.guardia.iniciar())
     }
     @Test fun bootSesionIdentidadProcesoYContadoresNoRetroceden() {

@@ -21,7 +21,14 @@ internal class ArchivosControlAndroid(c: Context) : ArchivosControl {
         val flujo = try { AtomicFile(f).openRead() } catch (e: FileNotFoundException) {
             check(!restos && f.parentFile!!.isDirectory && f.parentFile!!.canRead()); return null
         }
-        return flujo.use { it.readNBytes(CodecControlDurable.MAX + 1).also { b -> check(b.size in 1..CodecControlDurable.MAX) } }
+        return flujo.use { entrada ->
+            val salida = java.io.ByteArrayOutputStream(); val bloque = ByteArray(1024)
+            while (true) {
+                val n = entrada.read(bloque); if (n < 0) break
+                check(salida.size() + n <= CodecControlDurable.MAX); salida.write(bloque, 0, n)
+            }
+            salida.toByteArray().also { check(it.isNotEmpty()) }
+        }
     }
     private fun escribir(f: File, b: ByteArray) {
         ce(); require(b.size in 1..CodecControlDurable.MAX)
@@ -31,6 +38,7 @@ internal class ArchivosControlAndroid(c: Context) : ArchivosControl {
     override fun leer(): ByteArray? {
         val b = leer(base)
         check((b != null) == ancla.exists())
+        if (b != null) check(ancla.inputStream().use { it.read() == 1 && it.read() == -1 })
         return b
     }
     override fun reserva() = leer(pendiente)

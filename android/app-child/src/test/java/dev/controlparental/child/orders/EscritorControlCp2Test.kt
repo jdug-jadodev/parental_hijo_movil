@@ -10,11 +10,11 @@ import java.security.Signature
 class EscritorControlCp2Test {
     private class Disco : ArchivosControl {
         var datos: ByteArray? = null; var journal: ByteArray? = null
-        var error = ""; var escribe = 0
+        var error = ""; var escribe = 0; var alReservar: () -> Unit = {}
         override fun leer() = datos?.copyOf()
         override fun reserva() = journal?.copyOf()
         override fun iniciar(bytes: ByteArray) { check(datos == null); datos = bytes.copyOf() }
-        override fun reservar(bytes: ByteArray) { check(journal == null); journal = bytes.copyOf(); check(error != "reserva") }
+        override fun reservar(bytes: ByteArray) { check(journal == null); journal = bytes.copyOf(); alReservar(); check(error != "reserva") }
         override fun escribir(bytes: ByteArray) { escribe++; datos = bytes.copyOf(); check(error != "escritura") }
         override fun terminarReserva() { check(error != "terminar"); journal = null }
     }
@@ -128,5 +128,17 @@ class EscritorControlCp2Test {
         l.writer.confirmar(r.revision, false)
         assertEquals(ResultadoControl.ENFORCEMENT_FAILED, l.writer.actual().remoto!!.resultado)
         assertEquals(EfectoControl.FAILED, l.writer.actual().decision!!.efecto)
+    }
+    @Test fun reentranciaDuranteReservaNoPublicaPermisoAunqueWriteExternoContinua() {
+        val l = Lab()
+        l.disco.alReservar = { assertNull(l.writer.local(AccionOrdenCp2.ALLOW, null, false)) }
+        assertNull(l.writer.local(AccionOrdenCp2.ALLOW_FOR, 60, false))
+        assertFalse(l.writer.disponible); assertFalse(l.writer.esRevision(2)); assertTrue(l.cerrados > 0)
+    }
+    @Test fun firmaNuevaMismosBytesDeComandoDevuelveRetenidoSinReaplicar() {
+        val l = Lab(); val (p, entregar) = l.preparar(); entregar()
+        val otraFirma = CriptografiaOrdenCp2.verificar(l.firmado(p.orden), l.publica)
+        assertNotNull(l.writer.retenida(otraFirma))
+        assertEquals(p.payloadSha256B64, otraFirma.payloadSha256B64)
     }
 }

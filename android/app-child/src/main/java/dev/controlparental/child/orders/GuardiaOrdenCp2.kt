@@ -107,8 +107,7 @@ internal class GuardiaOrdenCp2(private val ahora: () -> Long, private val pareja
         val orden = v.mensaje as? PoliticaOrdenCp2 ?: return null
         if (orden.seq <= control.lastAcceptedSeq) {
             val consultar = synchronized(this) {
-                referencia === ref && epoca === sello && vigente(ref) == control && epoca === sello &&
-                    orden.bootId == ref.bootId && orden.childSessionId == ref.childSessionId
+                referencia === ref && epoca === sello && vigente(ref) == control && epoca === sello
             }
             if (consultar) try { escritor.consultarRetenida(v) } catch (_: Exception) { /* Sin resultado ni reto nuevo. */ }
             return null // La guardia no puede decidir si es duplicado exacto, conflicto o ya descartado.

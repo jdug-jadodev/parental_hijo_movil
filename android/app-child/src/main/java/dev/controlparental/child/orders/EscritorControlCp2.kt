@@ -25,8 +25,10 @@ internal interface ArchivosControl {
 /** Registro CE propio: no permiso restaurable. Frames firmados retenidos sólo para comparar duplicados exactos. */
 internal object CodecControlDurable {
     const val MAX = 32768
+    private val uuid = Regex("^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$")
     fun escribir(r: RegistroControl): ByteArray {
         require(r.revision > 0 && r.seq >= 0 && r.boot >= 0)
+        require(uuid.matches(r.bootId) && uuid.matches(r.sesion))
         val salida = ByteArrayOutputStream()
         DataOutputStream(salida).use { o ->
             o.writeInt(1); o.writeUTF(r.pareja); o.writeInt(r.boot); o.writeUTF(r.bootId); o.writeUTF(r.sesion)
@@ -41,6 +43,7 @@ internal object CodecControlDurable {
             r.remoto?.let { m ->
                 require(m.orden.seq == r.seq && m.acceptedRevision in 1..r.revision)
                 require((m.resultado == ResultadoControl.ACCEPTED_PENDING_ENFORCEMENT) == (m.resultElapsed == null))
+                require(m.resultElapsed == null || m.resultElapsed >= 0)
                 require(m.frame.size in 1..16384)
                 o.writeUTF(m.hash); o.writeInt(m.frame.size); o.write(m.frame); o.writeLong(m.acceptedRevision)
                 o.writeUTF(m.resultado.name); o.writeLong(m.resultElapsed ?: -1)
@@ -79,11 +82,13 @@ internal class EscritorControlCp2(private val archivos: ArchivosControl, private
     private val id: () -> String = { UUID.randomUUID().toString() }) {
     private var registro: RegistroControl? = null
     private var bytesGuardados: ByteArray? = null
-    private var incierto = false
+    @Volatile private var incierto = false
+    @Volatile private var revisionPublica: Long? = null
     private var ultimo = -1L
     private var enPuerto = false
     val disponible get() = registro != null && !incierto
-    fun actual(): RegistroControl { comprobar(); return registro!! }
+    fun esRevision(revision: Long) = !incierto && revisionPublica == revision
+    fun actual(): RegistroControl = try { comprobar(); registro!! } catch (e: Exception) { invalidar(); throw e }
     private fun huella(p: ParejaOrdenCp2) = p.pairId + ":" + p.revisionRegistro + ":" + p.publicaHijo + ":" + p.publicaPadre
     fun abrir(autoridadInicial: () -> Boolean): Boolean = seguro {
         check(registro == null && !incierto)
@@ -109,7 +114,7 @@ internal class EscritorControlCp2(private val archivos: ArchivosControl, private
             guardar(previo.copy(boot = p.boot, bootId = if (previo.boot == p.boot) previo.bootId else id(),
                 sesion = id(), revision = Math.addExact(previo.revision, 1), decision = null))
         }
-        ultimo = n
+        ultimo = n; revisionPublica = registro!!.revision
     }
     private fun comprobar() {
         check(disponible && !enPuerto)
@@ -122,10 +127,10 @@ internal class EscritorControlCp2(private val archivos: ArchivosControl, private
         val b = CodecControlDurable.escribir(nuevo)
         enPuerto = true
         try {
-            archivos.reservar(b); check(archivos.reserva()?.contentEquals(b) == true)
-            archivos.escribir(b); check(archivos.leer()?.contentEquals(b) == true)
-            archivos.terminarReserva(); check(archivos.reserva() == null)
-            registro = nuevo; bytesGuardados = b
+            archivos.reservar(b); check(!incierto && archivos.reserva()?.contentEquals(b) == true)
+            archivos.escribir(b); check(!incierto && archivos.leer()?.contentEquals(b) == true)
+            archivos.terminarReserva(); check(!incierto && archivos.reserva() == null)
+            registro = nuevo; bytesGuardados = b; revisionPublica = nuevo.revision
         } finally { enPuerto = false }
     }
     fun contexto(): ControlOrdenCp2? = try {
@@ -137,7 +142,7 @@ internal class EscritorControlCp2(private val archivos: ArchivosControl, private
         val r = registro ?: return null; val o = p.orden
         if (contexto() != p.reto.control || p.reto.referencia.pareja != pareja() || ahora() >= p.reto.expiresElapsedMs ||
             o.bootId != r.bootId || o.childSessionId != r.sesion || o.seq <= r.seq || o.expectedRevision != r.revision ||
-            o.commandNonce != p.reto.nonce || o.action != p.reto.action) return null
+            o.commandNonce != p.reto.nonce || o.action != p.reto.action || o.commandId == r.remoto?.orden?.commandId) return null
         return decidir(o.action, o.durationSec, false, false, p.verificada)
     }
     private fun decidir(action: AccionOrdenCp2, duracion: Long?, local: Boolean, offline: Boolean,
@@ -159,7 +164,9 @@ internal class EscritorControlCp2(private val archivos: ArchivosControl, private
     fun revocar(): Boolean = seguro {
         comprobar(); val r = registro!!
         if (r.decision?.action != null && r.decision?.action != AccionOrdenCp2.LOCK) {
-            guardar(r.copy(revision = Math.addExact(r.revision, 1), decision = null))
+            val m = r.remoto?.takeIf { !r.decision.local && it.acceptedRevision == r.decision.revision && it.resultado == ResultadoControl.ACCEPTED_PENDING_ENFORCEMENT }
+            guardar(r.copy(revision = Math.addExact(r.revision, 1), decision = null,
+                remoto = m?.copy(resultado = ResultadoControl.ENFORCEMENT_FAILED, resultElapsed = ahora()) ?: r.remoto))
         }
     }
     fun confirmar(revision: Long, exito: Boolean): Boolean = seguro {
@@ -172,9 +179,10 @@ internal class EscritorControlCp2(private val archivos: ArchivosControl, private
     fun retenida(v: OrdenVerificadaCp2): RemotoControl? {
         if (contexto() == null) return null
         val m = registro!!.remoto ?: return null
-        return m.takeIf { it.orden == v.mensaje && it.hash == v.payloadSha256B64 && it.frame.contentEquals(v.bytesFrame()) }
+        val payload = dev.controlparental.protocol.Base64Cp1.decodificar(CodecOrdenCp2.leerSobre(m.frame).payloadB64, 8192)
+        return m.takeIf { it.orden == v.mensaje && it.hash == v.payloadSha256B64 && payload.contentEquals(v.bytesPayload()) }
     }
-    private fun invalidar() { incierto = true; falloCerrado() }
-    private fun seguro(a: () -> Unit): Boolean = try { check(!incierto && !enPuerto); a(); true }
+    private fun invalidar() { incierto = true; revisionPublica = null; falloCerrado() }
+    private fun seguro(a: () -> Unit): Boolean = try { check(!incierto && !enPuerto); a(); check(!incierto); true }
         catch (_: Exception) { invalidar(); false }
 }

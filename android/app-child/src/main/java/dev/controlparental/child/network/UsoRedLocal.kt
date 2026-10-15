@@ -85,13 +85,14 @@ internal class UsoRedLocal(private val marca: ArchivoSnapshotLocal, private val 
         }
     }
     fun iniciarObservador(g: Long) { generacionObservador = g; revisionRed = -1; red = ValidacionRed.DESCONOCIDA }
-    fun autorizar(tipo: UsoLocal, minutos: MinutosUso? = null, autoridad: () -> Boolean): Boolean {
+    fun autorizar(tipo: UsoLocal, minutos: MinutosUso? = null, limiteAbsoluto: Long? = null, autoridad: () -> Boolean): Boolean {
         if (!autoridad() || tipo !in setOf(UsoLocal.NORMAL, UsoLocal.EXCEPCION_OFFLINE) ||
             uso in setOf(UsoLocal.ERROR, UsoLocal.FINALIZANDO) ||
             (tipo == UsoLocal.NORMAL && red != ValidacionRed.VALIDADA)) return false
         return seguro {
             require(contexto())
-            val inicio = ahora(); val fin = minutos?.deadlineDesde(inicio)
+            val inicio = ahora(); val fin = listOfNotNull(minutos?.deadlineDesde(inicio), limiteAbsoluto).minOrNull()
+            require(fin == null || fin > inicio)
             // Guardar obligación antes de abrir; no persistir inicio/plazo/permiso RAM.
             guardar(MotivoRed.CODIGO_ADULTO); uso = tipo; deadline = null
             inicioUso = inicio; vencimientoUso = fin

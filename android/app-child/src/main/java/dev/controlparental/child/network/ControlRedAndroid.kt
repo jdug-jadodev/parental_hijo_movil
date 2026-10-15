@@ -17,6 +17,11 @@ import android.util.Log
 import dev.controlparental.child.boot.ArranquePilotoAndroid
 import dev.controlparental.child.boot.FasePiloto
 import dev.controlparental.child.lock.*
+import dev.controlparental.child.orders.*
+import dev.controlparental.protocol.cp2.*
+import dev.controlparental.child.pairing.PairAndroid
+import dev.controlparental.child.pairing.CargaPairCp2
+import java.lang.ref.WeakReference
 import java.io.File
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicLong
@@ -34,6 +39,14 @@ internal object ControlRedAndroid {
     private var plazos: ProgramadorPlazo? = null
     private var revision = 0L
     private var cerrando = false
+    private var controlCp2: EscritorControlCp2? = null
+    private var guardiaCp2: GuardiaOrdenCp2? = null
+    private var generacionCp2: GeneracionOrdenCp2? = null
+    private var permisoControlRef: Long? = null
+    private var actividadCp2: WeakReference<Activity>? = null
+    private var cambioCp2: (() -> Unit)? = null
+    private var retenidaCp2: ((RemotoControl?) -> Unit)? = null
+    private var vigenteCanalCp2: (() -> Boolean)? = null
     @Volatile var activo = false; private set
     @Volatile var listo = false; private set
     @Volatile var uso = UsoLocal.BLOQUEADO; private set
@@ -49,6 +62,11 @@ internal object ControlRedAndroid {
             { Settings.Global.getInt(dp.contentResolver, Settings.Global.BOOT_COUNT, -1) })
     }
     private fun publicar(m: UsoRedLocal, evento: String) {
+        if (permisoControlRef != null && !m.permiteUso) {
+            permisoControlRef = null
+            controlCp2?.revocar() // Antes de solicitar cualquier side effect de reentrada.
+            cambioCp2?.invoke()
+        }
         uso = m.uso; validacion = m.red; deadline = m.deadline; vencimientoUso = m.vencimientoUso; referenciaPublica = m.referencia
         permiteUsoRAM = m.permiteUso && listo
         Log.i("ControlRedLocal", "evento=$evento uso=$uso red=$validacion gen=${m.referencia?.generacion} elapsed=${SystemClock.elapsedRealtime()} deadline=$deadline inicioUso=${m.inicioUso} vencimientoUso=$vencimientoUso")
@@ -162,29 +180,51 @@ internal object ControlRedAndroid {
         } catch (_: RuntimeException) { servicioTerminado(c) }
     }
     fun permitir(a: Activity, tipo: UsoLocal, autoridad: () -> Boolean, entregar: () -> Unit,
-        minutos: MinutosUso? = null, referenciaEsperada: ReferenciaRed? = referenciaPublica) {
+        minutos: MinutosUso? = null, referenciaEsperada: ReferenciaRed? = referenciaPublica,
+        decisionCp2: DecisionControl? = null) {
         ejecutor.execute {
             val m = modelo
-            if (m == null || !listo || cerrando || !autoridad()) { handler.post(entregar); return@execute }
-            if (m.referencia != referenciaEsperada) { handler.post(entregar); return@execute }
+            fun rechazar() {
+                val d = decisionCp2
+                if (d != null && controlCp2?.esRevision(d.revision) == true) {
+                    controlCp2?.confirmar(d.revision, false)
+                    m?.bloquear { true }; m?.let { publicar(it, "ORDEN_NO_APTA") }
+                    ArranquePilotoAndroid.exigirBloqueo(a); cambioCp2?.invoke()
+                }
+                handler.post(entregar)
+            }
+            if (m == null || !listo || cerrando || !autoridad()) { rechazar(); return@execute }
+            if (m.referencia != referenciaEsperada) { rechazar(); return@execute }
             evaluar(a, epoca.get()) // Lectura default actual, no capacidades del callback antiguo.
-            if (m.referencia != referenciaEsperada || !listo) { handler.post(entregar); return@execute }
-            if (!visible.autorizar(m, tipo, condiciones(a), minutos, autoridad)) {
+            if (m.referencia != referenciaEsperada || !listo) { rechazar(); return@execute }
+            if (!asegurarControlCp2(a, autoridad)) { rechazar(); return@execute }
+            val writer = controlCp2
+            val d = decisionCp2 ?: writer?.local(if (minutos == null) AccionOrdenCp2.ALLOW else AccionOrdenCp2.ALLOW_FOR,
+                minutos?.cantidad?.toLong()?.times(60), tipo == UsoLocal.EXCEPCION_OFFLINE)
+            if (writer != null && d == null) { handler.post(entregar); return@execute }
+            fun vigente() = autoridad() && (writer == null || (d != null && writer.esRevision(d.revision)))
+            if (!vigente()) { handler.post(entregar); return@execute }
+            cambioCp2?.invoke() // Intención pendiente durable, todavía no APPLIED.
+            if (!visible.autorizar(m, tipo, condiciones(a), minutos, d?.deadline, ::vigente)) {
+                d?.let { writer?.confirmar(it.revision, false) }; cambioCp2?.invoke()
                 publicar(m, "AUTORIZACION_RECHAZADA")
                 if (!visible.vigente(condiciones(a))) servicioTerminado(a)
                 handler.post(entregar); return@execute
             }
+            permisoControlRef = d?.revision
             val ref = m.referencia!!; publicar(m, "AUTORIZACION_LOCAL_$tipo")
             programar(a, m, epoca.get())
             handler.post {
                 val aceptada = BloqueoLocalAndroid.usarGuardado(a, {
-                    permiteUsoRAM && referenciaPublica == ref && visible.vigente(condiciones(a)) && autoridad()
-                }) { d ->
+                    permiteUsoRAM && referenciaPublica == ref && visible.vigente(condiciones(a)) && vigente()
+                }) { diagnostico ->
                     ejecutor.execute {
                         if (m.referencia != ref) return@execute
-                        if (d.fase != FaseLocal.RESTAURADO) {
+                        if (diagnostico.fase != FaseLocal.RESTAURADO) {
                             m.falloEnforcement(ref); publicar(m, "ERROR_ABRIR"); ArranquePilotoAndroid.exigirBloqueo(a)
                         } else publicar(m, "USO_APLICADO_NONE")
+                        d?.let { writer?.confirmar(it.revision, diagnostico.fase == FaseLocal.RESTAURADO && m.permiteUso) }
+                        cambioCp2?.invoke()
                         handler.post(entregar)
                     }
                 }
@@ -192,6 +232,7 @@ internal object ControlRedAndroid {
                     if (m.referencia == ref) {
                         m.falloEnforcement(ref); publicar(m, "NO_INICIADO"); ArranquePilotoAndroid.exigirBloqueo(a)
                     }
+                    d?.let { writer?.confirmar(it.revision, false) }; cambioCp2?.invoke()
                     handler.post(entregar)
                 }
             }
@@ -201,9 +242,14 @@ internal object ControlRedAndroid {
         ejecutor.execute {
             val m = modelo
             if (m != null && autoridad()) {
-                m.bloquear(autoridad); publicar(m, "BLOQUEAR_ADULTO")
+                if (!asegurarControlCp2(c, autoridad)) { m.bloquear { true }; publicar(m, "CONTROL_INCIERTO"); ArranquePilotoAndroid.exigirBloqueo(c); handler.post(entregar); return@execute }
+                val d = controlCp2?.local(AccionOrdenCp2.LOCK, null, false)
+                if (controlCp2 != null && d == null) { handler.post(entregar); return@execute }
+                permisoControlRef = null
+                m.bloquear { true }; publicar(m, "BLOQUEAR_ADULTO")
                 programar(c, m, epoca.get())
-                if (!m.permiteUso) ArranquePilotoAndroid.exigirBloqueo(c)
+                if (!m.permiteUso && d == null) ArranquePilotoAndroid.exigirBloqueo(c)
+                d?.let { observarBloqueoCp2(c, it) }; cambioCp2?.invoke()
             }
             handler.post(entregar)
         }
@@ -230,6 +276,8 @@ internal object ControlRedAndroid {
     fun finalizar(a: Activity, autoridad: () -> Boolean, entregar: () -> Unit) {
         ejecutor.execute {
             val m = modelo ?: crear(a).also { modelo = it; it.cargar() }
+            if (controlCp2 != null && !controlCp2!!.revocar()) { handler.post(entregar); return@execute }
+            permisoControlRef = null; cambioCp2?.invoke()
             if (!m.cerrar(autoridad)) { publicar(m, "ERROR_CIERRE"); handler.post(entregar); return@execute }
             cerrando = true; cancelar(a); publicar(m, "DESACTIVAR_OBSERVER_ANTES_RESTORE")
             handler.post {
@@ -243,6 +291,118 @@ internal object ControlRedAndroid {
             }
         }
     }
+    /** Entrada explícita del piloto. No arma Device Owner/boot/red ni crea pareja automáticamente. */
+    private fun asegurarControlCp2(c: Context, autoridad: () -> Boolean): Boolean {
+        controlCp2?.let { return it.contexto() != null }
+        when (PairAndroid.cargar(c)) {
+            CargaPairCp2.Ausente -> return true // Compatibilidad local sin pareja CP2, no es autoridad CP1 remota.
+            CargaPairCp2.Incierta -> {
+                permiteUsoRAM = false; modelo?.let { m -> m.referencia?.let(m::falloEnforcement) }
+                ArranquePilotoAndroid.exigirBloqueo(c); return false
+            }
+            is CargaPairCp2.Guardado -> Unit
+        }
+        val app = c.applicationContext
+        val w = EscritorControlCp2(ArchivosControlAndroid(app), SystemClock::elapsedRealtime,
+            { OrdenesAndroid.pareja(app) }, {
+                permiteUsoRAM = false; permisoControlRef = null
+                modelo?.let { m -> m.referencia?.let(m::falloEnforcement) }
+                ArranquePilotoAndroid.exigirBloqueo(app)
+            })
+        controlCp2 = w
+        return w.abrir(autoridad)
+    }
+    fun iniciarCp2(a: Activity, autoridad: () -> Boolean, cambio: () -> Unit,
+        retenida: (RemotoControl?) -> Unit, entregar: (Boolean) -> Unit) {
+        ejecutor.execute {
+            if (!autoridad() || !listo || modelo == null || !ArranquePilotoAndroid.enrolado) {
+                handler.post { entregar(false) }; return@execute
+            }
+            actividadCp2 = WeakReference(a)
+            if (!asegurarControlCp2(a, autoridad)) { handler.post { entregar(false) }; return@execute }
+            val w = controlCp2
+            if (w == null || !w.disponible) { handler.post { entregar(false) }; return@execute }
+            cambioCp2 = cambio; retenidaCp2 = retenida
+            val app = a.applicationContext
+            val g = GuardiaOrdenCp2(SystemClock::elapsedRealtime, { OrdenesAndroid.pareja(app) }, object : EscritorControlOrdenCp2 {
+                override fun consolidar(): ControlOrdenCp2? { consolidarCp2(app); return w.contexto() }
+                override fun consultarRetenida(orden: OrdenVerificadaCp2) { retenidaCp2?.invoke(w.retenida(orden)) }
+                override fun entregarParaDecision(preparacion: PreparacionOrdenCp2) {
+                    val canal = vigenteCanalCp2 ?: error("Sin generación de canal")
+                    check(canal())
+                    val d = w.remoto(preparacion) ?: error("Conflicto CONTROL; requiere SYNC nuevo")
+                    cambioCp2?.invoke()
+                    val actividad = actividadCp2?.get() ?: error("Piloto sin Activity foreground")
+                    if (d.action == AccionOrdenCp2.LOCK) {
+                        permisoControlRef = null
+                        modelo!!.bloquear { w.esRevision(d.revision) }
+                        publicar(modelo!!, "ORDEN_LOCK_CP2"); programar(app, modelo!!, epoca.get())
+                        observarBloqueoCp2(actividad, d)
+                    } else {
+                        permitir(actividad, UsoLocal.NORMAL, { canal() && w.esRevision(d.revision) }, {},
+                            d.deadline?.let { MinutosUso.desdeTexto(((it - d.accepted) / 60000).toString()) }, decisionCp2 = d)
+                    }
+                }
+            })
+            guardiaCp2?.cerrar(); guardiaCp2 = g; generacionCp2 = g.iniciar()
+            handler.post { entregar(generacionCp2 != null) }
+        }
+    }
+    private fun consolidarCp2(c: Context) {
+        evaluar(c, epoca.get())
+        val m = modelo ?: return
+        m.referencia?.let(m::comprobarDeadline); publicar(m, "CONSOLIDACION_CP2")
+        val w = controlCp2 ?: return
+        val d = try { w.actual().decision } catch (_: Exception) { null }
+        if (d?.deadline != null && SystemClock.elapsedRealtime() >= d.deadline && m.permiteUso) {
+            w.revocar(); permisoControlRef = null; m.bloquear { true }; publicar(m, "PLAZO_CONTROL_CP2")
+            ArranquePilotoAndroid.exigirBloqueo(c)
+        }
+    }
+    private fun observarBloqueoCp2(c: Context, d: DecisionControl) {
+        val w = controlCp2 ?: return
+        val a = (c as? Activity) ?: actividadCp2?.get()
+        if (a == null) { w.confirmar(d.revision, false); cambioCp2?.invoke(); return }
+        handler.post {
+            val ok = BloqueoLocalAndroid.reentrar(a, { !permiteUsoRAM && w.esRevision(d.revision) }) { diagnostico ->
+                ejecutor.execute {
+                    consolidarCp2(c)
+                    w.confirmar(d.revision, diagnostico.fase == FaseLocal.LOCKED && BloqueoLocalAndroid.modo(c) == ModoLocal.LOCKED)
+                    cambioCp2?.invoke()
+                }
+            }
+            if (!ok) ejecutor.execute { w.confirmar(d.revision, false); cambioCp2?.invoke() }
+        }
+    }
+    fun recibirCp2(c: Context, bytes: ByteArray, canalVigente: () -> Boolean,
+        entregar: (OrdenVerificadaCp2?, RetoOrdenCp2?) -> Unit) {
+        if (bytes.size !in 1..16384) { entregar(null, null); return }
+        val copia = bytes.copyOf()
+        ejecutor.execute {
+            val g = guardiaCp2; val ref = generacionCp2
+            try {
+                if (g == null || ref == null || !canalVigente()) { entregar(null, null); return@execute }
+                vigenteCanalCp2 = canalVigente
+                consolidarCp2(c)
+                val v = CriptografiaOrdenCp2.verificar(copia, ref.pareja.publicaPadre)
+                if (v.mensaje is SyncOrdenCp2) {
+                    val s = g.recibirSync(ref, copia)
+                    entregar(if (s != null) v else null, s?.reto)
+                } else {
+                    g.prepararPolitica(ref, copia)?.let { g.entregar(ref, it) }
+                    entregar(v, null)
+                }
+            } catch (_: Exception) { entregar(null, null) }
+        }
+    }
+    fun consultarCp2(c: Context, entregar: (RegistroControl?) -> Unit) {
+        ejecutor.execute {
+            consolidarCp2(c)
+            val r = try { controlCp2?.actual() } catch (_: Exception) { null }
+            entregar(r)
+        }
+    }
+    fun cerrarCanalCp2() { ejecutor.execute { guardiaCp2?.cerrar(); generacionCp2 = null; vigenteCanalCp2 = null; cambioCp2 = null; retenidaCp2 = null; actividadCp2 = null } }
     /** Solo autoridad técnica proporcionada por receptor DEBUG/DUMP; sin entrada MAIN exportada. */
     fun finalizarTecnico(c: Context, autoridad: () -> Boolean, entregar: () -> Unit) {
         ejecutor.execute {

@@ -1,5 +1,9 @@
 # Relevo de coordinación — padre, hijo y WebSocket CP/1
 
+## HIJO-E2E01 — avance EN CURSO, no entrega funcional
+
+2026-10-15, base9ddce88/bloquewriterd507df8. Evidencia `pruebas/EVIDENCIA_HIJO_E2E01.md`: escritorCONTROL CE real/reserva-readback/revisiónpropia/seq-últimoresultado, puente callable al actorControlRedAndroid local-remoto/red/timer, WSS callable OkHttp4.12.0/AUTHCHILDreal/TLSnormal/cp.v2/generaciones/sinreintento. ControlOrdenNoDisponible retiradoMAIN. **Faltan STATE/ACKemisores y conexiónUI/lifecycle-transporte-writer; NOE2Efuncional ni APKlisto.** Bloqueo específico fuenteACKschema§7/9 prometida para siguiente mensaje y enumexactoeffective.reason§9 no recibidos. Explicado al usuario que basta copiar fuenteRender, no claves/datosdel teléfono. Último full offline--rerun SUCCESS4m11s131ejecutadas0UPTODATE,193core/479debug/424release0fallos/19appnuevosdistintos,JVM-fakes sinAndroidreal/lint0errores12avisos. APKPARCIALdebugSHAae8b7661…b822e1/unsigned87bae7db…414c39, NOinstalados. SinADB/teléfonos/redreal/push/otrosrepos/subagentes. Completar SOLOE2E01 al recibirfuentes, no cerrar ni iniciar otraunidad. Historial/pasadas/límites en evidencia; entradas siguientes previas.
+
 ## HIJO-LOCAL05 — entrega bloqueada sin física, 14 de octubre de 2026
 
 - Base6ab6c1c; bloque1 `552d4b9`; cierre en commit que incorpora este relevo. MAIN uso libre NORMAL LOCAL/red default INTERNET+VALIDATED/gracia10.000ms y EXCEPCIÓN OFFLINE LOCAL con código fresco/casilla explícita; autoridad/snapshot/boot separados de CP/1. Reconexión antes deadline cancela gracia; a partir de10s revoca y NO abre de nuevo. Boot/proceso recreado no reconstruyen permisosRAM. No duración nueva/CP2/remoteoffline.
