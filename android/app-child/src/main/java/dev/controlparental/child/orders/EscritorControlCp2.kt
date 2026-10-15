@@ -84,10 +84,13 @@ internal class EscritorControlCp2(private val archivos: ArchivosControl, private
     private var bytesGuardados: ByteArray? = null
     @Volatile private var incierto = false
     @Volatile private var revisionPublica: Long? = null
+    @Volatile private var bloqueoPendiente: Long? = null
     private var ultimo = -1L
     private var enPuerto = false
+    var motivoActual = MotivoStateCp2.BOOT_AUTH_REQUIRED; private set // Diagnóstico del proceso; nunca reconstruye historia.
     val disponible get() = registro != null && !incierto
     fun esRevision(revision: Long) = !incierto && revisionPublica == revision
+    fun ticketBloqueo(): Long? = if (incierto) null else bloqueoPendiente
     fun actual(): RegistroControl = try { comprobar(); registro!! } catch (e: Exception) { invalidar(); throw e }
     private fun huella(p: ParejaOrdenCp2) = p.pairId + ":" + p.revisionRegistro + ":" + p.publicaHijo + ":" + p.publicaPadre
     fun abrir(autoridadInicial: () -> Boolean): Boolean = seguro {
@@ -131,6 +134,7 @@ internal class EscritorControlCp2(private val archivos: ArchivosControl, private
             archivos.escribir(b); check(!incierto && archivos.leer()?.contentEquals(b) == true)
             archivos.terminarReserva(); check(!incierto && archivos.reserva() == null)
             registro = nuevo; bytesGuardados = b; revisionPublica = nuevo.revision
+            bloqueoPendiente = nuevo.decision?.takeIf { it.action == AccionOrdenCp2.LOCK && it.efecto == EfectoControl.PENDING && it.revision == nuevo.revision }?.revision
         } finally { enPuerto = false }
     }
     fun contexto(): ControlOrdenCp2? = try {
@@ -158,15 +162,20 @@ internal class EscritorControlCp2(private val archivos: ArchivosControl, private
                 ResultadoControl.ACCEPTED_PENDING_ENFORCEMENT, null) } ?: r.remoto
             guardar(r.copy(revision = d!!.revision, seq = remoto?.orden?.seq ?: r.seq, decision = d, remoto = remoto))
         }) return null
+        motivoActual = if (action == AccionOrdenCp2.LOCK) {
+            if (local) MotivoStateCp2.LOCAL_LOCK else MotivoStateCp2.PARENT_LOCK
+        } else MotivoStateCp2.OK
         return d
     }
     /** Revocación observada en UsoRed: queda durable antes de solicitar reentrada de bloqueo. */
-    fun revocar(): Boolean = seguro {
+    fun revocar(motivo: MotivoStateCp2 = MotivoStateCp2.CONTROL_UNKNOWN): Boolean = seguro {
         comprobar(); val r = registro!!
         if (r.decision?.action != null && r.decision?.action != AccionOrdenCp2.LOCK) {
             val m = r.remoto?.takeIf { !r.decision.local && it.acceptedRevision == r.decision.revision && it.resultado == ResultadoControl.ACCEPTED_PENDING_ENFORCEMENT }
-            guardar(r.copy(revision = Math.addExact(r.revision, 1), decision = null,
+            val revision = Math.addExact(r.revision, 1)
+            guardar(r.copy(revision = revision, decision = DecisionControl(revision, AccionOrdenCp2.LOCK, true, false, ahora(), null, EfectoControl.PENDING),
                 remoto = m?.copy(resultado = ResultadoControl.ENFORCEMENT_FAILED, resultElapsed = ahora()) ?: r.remoto))
+            motivoActual = motivo
         }
     }
     fun confirmar(revision: Long, exito: Boolean): Boolean = seguro {
@@ -175,6 +184,7 @@ internal class EscritorControlCp2(private val archivos: ArchivosControl, private
         val m = r.remoto?.takeIf { !d.local && it.acceptedRevision == revision }
         guardar(r.copy(decision = d.copy(efecto = if (exito) EfectoControl.VERIFIED else EfectoControl.FAILED),
             remoto = if (m == null) r.remoto else m.copy(resultado = if (exito) ResultadoControl.APPLIED else ResultadoControl.ENFORCEMENT_FAILED, resultElapsed = ahora())))
+        if (!exito) motivoActual = MotivoStateCp2.ENFORCEMENT_ERROR
     }
     fun retenida(v: OrdenVerificadaCp2): RemotoControl? {
         if (contexto() == null) return null

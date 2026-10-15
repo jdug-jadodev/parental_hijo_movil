@@ -3,6 +3,48 @@
 15 de octubre de 2026. Base `9ddce88`; primer bloque `d507df8`.
 **EN CURSO. No hay recorrido funcional E2E entregable ni APK listo para ensayo.**
 
+## Avance STATE01 posterior — misma E2E01, fuente recibida
+
+FuenteSTATE01JSON exacta y enumreason recibidos después de la consulta al usuario,
+copiados `contrato-cp2/state-piloto.schema.json`, SHA256UTF8LFfinal
+`bf6c04c3614010932233b2ca052d5a5eb2605361f9b35e764000975198027809`.
+Render5tests/routingbytespreservados REPORTADOS, no ejecutados hijo. No esperar
+otrafuenteSTATE. El schema no define ACK§7/9: ese emisor aún sin fuenteexacta.
+
+CoreStateCp2 completo: listas20/11/5/9/5/enums exactos/C-C+LongMAX/retoigualrevisión/
+issued<=sampled<expires=issued+30000sinoverflow/ALLOW_FOR60000..86400000múltiplo60000/
+remainingceil/fase-modo-efecto/remotohistóricorelojindependiente/nullconseq>0noreset/
+historianull(no0)/CHILDdomMESSAGE-LFreal/P256DER/claveesperadaexterna. AuthAndroid
+comparte fuente/firmanteKeystoreexistente sincrear/importar/exportar.
+
+ProyeccionStateCp2 no es autoridad: modos sóloVERIFIEDconcorrrelacióncallbackdeESA
+revisión y observaciónactualcompatible; PINNEDnoLOCKED/Keyguardnofake. Revocación
+NORMALred10s/timer escribe decisiónLOCKLOCALnueva antes de reentrada, con motivo
+NETWORK_LOST/TIMER_EXPIRED; remotoanteriorretienehistoria. Rootreadback enlaza
+ticketderevisiónexacto, callbackviejo no confirma otraorden. channelHealthy=null
+sin mediciónliveness/WSS-AUTH-PONGnoAndroid.
+
+PilotoE2eAndroid **MAINcallable**, no puerto vacío: UIcódigofrescoCONECTAR_CP2
+marcooriginal120s→ControlRedwriterreal→WSS-AUTH→PARENTMESSAGEguardia→UsoRed-Bloqueo→
+STATEfirmadoMISMAgeneración/últimoSyncNonceválido. Cambios writer publican STATE
+pendiente/final. Sin nonce inicial fabricado. Fondo/salir/caducar/desconectarcierran,
+no reintento/reanudación de permiso; sin promesabackground. **ACKNOemitido/UIloindica**,
+no ACKCP1. PEER_UNAVAILABLE4camposv2/kind/reasonPEER_OFFLINE/refCommandId(UUID|null)
+sóloinformativo, no ACK/fracaso/aplicación; no PEER_STATUS necesario paraAUTH/SYNC.
+
+Nuevas StateCp2Test7/ProyeccionStateCp2Test3 (firmasreales/campos/contadores/retos/
+duraciones/remaining/dominioclave/mutaciones/remotohistórico/efecto), JVMoffline
+SUCCESS48s15exec37UPTODATE y1m13s15exec37UPTODATE, **200core/482debug/427release0fallos**.
+Fullbuild/lintoffline SUCCESS1m31s19exec112UPTODATE/JVMcached,0errores13avisos
+(SetTextI18n nuevo corregido arecurso después/pendiente nueva pasada). Bloques
+previos d507df8/897cfe7; seguir mismaunidadpruebasverticales/revisión/ACKexacto/final.
+Secciones siguientes conservan evidencia del avance anterior, no estadoactual.
+
+Antes del commit STATE/UI: fulloffline SUCCESS1m7s39exec92UPTODATE/corecached/
+appJVMambasejecutadas200core-482debug-427release0fallos/lint0errores12avisos;
+recurso corrige SetTextI18n sin suppress. Buildsdebug-test-release compilados,
+sin instalación/instrumentación. Continúa mismaunidad, ACKexacto/pruebasverticales.
+
 ## Borde productivo compilado
 
 - `orders/EscritorControlCp2.kt` y `ArchivosControlAndroid.kt`: writer CONTROL real CE/noBackup/AtomicFile, marca exclusiva/reserva por transacción/readback. Revisión propia, intención/seq/commandId/contexto/hash/payload del último remoto durables antes de efecto; pendiente no es APPLIED. Reapertura conserva secuencia/resultado, cambia sesión y elimina decisión recuperable: sin restaurar permiso RAM, incluso mismo boot. Corrupción/interrupción/IO ambiguo/reentrancia cierran sin reset ni virginidad fabricada. Callback sólo confirma revisión vigente. Duplicados exigen contexto/id/seq/hash/bytespayload idénticos, distinta firma válida de los mismos bytes no reaplica. Sólo último resultado, no ledger ilimitado.

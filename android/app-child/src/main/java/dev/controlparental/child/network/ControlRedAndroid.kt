@@ -21,6 +21,7 @@ import dev.controlparental.child.orders.*
 import dev.controlparental.protocol.cp2.*
 import dev.controlparental.child.pairing.PairAndroid
 import dev.controlparental.child.pairing.CargaPairCp2
+import dev.controlparental.child.auth.AuthAndroid
 import java.lang.ref.WeakReference
 import java.io.File
 import java.util.concurrent.Executors
@@ -29,7 +30,8 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 /** Observador de default vive con FGS, no con Activity. Permisos RAM separados de sesión adulta. */
 internal object ControlRedAndroid {
-    private val ejecutor = Executors.newSingleThreadExecutor { Thread(it, "control-red-local") }
+    @Volatile private var hiloActor: Thread? = null
+    private val ejecutor = Executors.newSingleThreadExecutor { Thread(it, "control-red-local").also { hiloActor = it } }
     private val handler = Handler(Looper.getMainLooper())
     private val epoca = AtomicLong()
     private val visible = ObservadorVisible()
@@ -47,6 +49,7 @@ internal object ControlRedAndroid {
     private var cambioCp2: (() -> Unit)? = null
     private var retenidaCp2: ((RemotoControl?) -> Unit)? = null
     private var vigenteCanalCp2: (() -> Boolean)? = null
+    private var secuenciaState = 0L
     @Volatile var activo = false; private set
     @Volatile var listo = false; private set
     @Volatile var uso = UsoLocal.BLOQUEADO; private set
@@ -64,7 +67,12 @@ internal object ControlRedAndroid {
     private fun publicar(m: UsoRedLocal, evento: String) {
         if (permisoControlRef != null && !m.permiteUso) {
             permisoControlRef = null
-            controlCp2?.revocar() // Antes de solicitar cualquier side effect de reentrada.
+            controlCp2?.revocar(when (m.motivoRevocacion) {
+                MotivoRed.RED_10S -> MotivoStateCp2.NETWORK_LOST
+                MotivoRed.TIEMPO -> MotivoStateCp2.TIMER_EXPIRED
+                MotivoRed.ENFORCEMENT -> MotivoStateCp2.ENFORCEMENT_ERROR
+                else -> MotivoStateCp2.CONTROL_UNKNOWN
+            }) // Antes de solicitar cualquier side effect de reentrada.
             cambioCp2?.invoke()
         }
         uso = m.uso; validacion = m.red; deadline = m.deadline; vencimientoUso = m.vencimientoUso; referenciaPublica = m.referencia
@@ -355,7 +363,7 @@ internal object ControlRedAndroid {
         val w = controlCp2 ?: return
         val d = try { w.actual().decision } catch (_: Exception) { null }
         if (d?.deadline != null && SystemClock.elapsedRealtime() >= d.deadline && m.permiteUso) {
-            w.revocar(); permisoControlRef = null; m.bloquear { true }; publicar(m, "PLAZO_CONTROL_CP2")
+            w.revocar(MotivoStateCp2.TIMER_EXPIRED); permisoControlRef = null; m.bloquear { true }; publicar(m, "PLAZO_CONTROL_CP2")
             ArranquePilotoAndroid.exigirBloqueo(c)
         }
     }
@@ -403,6 +411,37 @@ internal object ControlRedAndroid {
         }
     }
     fun cerrarCanalCp2() { ejecutor.execute { guardiaCp2?.cerrar(); generacionCp2 = null; vigenteCanalCp2 = null; cambioCp2 = null; retenidaCp2 = null; actividadCp2 = null } }
+    /** Sólo callbacks del actor. Firma y revalida antes de entregar bytes al MISMO canal. */
+    fun stateCp2EnActor(c: Context, syncNonce: String, canalVigente: () -> Boolean): ByteArray? {
+        check(Thread.currentThread() === hiloActor)
+        return try {
+            if (!canalVigente()) return null
+            consolidarCp2(c)
+            val w = controlCp2 ?: return null
+            val r = w.actual(); val identidad = AuthAndroid.contextoActual(c) ?: return null
+            val ref = generacionCp2 ?: return null
+            val reto = guardiaCp2?.retoActual(ref)
+            val sampled = SystemClock.elapsedRealtime()
+            val owner = try { c.getSystemService(DevicePolicyManager::class.java).isDeviceOwnerApp(c.packageName) } catch (_: RuntimeException) { null }
+            val modo = try { BloqueoLocalAndroid.modo(c) } catch (_: RuntimeException) { null }
+            val lock = modo?.let { it != ModoLocal.NONE }
+            secuenciaState = Math.addExact(secuenciaState, 1)
+            val s = ProyeccionStateCp2.crear(r, identidad.pairId, syncNonce, secuenciaState, sampled, w.motivoActual, reto,
+                when (validacion) { ValidacionRed.DESCONOCIDA -> null; ValidacionRed.VALIDADA -> true; ValidacionRed.NO_VALIDADA -> false }, owner, lock, permiteUsoRAM,
+                if (r.decision?.action == AccionOrdenCp2.LOCK) modo == ModoLocal.LOCKED else modo == ModoLocal.NONE)
+            val bytes = CriptografiaStateCp2.firmar(s, identidad.publicaHijo, AuthAndroid.firmanteExistente(c, identidad))
+            consolidarCp2(c)
+            if (!canalVigente() || AuthAndroid.contextoActual(c) != identidad || w.actual().revision != r.revision ||
+                guardiaCp2?.retoActual(ref) !== reto) null else bytes
+        } catch (_: Exception) { null }
+    }
+    fun revisionBloqueoCp2(): Long? {
+        return if (uso == UsoLocal.BLOQUEADO) controlCp2?.ticketBloqueo() else null
+    }
+    fun confirmarBloqueoCp2(revision: Long?, exito: Boolean) {
+        if (revision == null) return
+        ejecutor.execute { controlCp2?.confirmar(revision, exito); cambioCp2?.invoke() }
+    }
     /** Solo autoridad técnica proporcionada por receptor DEBUG/DUMP; sin entrada MAIN exportada. */
     fun finalizarTecnico(c: Context, autoridad: () -> Boolean, entregar: () -> Unit) {
         ejecutor.execute {

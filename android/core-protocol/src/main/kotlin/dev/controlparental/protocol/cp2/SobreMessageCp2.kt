@@ -4,6 +4,16 @@ import dev.controlparental.protocol.*
 
 /** Sólo estructura del sobre compartido. NO autentica rol, pareja, firma ni autoridad CONTROL. */
 object SobreMessageCp2 {
+    fun leerPeerUnavailable(bytes: ByteArray): String? {
+        require(tipoFrame(bytes) == "PEER_UNAVAILABLE")
+        val o = JsonCp1.leer(bytes, 16384) as ObjetoJson
+        require(o.campos.keys == setOf("v", "kind", "reason", "refCommandId") && o.campos["v"] == EnteroJson(2) && o.campos["reason"] == TextoJson("PEER_OFFLINE"))
+        return when (val v = o.campos["refCommandId"]) {
+            NuloJson -> null
+            is TextoJson -> v.texto.also { require(Regex("^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$").matches(it)) }
+            else -> error("Referencia PEER_UNAVAILABLE inválida")
+        }
+    }
     fun tipoFrame(bytes: ByteArray): String {
         CodecPairCp2.preflight(bytes, 16384)
         val o = JsonCp1.leer(bytes, 16384) as? ObjetoJson ?: error("Frame requiere objeto")

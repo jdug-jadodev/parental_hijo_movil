@@ -1,6 +1,6 @@
 package dev.controlparental.child.local
 
-internal enum class FinAdulto { ALTA, ENTRAR, RECUPERAR, CAMBIAR, BLOQUEAR, SALIR_ENSAYO, PROTEGER_APP, RESTAURAR_APP, ARMAR_BOOT, FINALIZAR_BOOT, ARMAR_RED, USO_NORMAL, USO_OFFLINE, BLOQUEAR_RED, FINALIZAR_RED, USO_TIEMPO_NORMAL, USO_TIEMPO_OFFLINE, GENERAR_OFERTA, INICIALIZAR_IDENTIDAD, VALIDAR_PAIR, GUARDAR_PAIR }
+internal enum class FinAdulto { ALTA, ENTRAR, RECUPERAR, CAMBIAR, BLOQUEAR, SALIR_ENSAYO, PROTEGER_APP, RESTAURAR_APP, ARMAR_BOOT, FINALIZAR_BOOT, ARMAR_RED, USO_NORMAL, USO_OFFLINE, BLOQUEAR_RED, FINALIZAR_RED, USO_TIEMPO_NORMAL, USO_TIEMPO_OFFLINE, GENERAR_OFERTA, INICIALIZAR_IDENTIDAD, VALIDAR_PAIR, GUARDAR_PAIR, CONECTAR_CP2 }
 internal class TicketAdulto(val epoca: Long, val fin: FinAdulto, val boot: Int, val limite: Long)
 internal class MarcoSesionAdulto internal constructor(val revision: Long, val boot: Int, val limite: Long)
 internal enum class AutoridadAdulto { CERRADA, ADMINISTRAR, CAMBIAR_CODIGO }
@@ -9,8 +9,8 @@ internal enum class AutoridadAdulto { CERRADA, ADMINISTRAR, CAMBIAR_CODIGO }
 internal class SesionAdulto(private val ahora: () -> Long, private val boot: () -> Int) {
     private val finesAccion = setOf(FinAdulto.BLOQUEAR, FinAdulto.SALIR_ENSAYO, FinAdulto.PROTEGER_APP, FinAdulto.RESTAURAR_APP, FinAdulto.ARMAR_BOOT, FinAdulto.FINALIZAR_BOOT,
         FinAdulto.ARMAR_RED, FinAdulto.USO_NORMAL, FinAdulto.USO_OFFLINE, FinAdulto.BLOQUEAR_RED, FinAdulto.FINALIZAR_RED,
-        FinAdulto.USO_TIEMPO_NORMAL, FinAdulto.USO_TIEMPO_OFFLINE, FinAdulto.GENERAR_OFERTA, FinAdulto.INICIALIZAR_IDENTIDAD, FinAdulto.VALIDAR_PAIR, FinAdulto.GUARDAR_PAIR)
-    private val finesPair = setOf(FinAdulto.GENERAR_OFERTA, FinAdulto.VALIDAR_PAIR, FinAdulto.GUARDAR_PAIR)
+        FinAdulto.USO_TIEMPO_NORMAL, FinAdulto.USO_TIEMPO_OFFLINE, FinAdulto.GENERAR_OFERTA, FinAdulto.INICIALIZAR_IDENTIDAD, FinAdulto.VALIDAR_PAIR, FinAdulto.GUARDAR_PAIR, FinAdulto.CONECTAR_CP2)
+    private val finesPair = setOf(FinAdulto.GENERAR_OFERTA, FinAdulto.VALIDAR_PAIR, FinAdulto.GUARDAR_PAIR, FinAdulto.CONECTAR_CP2)
     private var marco: MarcoSesionAdulto? = null
     private var epoca = 0L
     private var primerPlano = false

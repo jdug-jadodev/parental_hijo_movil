@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://control-parental.invalid/cp2/state-piloto.schema.json",
+  "oneOf": [{ "$ref": "#/$defs/state" }, { "$ref": "#/$defs/sobre" }],
+  "$defs": {
+    "uuid": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" },
+    "hash": { "type": "string", "minLength": 43, "maxLength": 43, "pattern": "^[A-Za-z0-9_-]+$" },
+    "c": { "type": "string", "pattern": "^(0|[1-9][0-9]{0,18})$" },
+    "positivo": { "type": "string", "pattern": "^[1-9][0-9]{0,18}$" },
+    "cn": { "anyOf": [{ "$ref": "#/$defs/c" }, { "type": "null" }] },
+    "accion": { "enum": ["LOCK", "ALLOW", "ALLOW_FOR"] },
+    "booleano": { "type": ["boolean", "null"] },
+    "enforcement": { "enum": ["PENDING", "VERIFIED", "FAILED", "UNKNOWN"] },
+    "state": {
+      "type": "object", "additionalProperties": false,
+      "required": ["v", "kind", "sender", "pairId", "bootId", "childSessionId", "syncNonce", "stateSeq", "sampledElapsedMs", "controlRevision", "lastAcceptedSeq", "commandChallenge", "effective", "lastRemote", "permittedTime", "lastExpiry", "networkValidated", "channelHealthy", "isDeviceOwner", "lockTaskActive"],
+      "properties": {
+        "v": { "const": 2 }, "kind": { "const": "STATE" }, "sender": { "const": "CHILD" },
+        "pairId": { "$ref": "#/$defs/uuid" }, "bootId": { "$ref": "#/$defs/uuid" }, "childSessionId": { "$ref": "#/$defs/uuid" },
+        "syncNonce": { "$ref": "#/$defs/hash" }, "stateSeq": { "$ref": "#/$defs/positivo" },
+        "sampledElapsedMs": { "$ref": "#/$defs/c" }, "controlRevision": { "$ref": "#/$defs/c" }, "lastAcceptedSeq": { "$ref": "#/$defs/c" },
+        "commandChallenge": { "anyOf": [{ "$ref": "#/$defs/reto" }, { "type": "null" }] },
+        "effective": { "$ref": "#/$defs/efectivo" }, "lastRemote": { "anyOf": [{ "$ref": "#/$defs/remota" }, { "type": "null" }] },
+        "permittedTime": { "type": "null" }, "lastExpiry": { "type": "null" },
+        "networkValidated": { "$ref": "#/$defs/booleano" }, "channelHealthy": { "$ref": "#/$defs/booleano" },
+        "isDeviceOwner": { "$ref": "#/$defs/booleano" }, "lockTaskActive": { "$ref": "#/$defs/booleano" }
+      }
+    },
+    "reto": {
+      "type": "object", "additionalProperties": false,
+      "required": ["nonce", "action", "revision", "issuedElapsedMs", "expiresElapsedMs"],
+      "properties": { "nonce": { "$ref": "#/$defs/hash" }, "action": { "$ref": "#/$defs/accion" }, "revision": { "$ref": "#/$defs/c" }, "issuedElapsedMs": { "$ref": "#/$defs/c" }, "expiresElapsedMs": { "$ref": "#/$defs/c" } }
+    },
+    "efectivo": {
+      "type": "object", "additionalProperties": false,
+      "required": ["mode", "reason", "source", "policyRevision", "action", "phase", "acceptedElapsedMs", "phaseStartedElapsedMs", "deadlineElapsedMs", "remainingSec", "enforcement"],
+      "properties": {
+        "mode": { "enum": ["LOCKED", "ALLOWED", "MAINTENANCE", "SETUP", "UNKNOWN"] },
+        "reason": { "enum": ["OK", "STATE_CORRUPT", "ENFORCEMENT_ERROR", "KEY_UNAVAILABLE", "NOT_DEVICE_OWNER", "NOT_PROVISIONED", "BEFORE_USER_UNLOCK", "BOOT_AUTH_REQUIRED", "SYSTEM_KEYGUARD", "MAINTENANCE_ACTIVE", "LOCAL_LOCK", "PARENT_LOCK", "TIMER_EXPIRED", "CONTROL_UNKNOWN", "NETWORK_LOST"] },
+        "source": { "enum": ["NONE", "LOCAL", "REMOTE"] }, "policyRevision": { "$ref": "#/$defs/cn" },
+        "action": { "anyOf": [{ "$ref": "#/$defs/accion" }, { "type": "null" }] }, "phase": { "enum": ["BLOCKED", "PERMITTED", "EXPIRED", "NONE"] },
+        "acceptedElapsedMs": { "$ref": "#/$defs/cn" }, "phaseStartedElapsedMs": { "$ref": "#/$defs/cn" }, "deadlineElapsedMs": { "$ref": "#/$defs/cn" },
+        "remainingSec": { "type": ["integer", "null"], "minimum": 0, "maximum": 86400 }, "enforcement": { "$ref": "#/$defs/enforcement" }
+      }
+    },
+    "remota": {
+      "type": "object", "additionalProperties": false,
+      "required": ["commandId", "seq", "payloadSha256B64", "bootId", "childSessionId", "acceptedRevision", "result", "resultReason", "resultElapsedMs"],
+      "properties": {
+        "commandId": { "$ref": "#/$defs/uuid" }, "seq": { "$ref": "#/$defs/positivo" }, "payloadSha256B64": { "$ref": "#/$defs/hash" },
+        "bootId": { "$ref": "#/$defs/uuid" }, "childSessionId": { "$ref": "#/$defs/uuid" }, "acceptedRevision": { "$ref": "#/$defs/positivo" },
+        "result": { "enum": ["APPLIED", "ACCEPTED_PENDING_ENFORCEMENT", "ENFORCEMENT_FAILED"] }, "resultReason": { "enum": ["OK", "ENFORCEMENT_ERROR"] }, "resultElapsedMs": { "$ref": "#/$defs/cn" }
+      }
+    },
+    "sobre": {
+      "type": "object", "additionalProperties": false,
+      "required": ["v", "kind", "purpose", "payloadB64", "sigB64"],
+      "properties": {
+        "v": { "const": 2 }, "kind": { "const": "SIGNED" }, "purpose": { "const": "MESSAGE" },
+        "payloadB64": { "type": "string", "minLength": 1, "maxLength": 10923, "pattern": "^[A-Za-z0-9_-]+$" },
+        "sigB64": { "type": "string", "minLength": 11, "maxLength": 96, "pattern": "^[A-Za-z0-9_-]+$" }
+      }
+    }
+  }
+}

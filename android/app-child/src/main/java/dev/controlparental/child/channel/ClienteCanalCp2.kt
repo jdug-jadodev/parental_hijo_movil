@@ -56,6 +56,7 @@ internal class ClienteCanalCp2(private val auth: ClienteAuthHijo,
                         "PING" -> check(socket?.enviar((auth.responderPing(ref.auth, bytes) ?: error("PING inválido")).toString(Charsets.UTF_8)) == true)
                         "PONG" -> check(auth.recibirPong(ref.auth, bytes))
                         "SIGNED" -> { SobreMessageCp2.leer(bytes); mensaje(ref, bytes.copyOf()) } // El guardia verifica firma/rol/contexto.
+                        "PEER_UNAVAILABLE" -> { SobreMessageCp2.leerPeerUnavailable(bytes); estado("Otro dispositivo sin conexión; no es ACK ni resultado de aplicación") }
                         else -> error("Frame no previsto")
                     }
                 }

@@ -40,6 +40,7 @@ import dev.controlparental.child.network.UsoLocal
 import dev.controlparental.child.network.ValidacionRed
 import dev.controlparental.child.network.MinutosUso
 import dev.controlparental.child.pairing.*
+import dev.controlparental.child.channel.PilotoE2eAndroid
 import android.graphics.Bitmap
 import android.widget.ImageView
 import androidx.core.graphics.createBitmap
@@ -63,6 +64,8 @@ class AccesoAdultoActivity : ComponentActivity() {
     private val entradas = mutableListOf<EditText>()
     private val handler = Handler(Looper.getMainLooper())
     private var activa = false
+    private var pilotoCp2: PilotoE2eAndroid? = null
+    private var estadoCanalCp2: TextView? = null
     private var mensajePublico = ""
     private var ofertas: OfertasRam? = null
     private var imagenOferta: ImageView? = null
@@ -99,6 +102,7 @@ class AccesoAdultoActivity : ComponentActivity() {
         entradas.forEach { it.text.clear() }; entradas.clear(); columna.removeAllViews()
     }
     private fun cerrarAutoridad() {
+        pilotoCp2?.close(); pilotoCp2 = null; estadoCanalCp2 = null
         camaraPair?.close(); camaraPair = null
         framePair?.fill(0); framePair = null; casoPair?.cancelar(); casoPair = null; referenciaPair = null
         imagenOferta?.setImageDrawable(null)
@@ -293,9 +297,36 @@ class AccesoAdultoActivity : ComponentActivity() {
         }
         boton("INICIALIZAR IDENTIDAD — solo alta presencial separada") { confirmarOferta(true) }
         for (s in listOf("Red remota — pendiente", "Otras políticas de Ajustes — pendiente")) boton(s, false)
-        boton("Conexión AUTH CP/2 — deshabilitada hasta transporte TLS/canal compatible", false)
-        boton("Órdenes CP/2 — NO_DISPONIBLE: falta escritor CONTROL durable y canal compatible", false)
+        boton("Conectar piloto CP/2 — TLS/AUTH y STATE; sólo este primer plano", ControlRedAndroid.listo) { confirmarCanalCp2() }
+        texto("Historia de tiempo y avisos: NO DISPONIBLE, no cero. El piloto aún no tiene emisor ACK; STATE informa el último resultado. No es producto final.")
         boton("Cerrar sesión") { cerrarAutoridad(); sesion.reanudar(); consultar() }
+    }
+    private fun confirmarCanalCp2() {
+        if (sesion.estado() != AutoridadAdulto.ADMINISTRAR) return
+        base("Conexión piloto CP/2 explícita")
+        texto("Requiere pareja CP/2 ya guardada y ensayo red/local armado. No crea claves, QR ni pareja. Recibirá LOCK/ALLOW/ALLOW_FOR con autoridad del padre vinculado. Salir, fondo o caducar la sesión cierra el canal, sin renovar permiso ni reintentar órdenes. ACK aún pendiente de fuente exacta.")
+        val codigo = campo("Código adulto fresco", codigo = true)
+        boton("Confirmar conexión piloto con mi código") {
+            val t = sesion.solicitar(FinAdulto.CONECTAR_CP2) ?: return@boton
+            val secreto = codigo.text.toString(); base("Verificando autoridad de conexión…")
+            val n = consulta.incrementAndGet()
+            AdultoAndroid.ejecutar(applicationContext, { it.verificar(secreto, false) { sesion.vigente(t) } }) { r ->
+                runOnUiThread {
+                    if (!activa || consulta.get() != n) return@runOnUiThread
+                    if (!sesion.autorizarAccion(t, r)) { cerrarAutoridad(); sesion.reanudar(); publica("Conexión no autorizada."); return@runOnUiThread }
+                    val marco = sesion.marcoAcreditado(t) ?: return@runOnUiThread
+                    pilotoCp2?.close()
+                    base("Piloto CP/2 foreground — sin prueba física")
+                    texto("Historia/avisos: NO DISPONIBLE. STATE firmado no implica recuperación ni perfección. ACK aún no emitido.")
+                    val vista = TextView(this).apply { setText(R.string.preparando_control_cp2); textSize = 18f }
+                    estadoCanalCp2 = vista; columna.addView(vista)
+                    val p = PilotoE2eAndroid(this, { activa && sesion.marcoVigente(marco) }) { vista.text = it }
+                    pilotoCp2 = p; p.conectar()
+                    boton("Desconectar piloto — no cambia permiso de uso") { p.close(); pilotoCp2 = null; administrar() }
+                    boton("Administración local — misma sesión") { administrar() }
+                }
+            }
+        }
     }
     private fun confirmarOferta(inicializar: Boolean) {
         if (sesion.estado() != AutoridadAdulto.ADMINISTRAR) { consultar(); return }

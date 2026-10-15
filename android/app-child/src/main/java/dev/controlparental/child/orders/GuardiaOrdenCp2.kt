@@ -46,6 +46,10 @@ internal class GuardiaOrdenCp2(private val ahora: () -> Long, private val pareja
     private val emitidos = mutableSetOf<String>()
     private val uuid = Regex("^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$")
     @Synchronized fun cerrar() { epoca = Any(); referencia = null; reto = null; preparada = null; observado = null }
+    @Synchronized fun retoActual(ref: GeneracionOrdenCp2): RetoOrdenCp2? {
+        vigente(ref) ?: return null
+        return reto
+    }
     private fun consolidado(): Pair<ParejaOrdenCp2, ControlOrdenCp2>? = try {
         val p = pareja(); val c = escritor.consolidar()
         if (p == null || c == null || pareja() != p || c.boot != p.boot || c.boot < 0 || c.revisionControl < 0 || c.lastAcceptedSeq < 0 ||

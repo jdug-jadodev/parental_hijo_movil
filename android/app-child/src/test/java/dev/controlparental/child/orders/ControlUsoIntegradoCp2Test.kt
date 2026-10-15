@@ -33,7 +33,7 @@ class ControlUsoIntegradoCp2Test {
         t = 100; m.observar(ValidacionRed.NO_VALIDADA, 1, 2)
         t = 10099; m.comprobarDeadline(m.referencia!!); assertTrue(m.permiteUso)
         t = 10100; m.observar(ValidacionRed.VALIDADA, 1, 3)
-        assertFalse(m.permiteUso); assertTrue(w.revocar()); assertNull(w.actual().decision)
+        assertFalse(m.permiteUso); assertTrue(w.revocar()); assertEquals(AccionOrdenCp2.LOCK, w.actual().decision!!.action)
         val rev = w.actual().revision
         m.observar(ValidacionRed.VALIDADA, 1, 4); assertFalse(m.permiteUso); assertEquals(rev, w.actual().revision)
     }
@@ -48,7 +48,7 @@ class ControlUsoIntegradoCp2Test {
         assertEquals(60100L, m.vencimientoUso)
         m.observar(ValidacionRed.NO_VALIDADA, 1, 1); assertNull(m.deadline)
         t = 60100; m.comprobarDeadline(m.referencia!!); assertFalse(m.permiteUso)
-        w.revocar(); assertNull(w.actual().decision)
+        w.revocar(); assertEquals(AccionOrdenCp2.LOCK, w.actual().decision!!.action)
     }
     @Test fun limiteYaVencidoNoAutorizaAunqueDuracionRelativaSeaNueva() {
         var t = 100L

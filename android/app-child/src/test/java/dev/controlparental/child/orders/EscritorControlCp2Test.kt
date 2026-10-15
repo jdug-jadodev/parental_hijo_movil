@@ -105,7 +105,7 @@ class EscritorControlCp2Test {
         l.writer.local(AccionOrdenCp2.ALLOW, null, true)
         assertEquals(EntregaOrdenCp2.RECHAZADA, entregar()); assertNull(l.writer.remoto(p))
         val r = l.writer.actual(); assertTrue(r.decision!!.offline)
-        assertTrue(l.writer.revocar()); assertNull(l.writer.actual().decision); assertEquals(r.revision + 1, l.writer.actual().revision)
+        assertTrue(l.writer.revocar()); assertEquals(AccionOrdenCp2.LOCK, l.writer.actual().decision!!.action); assertEquals(r.revision + 1, l.writer.actual().revision)
         val d = l.writer.local(AccionOrdenCp2.ALLOW_FOR, 60, false)!!
         assertEquals(l.ahora + 60000, d.deadline)
     }

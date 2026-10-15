@@ -44,6 +44,7 @@ internal class UsoRedLocal(private val marca: ArchivoSnapshotLocal, private val 
     private var revisionRed = -1L
     private var generacionObservador = -1L
     private var obligacion: ObligacionRed? = null
+    val motivoRevocacion get() = obligacion?.motivo
     val permiteUso get() = uso == UsoLocal.NORMAL || uso == UsoLocal.EXCEPCION_OFFLINE
     val proximoPlazo get() = listOfNotNull(deadline, vencimientoUso).minOrNull()
     fun preparar(autoridad: () -> Boolean) = seguro {
