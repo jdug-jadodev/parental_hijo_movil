@@ -2,8 +2,15 @@
 
 Última actualización: 15 de octubre de 2026
 Commit de partida: ac7d801 (C01 completada)
-Tarea actual: HIJO-C8-I01 — implementación vertical MAIN/cliente C8 sin cámara
-Estado: CERRADA_IMPLEMENTACION_C8_MAIN_COMPILADA_JVM_SIN_FISICA — fuenteR1exacta/hash089e0b6299ec6db3d312596e5929452321cbb60e3fb4646cceb4669b9492adde confirmada. MAINGenerarCódigo8→OfertasRamreal sinmatriz→WSS/pair-c8.v1/PROOFKeystoreexistente→PAIRoriginal→confirmaciónhumana/VALIDAR→GUARDAR/PairAndroidreadback conectado. Final210core/506debug/451release0fallos/lint0errores12avisos/131tareas131ejecutadas. APKscompiladosNOinstalados, sin endpointC8real/ADB/bootstrap. Evidencia `pruebas/EVIDENCIA_HIJO_C8_I01.md`; entregar y detener, no otra tarea automática.
+Tarea actual: HIJO-C8-X01 — interoperabilidad local CHILD JVM/Node real
+Estado: CERRADA_CRUCE_LOCAL_TLS_NODE_EXIT0_SIN_ANDROID — opt-in -PrutaRelay ejecutado de verdad/2tests0omitidos0fallos, AUTH-PUBLISH-CLAIM-PAIR/readback1,3eventosNode/exit0; hashPAIRframe X28PLtkh_Zv4nf-pqACF5Xe8bx21xZ0MTnNmdYsGOww igual ambos lados. PuenteOkHttpTEST/modeloJVMreal, contraparteNodePARENTsintética; NO wrapperAndroid/dosAPKs/Keystore/IOAndroid/enforcer. R1/APKs iguales/sin recompilar. Evidencia `pruebas/EVIDENCIA_HIJO_C8_X01.md`; entregar y detener sin otra tarea automática.
+
+## C8-X01 — cierre local, no ensayo físico
+
+- Se invocó únicamente node+rutaRelay/test/soporte/interop-c8.mjs autorizado; no leer/editarRender/build/CLI ni tocar servicios públicos. READYPIPE públicaPADREsintética independiente antesPAIR, TLSestricto con certificadoSAN127efímero/CA sóloRAM/privada sóloPIPE, hostnamepredeterminado; prueba rechaza certificado con confianza global. No trustAll ni debilitar DNS/TLS productivos; helpers sólo src/test. Actualizado GradleTestoptin rutaexplícita/outputsfalse, ordinario sinruta OMITIDOclaro.
+- ModeloClienteEncuentroC8/CodecC8/OfertasRam/ValidacionPairRam/AlmacenPairCp2 reales hasta JVM; relojmonotónicoJVMreal/bootfijo/adultoacreditadoFAKE/discoRAMFAKE/firmaJCAefímera noKeystore. Tickets/TTL/generaciones/nonce/origen/ambaspúblicas/bytes originales/readback/pendingnoUSO; sin autoreconnect. Nodo3eventos READY-PAIR_SENT-DONE/exit0/AUTH1PUBLISH1CLAIM1PAIR1reserva1escritura1. HashPAIRframe X28PLtkh_Zv4nf-pqACF5Xe8bx21xZ0MTnNmdYsGOww/payload rfaSPBDP7sRaeNm9W0FrGhSYRaOQkRZR7o4btamjscU. No frames/códigos/claves en repo/log.
+- Pasadas: ordinariodebugSUCCESS26s2exec25UPTODATE/1TLSunitpass1Nodeskip; primeroptinFAILED5s1exec26UPTODATE por serializadorPIPEpropio rechazandoLFPEM antesinit (no fallodel arnés ni encuentro); corregido sólo escapePIPEtest, no wire. OptinrealSUCCESS5s2exec25UPTODATE/2tests0skip0fallos (tasktestejecutada, MAINcompileUPTODATE). Releasefocalordinario+lintSUCCESS53s8exec27UPTODATE/17pass1Nodeskip0fallos/lint0errores12avisos. Dos testsnuevosdistintos, no suitefull/core repetida ni contar skip como interop.
+- R1hash089e0b6299ec6db3d312596e5929452321cbb60e3fb4646cceb4669b9492adde/APKdebug6221f3f52a7bdfbe4a4da19627c00821598fb2b2f9a59989a82e846e28250751/release029d4e2dd876f87c061f4bace6e2fb4fbaaad76dddcdd5ae5116b7f5a285b3b4 recomprobados/sin rebuild. Servidor209tests/build/perfilpúblicodesactivado sólo REPORTADOS/noejecutadoshijo, sin variablesremotas. Rutas TestGradle/srcTestTLS-Cruce/ESTADO/evidencia/relevo. SinADB/install/teléfonos/QR/identidadesreales/códigosadultos/push/deploy/otrosrepos/agentes. Próximo: entregar y detener, no permisos heredados para público/ceremonia.
 
 ## C8-I01 — cierre MAIN sin cámara
 

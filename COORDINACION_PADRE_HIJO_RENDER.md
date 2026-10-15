@@ -1,5 +1,41 @@
 # Relevo de coordinación — padre, hijo y WebSocket CP/1
 
+## HIJO-C8-X01 — cruce local CHILD JVM ↔ Node real, exit0; sin APK nuevas
+
+Base625af90/cierre encommitdeesterelevo. Evidencia
+`pruebas/EVIDENCIA_HIJO_C8_X01.md`. Autorización directa de ensayo local; se invocó
+únicamente `node <rutaRelay>/test/soporte/interop-c8.mjs`, sin leer/editar Render,
+build/CLI/main/deploy. Servidor209tests/build/perfilpúblicodesactivado reportados,
+no verificados por hijo. No configuración/variablesremotas ni bootstrap público.
+
+Opt-in con `-PrutaRelay=C:\Users\Usuario\Documents\parental_render` ejecutado
+REALMENTE: taskdebugtest noUPTODATE, SUCCESS5s/2exec25UPTODATE, XML2tests0skip0fallos.
+UN ClienteEncuentroC8CHILD JVM real/Codec-OfertasRam-ValidacionPairRam-AlmacenPair
+reales + puenteOkHttpTEST por TLSestricto, PARENTNode sintético; NO dosAPKs/
+wrapperCanalEncuentroC8Android/IOAndroid/Keystore/DeviceOwner/enforcerreal.
+TLS SAN127/certificado-privada efímeros sóloRAM/PIPE; CAacotada/hostnamepredeterminado,
+no trustAll/relajarDNSproductivo. READYPIPE públicaPADRE independiente dePAIR,
+CLAIMcode sóloPIPE/no logs. Adultoacreditado/discoRAM falsos/relojJVMmonotónico
+real, firmasJCA reales/identidades sólo laboratorio. Tickets/TTL/nonce/contexto/
+bytes y readback verificados. AUTH1/PUBLISH1/CLAIM1/PAIR1/reserva1/escritura1,
+3eventosNode READY-PAIR_SENT-DONE y **exit0**; pendiente NOUSO, cierre no revierte.
+Hashes públicos ESEcruce, igualesNode/JVM original sobrePAIR:
+**X28PLtkh_Zv4nf-pqACF5Xe8bx21xZ0MTnNmdYsGOww**;
+payloadvalidado **rfaSPBDP7sRaeNm9W0FrGhSYRaOQkRZR7o4btamjscU**.
+Sin frames/claves/códigos efímeros persistidos ni impresos.
+
+OrdinariosinrutaSUCCESS26s/1TLSunitpass1Nodeskip explícito; primeroptinFAILED5s
+antesinit por JsonCp1 usadoerróneamente paraPIPEPEM-LF, corregido sólo escapeJSON
+PIPEtest, no codec/wire/arnés. No éxito simulado/retryautomático ni fallo oculto.
+Releaseordinariofocal+lintSUCCESS53s/17pass1Nodeskip/lint0errores12avisos;
+2nuevostestsdistintos. Nada de fullcore/APK repetidos. Helpers src/test y optin
+GradleTest, ninguna modificación productiva. HashR1exacto089e0b62…492adde/APKdebug
+6221f3f52a7bdfbe4a4da19627c00821598fb2b2f9a59989a82e846e28250751/unsigned
+029d4e2dd876f87c061f4bace6e2fb4fbaaad76dddcdd5ae5116b7f5a285b3b4 recomprobados.
+SinADB/dispositivos/install/QRreal/familiareal/códigosadultos/otraslecturasrepos/
+push/deploy/subagentes/sesiones/prompts/serviciopúblico. **Entregar y detener**;
+perfilpúblico/instalación/ceremonia requieren autorización posterior concreta.
+
 ## HIJO-C8-I01 — MAIN sin cámara entregado en código/JVM, NO instalado
 
 Fuente EXACTA R1 copiada a `contrato-c8/CONTRATO_C8_1.md`, UTF8/LFfinal SHA256

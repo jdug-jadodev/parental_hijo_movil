@@ -36,6 +36,17 @@ kotlin {
     }
 }
 
+// C8-X01 sólo se ejecuta contra el arnés local autorizado por una ruta explícita.
+tasks.withType<Test>().configureEach {
+    val rutaRelay = providers.gradleProperty("rutaRelay").orNull
+    testLogging.events("skipped", "failed")
+    if (rutaRelay != null) {
+        systemProperty("rutaRelay", rutaRelay)
+        outputs.upToDateWhen { false }
+        testLogging.showStandardStreams = true
+    }
+}
+
 dependencies {
     implementation(project(":core-protocol"))
     implementation(libs.activity.compose)
