@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://control-parental.invalid/cp2/ack.schema.json",
+  "oneOf": [{ "$ref": "#/$defs/ack" }, { "$ref": "#/$defs/sobre" }],
+  "$defs": {
+    "uuid": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" },
+    "hash": { "type": "string", "minLength": 43, "maxLength": 43, "pattern": "^[A-Za-z0-9_-]+$" },
+    "contador": { "type": "string", "pattern": "^(0|[1-9][0-9]{0,18})$" },
+    "positivo": { "type": "string", "pattern": "^[1-9][0-9]{0,18}$" },
+    "ack": {
+      "type": "object", "additionalProperties": false,
+      "required": ["v", "kind", "sender", "pairId", "bootId", "childSessionId", "commandId", "seq", "commandPayloadSha256B64", "acceptedRevision", "evaluatedRevision", "result", "reason", "resultElapsedMs"],
+      "properties": {
+        "v": { "const": 2 }, "kind": { "const": "ACK" }, "sender": { "const": "CHILD" },
+        "pairId": { "$ref": "#/$defs/uuid" }, "bootId": { "$ref": "#/$defs/uuid" },
+        "childSessionId": { "$ref": "#/$defs/uuid" }, "commandId": { "$ref": "#/$defs/uuid" },
+        "seq": { "$ref": "#/$defs/positivo" }, "commandPayloadSha256B64": { "$ref": "#/$defs/hash" },
+        "acceptedRevision": { "anyOf": [{ "$ref": "#/$defs/positivo" }, { "type": "null" }] },
+        "evaluatedRevision": { "$ref": "#/$defs/contador" },
+        "result": { "enum": ["APPLIED", "ACCEPTED_PENDING_ENFORCEMENT", "ENFORCEMENT_FAILED", "REJECTED", "UNKNOWN_COMMAND"] },
+        "reason": { "enum": ["OK", "BAD_SCHEMA", "BAD_SIGNATURE", "WRONG_PAIR", "WRONG_ROLE", "UNKNOWN_VERSION", "PROTOCOL_MISMATCH", "STALE_BOOT", "STALE_SESSION", "STALE_NONCE", "STALE_REVISION", "STALE_SEQUENCE", "SEQUENCE_CONFLICT", "UNKNOWN_COMMAND", "NOT_DEVICE_OWNER", "NOT_PROVISIONED", "BEFORE_USER_UNLOCK", "STATE_CORRUPT", "KEY_UNAVAILABLE", "ENFORCEMENT_ERROR", "COUNTER_EXHAUSTED", "PEER_OFFLINE", "RATE_LIMITED"] },
+        "resultElapsedMs": { "anyOf": [{ "$ref": "#/$defs/contador" }, { "type": "null" }] }
+      },
+      "oneOf": [
+        { "properties": { "result": { "const": "APPLIED" }, "reason": { "const": "OK" }, "acceptedRevision": { "$ref": "#/$defs/positivo" }, "resultElapsedMs": { "$ref": "#/$defs/contador" } } },
+        { "properties": { "result": { "const": "ACCEPTED_PENDING_ENFORCEMENT" }, "reason": { "const": "OK" }, "acceptedRevision": { "$ref": "#/$defs/positivo" }, "resultElapsedMs": { "type": "null" } } },
+        { "properties": { "result": { "const": "ENFORCEMENT_FAILED" }, "reason": { "const": "ENFORCEMENT_ERROR" }, "acceptedRevision": { "$ref": "#/$defs/positivo" }, "resultElapsedMs": { "$ref": "#/$defs/contador" } } },
+        { "properties": { "result": { "const": "REJECTED" }, "reason": { "not": { "enum": ["OK", "UNKNOWN_COMMAND"] } }, "acceptedRevision": { "type": "null" }, "resultElapsedMs": { "type": "null" } } },
+        { "properties": { "result": { "const": "UNKNOWN_COMMAND" }, "reason": { "const": "UNKNOWN_COMMAND" }, "acceptedRevision": { "type": "null" }, "resultElapsedMs": { "type": "null" } } }
+      ]
+    },
+    "sobre": {
+      "type": "object", "additionalProperties": false,
+      "required": ["v", "kind", "purpose", "payloadB64", "sigB64"],
+      "properties": {
+        "v": { "const": 2 }, "kind": { "const": "SIGNED" }, "purpose": { "const": "MESSAGE" },
+        "payloadB64": { "type": "string", "minLength": 1, "maxLength": 10923, "pattern": "^[A-Za-z0-9_-]+$" },
+        "sigB64": { "type": "string", "minLength": 11, "maxLength": 96, "pattern": "^[A-Za-z0-9_-]+$" }
+      }
+    }
+  }
+}

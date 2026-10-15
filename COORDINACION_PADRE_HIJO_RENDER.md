@@ -1,5 +1,39 @@
 # Relevo de coordinación — padre, hijo y WebSocket CP/1
 
+## CIERRE HIJO-E2E01 — recorrido MAIN STATE/ACK, compilado/JVM sin física
+
+2026-10-15. Bloquesd507df8/897cfe7/647d138/61eccca+cierre encommitdeesterelevo.
+FuenteACKRenderK01íntegra recibida/schemaACK14-5copiadoSHA256UTF8LFfinal
+3aeae8504de36f5f05462a79f60972889c6d0eb45d356d031eec361412e512e4;
+7testsRenderreportados/noejecutadoshijo. Codec/firmaACKCHILD-MESSAGE-LFreal/
+P256DER/canonicalidad/C-C+LongMAX/accepted<=evaluated/variantesexactas; nunca relay.
+MAIN UIadulta-códigofresco/marcooriginal120s→WSS-TLSnormal/AUTHCHILD→SYNC-SET_POLICY
+guardiaPARENT→writerCONTROLCEdurable/reserva-readback→UsoRed/Bloqueoexistentes→
+STATE/ACKfirmadosESAgeneración. PendingACKpreparado-enfiladoantesefecto/no prueba
+entrega; final sólo resultado de ESAorden/revisión trascallback-readback, stale
+no confirmaotraacción. Duplicadoretenidocontexto-id-seq-hash-bytes sinreaplicar/
+renovar/reset; no retenido UNKNOWN_COMMAND, conflictos/CAS/nonce rechazos sin
+accepted/elapsedfabricados. SinACKparatramanoautenticada/contextoincierto/fakehash/
+revision0/CP1fallback. PEER_UNAVAILABLEinformativo/noACK/noefecto/noPEER_STATUS.
+Statehistoria/avisosnull=NO DISPONIBLE/no0, modoVERIFIEDsóloreadbackcorrelacionado
+yobservaciónactualcompatible/noKeyguard-PINNEDfakes. NORMAL10sAndroidnegativa/
+reconectarnoabre/OFFLINEsólolocalexplícito/boot-procesonoreanudanRAM. Sólosesión
+adultaforeground/cierrealfondo-salir-caducidad, no background/appmuerta/autogrant.
+Finaloffline--rerun **SUCCESS1m49s131ejecutadas0UPTODATE/205core-490debug-435release
+0fallos/lint0errores12avisos**;nuevos12core+30appdistintos/no duplicarvariantes.
+Firmasreales/componentesKotlinreales/puertosdisco-clock-socket-enforcementFAKE,
+no UIAndroid/DeviceOwner/TLSreal; AndroidTestcompiladoNOinstrumentado. Historial
+QRsintéticoaleatoriofallóprevio/reintento pasó/no modificado ni flakinessresuelta.
+APKdebugNOinstaladoSHAfc7a5bd82e6bfdcb0ae0434ce2d88be03eac2cc1390d73a339c9eb52c83108ed;
+unsigned17c0808bdca086ddfb0dea0a4e57cda7a5dbe24b92d14944cabe1f4daa94102f.
+InspecciónAPKdirigidaMAINauth-control-STATE-ACKpresentes/tests-vectores-schema
+ausentes/ignoreFGSúnicoigual/rollbackDEBUG/schemahashintactos. Evidencia final
+`pruebas/EVIDENCIA_HIJO_E2E01.md`. SinADB/A13/A56/install/QRreal/pareja/altas/Owner/
+PIN/protecciones/CA/redapp-router/LOCAL07-LOCAL08/push/otrosrepos/subagentes/prompts.
+**Entregar y detener**. Próximo ensayo TLS/pareja/teléfonos requiereaprobación
+concreta NUEVA, no permisosheredados ni otratareaautomática. Siguientes entradas
+históricas: ACKpendiente allí YA RESUELTO.
+
 ## E2E01 / STATE01 actual — avance vertical real compilado, ACK pendiente
 
 2026-10-15. Bloquesd507df8/897cfe7/647d138 y commit de este relevo. STATE01JSON

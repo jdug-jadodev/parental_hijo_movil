@@ -297,14 +297,14 @@ class AccesoAdultoActivity : ComponentActivity() {
         }
         boton("INICIALIZAR IDENTIDAD — solo alta presencial separada") { confirmarOferta(true) }
         for (s in listOf("Red remota — pendiente", "Otras políticas de Ajustes — pendiente")) boton(s, false)
-        boton("Conectar piloto CP/2 — TLS/AUTH y STATE; sólo este primer plano", ControlRedAndroid.listo) { confirmarCanalCp2() }
-        texto("Historia de tiempo y avisos: NO DISPONIBLE, no cero. El piloto aún no tiene emisor ACK; STATE informa el último resultado. No es producto final.")
+        boton("Conectar piloto CP/2 — TLS/AUTH, STATE y ACK; sólo este primer plano", ControlRedAndroid.listo) { confirmarCanalCp2() }
+        texto("Historia de tiempo y avisos: NO DISPONIBLE, no cero. STATE y ACK firmados distinguen pendiente y efecto confirmado. No es producto final.")
         boton("Cerrar sesión") { cerrarAutoridad(); sesion.reanudar(); consultar() }
     }
     private fun confirmarCanalCp2() {
         if (sesion.estado() != AutoridadAdulto.ADMINISTRAR) return
         base("Conexión piloto CP/2 explícita")
-        texto("Requiere pareja CP/2 ya guardada y ensayo red/local armado. No crea claves, QR ni pareja. Recibirá LOCK/ALLOW/ALLOW_FOR con autoridad del padre vinculado. Salir, fondo o caducar la sesión cierra el canal, sin renovar permiso ni reintentar órdenes. ACK aún pendiente de fuente exacta.")
+        texto("Requiere pareja CP/2 ya guardada y ensayo red/local armado. No crea claves, QR ni pareja. Recibirá LOCK/ALLOW/ALLOW_FOR con autoridad del padre vinculado. Salir, fondo o caducar la sesión cierra el canal, sin renovar permiso ni reintentar órdenes. ACK pendiente no prueba aplicación.")
         val codigo = campo("Código adulto fresco", codigo = true)
         boton("Confirmar conexión piloto con mi código") {
             val t = sesion.solicitar(FinAdulto.CONECTAR_CP2) ?: return@boton
@@ -317,7 +317,7 @@ class AccesoAdultoActivity : ComponentActivity() {
                     val marco = sesion.marcoAcreditado(t) ?: return@runOnUiThread
                     pilotoCp2?.close()
                     base("Piloto CP/2 foreground — sin prueba física")
-                    texto("Historia/avisos: NO DISPONIBLE. STATE firmado no implica recuperación ni perfección. ACK aún no emitido.")
+                    texto("Historia/avisos: NO DISPONIBLE. STATE/ACK firmados no implican recuperación ni perfección. APPLIED sólo tras observación correlacionada.")
                     val vista = TextView(this).apply { setText(R.string.preparando_control_cp2); textSize = 18f }
                     estadoCanalCp2 = vista; columna.addView(vista)
                     val p = PilotoE2eAndroid(this, { activa && sesion.marcoVigente(marco) }) { vista.text = it }

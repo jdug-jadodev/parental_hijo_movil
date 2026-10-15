@@ -1,5 +1,26 @@
 # CP/2 parcial — fuente local suministrada
 
+## Cierre E2E01 con ACKRenderK01 — sólo código/JVM, sin física
+
+Fuente íntegra ACKRenderK01 copiada `ack.schema.json`, SHA256UTF8LFfinal
+`3aeae8504de36f5f05462a79f60972889c6d0eb45d356d031eec361412e512e4`.
+7testsRender reportados, no ejecutados aquí. ACK14/sobre5/C-C+LongMAX/
+accepted<=evaluated/variantescerradas/CHILD-MESSAGE-LFreal/P256DER; nunca relay.
+ACKpendiente se firma/enfila antes del sideeffect; final sólo desde resultado
+durable/readback de ESAorden/ESArevisión. Replay retenido por bytes/hash/contexto
+devuelve resultado sin reaplicar/renovar; historia no retenida UNKNOWN_COMMAND,
+conflicto/revisión/nonce rechazan sin accepted/elapsed inventados. No responder
+con correlación/hash/revisión ficticios a tramas no autenticadas o estado incierto.
+KEY/signing/IOinciertos no amplían uso. PEER_UNAVAILABLE no se convierte en ACK.
+
+MAIN UIadulta120s/foreground→WSS-TLSnormal/AUTH→guardia→writerCEreal→UsoRed/Bloqueo→
+STATE/ACKfirmados conectado y compilado; no Androidreal ni handshakeTLS ensayados.
+Final205core/490debug/435release0fallos/lint0errores12avisos; evidencia y hashesAPK
+`pruebas/EVIDENCIA_HIJO_E2E01.md`. No producto final/recuperación/ceremonia perfecta.
+E2E01 entregada EN CÓDIGO y detener; no instalación, QR/vínculo/endpoints o pruebas
+de teléfono sin aprobación posterior específica. Secciones siguientes históricas:
+fuente ACK pendiente allí YA RESUELTA, no cambio CP1 ni congelaciónCP2completa.
+
 ## Estado actual E2E01 / STATE01-PILOTO (15 de octubre de 2026)
 
 Fuente JSONSTATE suministrada íntegra en conversación, copiada separada

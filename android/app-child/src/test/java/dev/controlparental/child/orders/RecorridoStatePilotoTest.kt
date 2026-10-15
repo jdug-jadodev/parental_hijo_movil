@@ -42,7 +42,7 @@ class RecorridoStatePilotoTest {
         val writer = EscritorControlCp2(disco, { t }, { pareja }, { uso.bloquear { true } }).also { assertTrue(it.abrir { true }) }
         val nonceSync = Base64Cp1.codificar(ByteArray(32) { 5 }); var consulta = nonceSync
         var stateSeq = 0L; var lock = true; var aplicaciones = 0; var pendiente: DecisionControl? = null
-        var reto: RetoOrdenCp2? = null; val estados = mutableListOf<StateCp2>()
+        var reto: RetoOrdenCp2? = null; val estados = mutableListOf<StateCp2>(); val acks = mutableListOf<AckCp2>()
         fun firma(k: KeyPair, bytes: ByteArray) = Signature.getInstance("SHA256withECDSA").run { initSign(k.private); update(bytes); sign() }
         val firmante = object : FirmanteAuthCp2 {
             override val publica get() = pubH
@@ -66,6 +66,8 @@ class RecorridoStatePilotoTest {
             canal.abierto(ref, object : SocketCp2 {
                 override fun enviar(texto: String): Boolean {
                     if (texto.contains("\"purpose\":\"AUTH\"")) CriptografiaAuthCp2.verificar(texto.toByteArray(), pubH, RolAuthCp2.CHILD)
+                    else if ((SobreMessageCp2.leer(texto.toByteArray()).campos["kind"] as dev.controlparental.protocol.TextoJson).texto == "ACK")
+                        acks.add(CriptografiaAckCp2.verificar(texto.toByteArray(), pubH))
                     else estados.add(CriptografiaStateCp2.verificar(texto.toByteArray(), pubH))
                     return true
                 }
@@ -94,6 +96,8 @@ class RecorridoStatePilotoTest {
         fun aplicar() {
             val d = pendiente!!; pendiente = null; aplicaciones++
             assertEquals(ResultadoStateCp2.ACCEPTED_PENDING_ENFORCEMENT, estados.last().lastRemote!!.result)
+            assertEquals(ResultadoAckCp2.ACCEPTED_PENDING_ENFORCEMENT, acks.last().result)
+            assertNull(acks.last().resultElapsedMs)
             if (d.action == AccionOrdenCp2.LOCK) { uso.bloquear { true }; lock = true }
             else { assertTrue(uso.autorizar(UsoLocal.NORMAL, limiteAbsoluto = d.deadline) { writer.esRevision(d.revision) }); lock = false }
             writer.confirmar(d.revision, true); emitir()
@@ -104,6 +108,7 @@ class RecorridoStatePilotoTest {
         }
         fun emitir() {
             consolidar(); val r = writer.actual()
+            r.remoto?.let { assertTrue(canal.enviar(ref, CriptografiaAckCp2.firmar(ProyeccionAckCp2.retenida(it, r.revision), pubH, firmante))) }
             val s = ProyeccionStateCp2.crear(r, pairId, consulta, ++stateSeq, t, writer.motivoActual, reto,
                 uso.red == ValidacionRed.VALIDADA, true, lock, uso.permiteUso, true)
             assertTrue(canal.enviar(ref, CriptografiaStateCp2.firmar(s, pubH, firmante)))
@@ -115,6 +120,9 @@ class RecorridoStatePilotoTest {
             val b = l.ordenar(a); assertEquals(ModoStateCp2.UNKNOWN, l.estados.last().effective.mode)
             l.aplicar(); val s = l.estados.last()
             assertEquals(ResultadoStateCp2.APPLIED, s.lastRemote!!.result)
+            val ack = l.acks.last()
+            assertEquals(ResultadoAckCp2.APPLIED, ack.result); assertEquals(s.lastRemote!!.payloadSha256B64, ack.commandPayloadSha256B64)
+            assertEquals(s.lastRemote!!.commandId, ack.commandId); assertEquals(s.lastRemote!!.acceptedRevision, ack.acceptedRevision)
             assertEquals(a, s.effective.action); assertEquals(l.consulta, s.syncNonce)
             val cantidad = l.aplicaciones; l.canal.recibir(l.ref, b); assertEquals(cantidad, l.aplicaciones)
             assertEquals(s.lastRemote, l.estados.last().lastRemote)

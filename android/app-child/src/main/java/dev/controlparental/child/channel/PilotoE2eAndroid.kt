@@ -5,6 +5,7 @@ import android.os.Handler
 import android.os.Looper
 import dev.controlparental.child.network.ControlRedAndroid
 import dev.controlparental.protocol.cp2.SyncOrdenCp2
+import dev.controlparental.protocol.cp2.AckCp2
 import java.util.concurrent.atomic.AtomicBoolean
 
 /** Recorrido callable real: sesión adulta explícita → TLS/AUTH → guardia/writer/UsoRed → STATE firmado. */
@@ -25,23 +26,28 @@ internal class PilotoE2eAndroid(private val actividad: Activity, private val aut
     fun conectar() {
         if (cerrado.get() || !autoridad()) return
         main.removeCallbacks(vencimiento); main.postDelayed(vencimiento, 1000)
-        ControlRedAndroid.iniciarCp2(actividad, { !cerrado.get() && autoridad() }, ::emitirEnActor,
-            { emitirEnActor() }) { disponible ->
+        ControlRedAndroid.iniciarCp2(actividad, { !cerrado.get() && autoridad() }, { emitirEnActor() },
+            { /* El resultado de consulta se correlaciona con la orden en recibirCp2, sin reaplicar. */ }) { disponible ->
             if (cerrado.get() || !autoridad()) return@iniciarCp2
             if (!disponible) { estado("No se pudo preparar CONTROL: comprueba pareja, CE y ensayo local/red armado. No se abrió conexión."); return@iniciarCp2 }
             canal = CanalWssAndroid(actividad.applicationContext, { ref, bytes ->
                 if (!vigente(ref)) return@CanalWssAndroid
-                ControlRedAndroid.recibirCp2(actividad.applicationContext, bytes, { vigente(ref) }) { v, _ ->
+                ControlRedAndroid.recibirCp2(actividad.applicationContext, bytes, { vigente(ref) }) { v, _, ack ->
                     if (!vigente(ref)) return@recibirCp2
                     (v?.mensaje as? SyncOrdenCp2)?.let { consulta = ref to it.syncNonce }
-                    emitirEnActor()
+                    emitirEnActor(ack)
                 }
             }, { texto -> main.post { if (!cerrado.get()) estado(texto) } }).also { it.conectar() }
         }
     }
-    private fun emitirEnActor(): Boolean {
+    private fun emitirEnActor(respuesta: AckCp2? = null): Boolean {
         val (ref, nonce) = consulta ?: return false
         if (!vigente(ref)) return false
+        val ack = respuesta ?: ControlRedAndroid.ackActualCp2EnActor(actividad.applicationContext)
+        if (ack != null) {
+            val firmado = ControlRedAndroid.firmarAckCp2EnActor(actividad.applicationContext, ack) { vigente(ref) } ?: return false
+            if (canal?.enviar(ref, firmado) != true) return false
+        }
         val bytes = ControlRedAndroid.stateCp2EnActor(actividad.applicationContext, nonce) { vigente(ref) } ?: return false
         return vigente(ref) && canal?.enviar(ref, bytes) == true
     }

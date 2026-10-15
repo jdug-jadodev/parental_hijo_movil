@@ -338,6 +338,7 @@ internal object ControlRedAndroid {
                 override fun entregarParaDecision(preparacion: PreparacionOrdenCp2) {
                     val canal = vigenteCanalCp2 ?: error("Sin generación de canal")
                     check(canal())
+                    check(w.contexto()?.revisionControl != Long.MAX_VALUE) { "Contador CONTROL agotado" }
                     val d = w.remoto(preparacion) ?: error("Conflicto CONTROL; requiere SYNC nuevo")
                     if (cambioCp2?.invoke() != true) {
                         w.confirmar(d.revision, false)
@@ -389,24 +390,27 @@ internal object ControlRedAndroid {
         }
     }
     fun recibirCp2(c: Context, bytes: ByteArray, canalVigente: () -> Boolean,
-        entregar: (OrdenVerificadaCp2?, RetoOrdenCp2?) -> Unit) {
-        if (bytes.size !in 1..16384) { entregar(null, null); return }
+        entregar: (OrdenVerificadaCp2?, RetoOrdenCp2?, AckCp2?) -> Unit) {
+        if (bytes.size !in 1..16384) { entregar(null, null, null); return }
         val copia = bytes.copyOf()
         ejecutor.execute {
             val g = guardiaCp2; val ref = generacionCp2
             try {
-                if (g == null || ref == null || !canalVigente()) { entregar(null, null); return@execute }
+                if (g == null || ref == null || !canalVigente()) { entregar(null, null, null); return@execute }
                 vigenteCanalCp2 = canalVigente
                 consolidarCp2(c)
                 val v = CriptografiaOrdenCp2.verificar(copia, ref.pareja.publicaPadre)
                 if (v.mensaje is SyncOrdenCp2) {
                     val s = g.recibirSync(ref, copia)
-                    entregar(if (s != null) v else null, s?.reto)
+                    entregar(if (s != null) v else null, s?.reto, null)
                 } else {
                     g.prepararPolitica(ref, copia)?.let { g.entregar(ref, it) }
-                    entregar(v, null)
+                    consolidarCp2(c)
+                    val w = controlCp2 ?: return@execute
+                    val ack = ProyeccionAckCp2.respuesta(v, w.actual(), w.retenida(v), g.retoActual(ref), SystemClock.elapsedRealtime())
+                    entregar(v, null, ack)
                 }
-            } catch (_: Exception) { entregar(null, null) }
+            } catch (_: Exception) { entregar(null, null, null) }
         }
     }
     fun consultarCp2(c: Context, entregar: (RegistroControl?) -> Unit) {
@@ -417,6 +421,27 @@ internal object ControlRedAndroid {
         }
     }
     fun cerrarCanalCp2() { ejecutor.execute { guardiaCp2?.cerrar(); generacionCp2 = null; vigenteCanalCp2 = null; cambioCp2 = null; retenidaCp2 = null; actividadCp2 = null } }
+    fun ackActualCp2EnActor(c: Context): AckCp2? {
+        check(Thread.currentThread() === hiloActor)
+        return try {
+            consolidarCp2(c)
+            val r = controlCp2?.actual() ?: return null
+            r.remoto?.let { ProyeccionAckCp2.retenida(it, r.revision) }
+        } catch (_: Exception) { null }
+    }
+    fun firmarAckCp2EnActor(c: Context, ack: AckCp2, canalVigente: () -> Boolean): ByteArray? {
+        check(Thread.currentThread() === hiloActor)
+        return try {
+            if (!canalVigente()) return null
+            consolidarCp2(c)
+            val w = controlCp2 ?: return null
+            val r = w.actual(); val identidad = AuthAndroid.contextoActual(c) ?: return null
+            if (ack.pairId != identidad.pairId || ack.evaluatedRevision != r.revision) return null
+            val bytes = CriptografiaAckCp2.firmar(ack, identidad.publicaHijo, AuthAndroid.firmanteExistente(c, identidad))
+            consolidarCp2(c)
+            if (!canalVigente() || AuthAndroid.contextoActual(c) != identidad || w.actual().revision != r.revision) null else bytes
+        } catch (_: Exception) { null }
+    }
     /** Sólo callbacks del actor. Firma y revalida antes de entregar bytes al MISMO canal. */
     fun stateCp2EnActor(c: Context, syncNonce: String, canalVigente: () -> Boolean): ByteArray? {
         check(Thread.currentThread() === hiloActor)

@@ -1,7 +1,92 @@
 # HIJO-E2E01 — avance, NO cierre
 
 15 de octubre de 2026. Base `9ddce88`; primer bloque `d507df8`.
-**EN CURSO. No hay recorrido funcional E2E entregable ni APK listo para ensayo.**
+**CERRADA IMPLEMENTACIÓN VERTICAL PILOTO / COMPILADA Y PROBADA JVM / SIN FÍSICA.**
+APK preparado en código para un ensayo posteriormente autorizado; no producto final,
+pareja/canal reales, enforcement Android ni recuperación acreditados.
+
+## Cierre con ACKRenderK01 — estado final de la misma E2E01
+
+FuenteACKRenderK01 suministrada íntegra,7testsRender REPORTADOS/noejecutadoshijo.
+Copia exacta `contrato-cp2/ack.schema.json`, UTF8/LFfinal/SHA256
+`3aeae8504de36f5f05462a79f60972889c6d0eb45d356d031eec361412e512e4`.
+No otros repos/HEADs remotos leídos. STATE y ORD copias exactas intactas.
+
+- `core.../cp2/AckCp2.kt`: DTO/codec/criptoACKCHILD14campos/sobre5, dominioUTF8
+  CPv2/MESSAGE+LFreal+bytescanónicos, P256SPKI/DERr,s/base64roundtrip/profundidad6/
+  payload8192-frame16384/camposcerrados/duplicados/tipos/countersC-C+hastaLongMAX.
+  acceptedRevisionpositivo<=evaluatedRevision; variantes exactas APPLIED/OK/
+  accepted+elapsed, PENDING/OK/accepted+elapsednull, FAILED/ENFORCEMENT_ERROR/
+  accepted+elapsed, REJECTEDsinaccepted-elapsed/motivo!=OK-UNKNOWN_COMMAND y
+  UNKNOWN_COMMANDconmotivoexacto/sinaccepted-elapsed. No ACKrelay ni permiso.
+- `orders/ProyeccionAckCp2.kt`: respuesta correlacionada sólo a comando verificado
+  y estado consolidado; resultado retenido preserva boot/sesión/id/seq/hash/bytes/
+  acceptedRevision/resultElapsed originales, evaluatedRevisionactual. No comparar
+  relojes de otros boots. Duplicados no reaplican ni renuevan nonce/plazo/seq;
+  misma secuencia/id no retenidoexacto=SEQUENCE_CONFLICT, secuencia anterior no
+  retenida=UNKNOWN_COMMANDsinaccepted-elapsed, CAS/contexto/nonce rechazados sin
+  aceptar. COUNTER_EXHAUSTED se rechaza antes de incrementar/IO. Sólo último
+  resultado retenido, sin ledger/historia ilimitados ni exactlyonce general.
+- MAIN `ControlRedAndroid` y `PilotoE2eAndroid`: ACKpendiente firmado/enfilado en
+  MISMAgeneración antes de invocar sideeffect; ACKfinal desde resultado durable
+  de ESAorden/ESArevisión tras callback/readback; snapshot antes/despuéscrypto/
+  revisióncomparada; callbacks obsoletos no confirman nuevaorden. Enfilar no es
+  entregar ni prueba bloqueo. Si no puede firmar/enfilar respuesta, falla cerrado
+  y no amplía uso. Publica STATE además con última consulta SYNC real, sin fabricar
+  syncNonce. UI ya indica STATE/ACK disponibles y pendiente no implica aplicación.
+- Rechazo de tramas no autenticadas/malformadas o contextoCONTROLincierto puede
+  ser silencioso: no fabricar hash/correlación/evaluatedRevision0 para contestar.
+  Una pareja distinta nunca recibe firma como si fuera la actual. No fallback
+  ACKCP1. PEER_UNAVAILABLE sóloinformativo/noACK/noefecto, no presencia necesaria.
+
+**Recorrido MAIN completo callable** de la unidad: sesiónadulta/códigofresco y
+marcooriginal120s → WSS/TLSnormal/AUTHCHILDconKeystoreexistente → SYNC/SET_POLICY
+PARENT verificadas → guardia → writerCONTROLdurableCE/reserva-readback → actor
+existente UsoRed/Bloqueo reversible → STATE/ACKCHILDfirmados en mismo canal.
+No ControlOrdenNoDisponible ni writerRAM alternativo en MAIN. NORMALAndroid10s/
+reconectarnoabre, EXCEPCION_OFFLINEsólolocalexplícita, boot/procesonoreanudanRAM.
+Sólo acceso adulto foreground/sesiónoriginal; salir/fondo/caducarcierran canal,
+no reintento ni grant autónomo. No prometer background/appmuerta/serviciocanal.
+No nuevos recibos de pareja ni CP1activado/migración/credencial/claves nuevas.
+
+ACKnuevas pruebas5core+3proyecciónapp, verticales existentes ampliadas para verificar
+ACKreales CHILD/hash/commandId/accepted-evaluated/PENDINGantesefectoFAKE/APPLIEDsólo
+callbackFAKE. Totales E2E01 nuevos **12core+30app distintos**, no duplicarvariantes.
+Disco/reloj/socket/enforcement y glue del ensayo **FALSOS**, componentes Kotlin/
+firmas PADRE-HIJO reales. NO UIAndroid/DeviceOwner/Keystorefísico/TLShandshake real.
+
+Pasada ACKJVM completa SUCCESS41s/15ejecutadas37UPTODATE. **FINAL** comando completo
+offline--rerun indicado abajo **SUCCESS1m49s/131tareas131ejecutadas/0UPTODATE**,
+XML **205core/490debug/435release0fallos/errores**, lintReleaseMAIN-test-reporte
+**0errores12avisos** (versionesprevias+OkHttpautorizado4.12.0). APKAndroidTest sólo
+compilado/empaquetado, NOinstrumentado/instalado. Falla QRsintética histórica y
+pasadas anteriores preservadas abajo; no esconderlas por este final exitoso.
+
+InspecciónAPKdirigida final python-B/ZipFile: MAINauth/control/PilotoE2eAndroid/
+STATE-ACKcodecs-cripto-proyecciónpresentes, ControlOrdenNoDisponible/tests/vectores
+fuente-vueltas/schemasausentes, rollbacksoloDEBUG, ignoreFGSúnico/mismonodo;
+hashesACK-STATE-ORD exactos. No auditoríaexhaustiva ni lintDebug/verificadorFake
+históricos resueltos. Revisión de cambios y gitdiffcheck antes de commit.
+
+**APKs finales E2E01 compilados, NOINSTALADOS**:
+- Debug `android/app-child/build/outputs/apk/debug/app-child-debug.apk`, SHA256
+  `fc7a5bd82e6bfdcb0ae0434ce2d88be03eac2cc1390d73a339c9eb52c83108ed`.
+- Releaseunsigned `android/app-child/build/outputs/apk/release/app-child-release-unsigned.apk`,
+  SHA256 `17c0808bdca086ddfb0dea0a4e57cda7a5dbe24b92d14944cabe1f4daa94102f`.
+- Últimoinstalado acreditado sigue PAIR01histórico, sin consultaactual. SinADB/
+  A13/A56/install/QRreal/vínculo/altas/Keystorefísico/Owner/PIN/CA/redapp-router/
+  protecciones/LOCAL07-LOCAL08/push/deploy/otrosrepos/subagentes/prompts.
+- Bloques d507df8/897cfe7/647d138/61eccca y cierre en commit que incorpora esta
+  evidencia. Rutas de cierre: schemaACKsuministrado/coreACK+test/appProyeccionACK+
+  test/ControlRed-PilotoE2e-UI/verticalesampliados/READMEcp2/ESTADO/evidencia/relevo.
+  CP1/fixtures/schemaSTATE-ORD-AUTH-PAIR/deps/manifest de esta última parte intactos;
+  dependenciaOkHttp+INTERNET ya autorizados e incorporados en bloquesanteriores.
+- **Entregar y detener.** Ensayo endpointTLS/pareja/Keystore/CE/readback/enforcement/
+  emergencia/red-timer-boot físicos requiere aprobación concreta posterior. No
+  generar QR/vínculo/instalar ni heredar permisos por este cierre. Sin otra tarea.
+
+Lo siguiente preserva los avances anteriores: ACKpendiente allí YA RESUELTO;
+hashes parciales previos no son los APKs finales de este cierre.
 
 ## Resultado actual — STATE vertical conectado, ACK exacto pendiente
 
