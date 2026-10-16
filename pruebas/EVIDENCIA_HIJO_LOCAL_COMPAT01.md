@@ -51,7 +51,7 @@ apksigner verifica firma/certificadohistórico
 aapt paquete dev.controlparental.child/versión1-0.1.0/min31target36/testOnly/
 únicoLauncherActivity. Sin nuevos permisos ni dependencias. diff-check correcto.
 
-## Relevo y siguiente paso físico (pendiente de permiso directo nuevo)
+## Preparación anterior al permiso físico (histórico)
 
 Cambios: boot/ArranquePilotoAndroid; protection/ProteccionLocal y ProteccionAndroid;
 testProteccionLocal; ESTADO/guía/evidencia. Código listo, todavía NOinstalado;
@@ -65,3 +65,61 @@ código fresco y prueba local coordinada de tiempo/bloqueo, conservando protecci
 Sin reboot/apagarpantalla/cortesred-energía/clear/reset/uninstall/Owner/PIN/QR/
 remoto/lecturasCE-Keystore; no instalar si compatibilidad incierta ni reintentar.
 No atribuir pruebas físicas a JVM ni extender permisos anteriores consumidos.
+
+## Actualización y prueba física posteriores — completadas
+
+Código en `8cc4823`. Propietario autorizó DIRECTAMENTE **«Sí, actualizar y probar»**
+a una actualización adicional conservadora, A13 conectado/pantalla-adulto-salida/
+emergencia disponibles, preparación MANUAL y permiso NORMAL de1min hasta bloqueo.
+LecturasADB limitadas a compatibilidad/paquete/políticas; sin reiniciar, apagar
+pantalla ni cortar internet. A56 excluido.
+
+- Inventario seleccionó únicoA13 anunciado, destino coincidente con actualización
+  anterior y modeloSM-A135M reconfirmado. Todas las operaciones dirigidas poradb-s.
+  Serial sólo RAM/contexto temporal externo, no repositorio.
+- APKprevio recuperado SHA2b5ea130…15a821, firma/certificado y paqueteversión
+  compatibles. Baseline ya protegido: uninstallBlockedhijo=true y
+  no_control_appsusuario=true; globalindependiente sinadmins/null; LockTask
+  lista vacía/flags16. Candidato/hash/firma/modelo reconfirmados.
+- **UNA install-r-t → Success**, sin reintento. APKposterior recuperado/hash
+  **e097e002434aee19982eb0f643c89ef65f30665909c6f3978dd532ba8133bce5** y
+  certificado verificados. Cero diferencias metadatos/versión/firstInstallTime/
+  ceDataInode/estado, Owner y políticas consultadas tras actualizar. Ninguna
+  lectura de contenidoCE/DP/Keystore/identidad/PAIR/pending; continuidad de
+  directorio no es auditoría semántica de los almacenes.
+- POSTactualización el propietario confirmó **«Sí, todo correcto»**: código
+  habitual, entrar/cerrar/volver a entrar, protecciónactiva y emergencia visible.
+- Ejecutó manualmente «Seguridad y configuración → Preparar control local»,
+  código fresco y «Confirmar» UNA vez; informó **«Teléfono bloqueado»**. No se
+  retiró protección para preparar. No se reportó petición de notificaciones.
+- Ejecutó manualmente «PERMITIR POR TIEMPO → Normal · con internet», eligió
+  **1min**, código fresco y «Confirmar»; cerró acceso adulto y observó contador
+  con pantalla/internet encendidos. Resultado **«Sí, contó y se bloqueó»**.
+  Evidencia HUMANA de cuenta regresiva/bloqueo al terminar, no cronometraje externo
+  milisegundo a milisegundo ni lectura de modoActivity porADB.
+- LecturaADB posterior de políticas: uninstallBlockedhijo=true, no_control_apps
+  usuario=true resueltos, globalindependiente sinadmins/null; LockTask resuelto
+  paquetes={dev.controlparental.child}/flags48 (KEYGUARD+GLOBAL_ACTIONS), mismo
+  DeviceOwnerChildAdminReceiver. Son políticas leídas; el bloqueo visible fue
+  confirmado por el usuario, no inferido exclusivamente de la lista.
+- POSTbloqueo final propietario **«Sí, todo correcto»**: entrada con código,
+  cierre, Emergencia visible y Protecciónactiva. Se pidió dejar bloqueado.
+
+### Cierre y relevo actual
+
+**Compatibilidad protección+control, actualización y prueba manualNORMAL1min
+completadas.** Último instalado AHORA e097e002…33bce5. Protección activa, control
+local preparado y último estado humano bloqueado. Permiso de actualización
+consumido; sin otra instalación ni tarea física iniciada.
+
+Límites: no se probó liberarRAM/muerte de proceso/reboot/pantallaapagada/Doze/
+cortered/OFFLINE/libre/desinstalar/actualizar otraapp/recuperar cambiando código/
+llamada de emergencia en esta unidad. Preservación de registros basada en diseño
+y uso humano de credencial, no lecturas de secretos. No nuevas garantías de
+enforcement instantáneo ante proceso muerto; emergencia visible no prueba llamada.
+Sin WSS/C8/padre/Render/otrosrepos/subagentes/push/deploy/root/reset/Owner/PIN/
+uninstall/clear ni protecciones desactivadas. Sin builds/tests repetidos después
+del APK verificado. diff-check y commit documental de cierre.
+
+Siguiente: uso manual del control local mediante etiquetas de la guía; otra
+prueba física distinta sólo con alcance concreto directo. No reanudar T10/remoto.

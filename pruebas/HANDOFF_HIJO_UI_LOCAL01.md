@@ -1,5 +1,13 @@
 # Relevo — HIJO-UI-LOCAL01
 
+CONTINUACIÓN MÁS RECIENTE: `pruebas/EVIDENCIA_HIJO_LOCAL_COMPAT01.md` sustituye
+el pendiente de preparar control. Corrección8cc4823 permite protecciónpropiaactiva
+verificada, APKe097e002…33bce5 actualizado con permisoDIRECTO nuevo, protección
+conservada. PreparaciónMANUAL y NORMAL1min contadobloqueado confirmados por humano;
+ADBpolíticas posteriores LockTaskhijo/flags48 y proteccióntrue. Acceso adulto/
+cierre/emergencia visible confirmados al final. Último estado bloqueado. No más
+instalaciones ni otras pruebas físicas autorizadas. Detener; remoto pausado.
+
 ACTUALIZACIÓN POSTENTREGA CERRADA: propietario dio permiso DIRECTO y confirmó
 preparación física. UNA actualización A13 completada/verificada APK2b5ea130…15a821,
 Owner/políticas/directorio continuos; UI/adulto/salidaemergencia confirmados.

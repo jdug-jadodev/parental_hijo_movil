@@ -7,12 +7,15 @@ almacenamiento cifrado; la protección queda en Android. La sesión adulta y el
 permiso de uso son temporales: si se cierra el proceso, hay que entrar y autorizar
 otra vez. No equivale a «Borrar datos» de la aplicación.
 
-**Corrección posterior preparada:** el APK instalado UI-LOCAL01 exigía protección
-desactivada para «Preparar control local». No desactives la protección: se corrigió
-esa incompatibilidad en LOCAL-COMPAT01, APKe097e002…33bce5 pendiente de actualización
-autorizada. Consultar `EVIDENCIA_HIJO_LOCAL_COMPAT01.md` antes de esa prueba.
+**Corrección posterior instalada y probada:** el APK anterior UI-LOCAL01 exigía
+protección desactivada para preparar. Se corrigió en LOCAL-COMPAT01, instalado
+APKe097e002…33bce5 con autorización directa. Control local preparado manualmente
+sin retirar protección; propietario confirmó permisoNORMAL1min, contador y
+bloqueo al terminar. Acceso adulto/cierre/emergencia visible correctos después.
+Protección activa acreditada por políticas. No hace falta volver a preparar ni
+desactivar protección para cada permiso. Evidencia `EVIDENCIA_HIJO_LOCAL_COMPAT01.md`.
 
-## Estado físico anterior a esa corrección
+## Actualización anterior (histórica)
 
 **Actualizado en el A13 y protección activada con permiso directo posterior.**
 APK2b5ea130…15a821 verificado; UI/acceso adulto/cierre/emergencia visible confirmados
