@@ -13,8 +13,7 @@ import android.os.SystemClock
 import android.os.UserManager
 import android.util.Log
 import dev.controlparental.child.lock.*
-import dev.controlparental.child.protection.PoliticasProteccionAndroid
-import dev.controlparental.child.protection.LecturaProteccion
+import dev.controlparental.child.protection.ProteccionAndroid
 import dev.controlparental.child.ui.LauncherActivity
 import java.io.File
 import java.util.concurrent.Executors
@@ -138,8 +137,7 @@ internal object ArranquePilotoAndroid {
                 PoliticasLockAndroid(a).validar()
                 exigirPiloto(BloqueoLocalAndroid.modo(a) == ModoLocal.NONE &&
                     ArchivoSnapshotAndroid(File(a.noBackupFilesDir, "lock-local-v1.snapshot")).leer() == null)
-                exigirPiloto(ArchivoSnapshotAndroid(File(a.noBackupFilesDir, "proteccion-local-v1.snapshot")).leer() == null &&
-                    PoliticasProteccionAndroid(a).leer() == LecturaProteccion(false, false, false, false))
+                exigirPiloto(ProteccionAndroid.permitePrepararControl(a))
                 exigirPiloto(almacen(a).leer() == null && autoridad())
                 BloqueoLocalAndroid.prepararEnrolamiento(a)
                 val r = almacen(a).armar(autoridad); enrolado = true; fase = FasePiloto.ARMADO

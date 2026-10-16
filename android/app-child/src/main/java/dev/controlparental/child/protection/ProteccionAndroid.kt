@@ -51,6 +51,10 @@ internal object ProteccionAndroid {
     fun consultar(c: Context, entregar: (EstadoProteccion) -> Unit) {
         ejecutor.execute { val r = modelo(c) { false }.consultar(); estado = r; handler.post { entregar(r) } }
     }
+    /** Sólo desde worker de arranque; lectura serializada con aplicar/restaurar, nunca desde UI. */
+    fun permitePrepararControl(c: Context): Boolean = ejecutor.submit<Boolean> {
+        modelo(c) { false }.permitePrepararControl()
+    }.get()
     fun ejecutar(c: Context, restaurar: Boolean, autoridad: () -> Boolean, entregar: (EstadoProteccion) -> Unit): Boolean {
         if (!autoridad() || !ocupado.compareAndSet(false, true)) return false
         val g = generacion.incrementAndGet()

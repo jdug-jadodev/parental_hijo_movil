@@ -49,6 +49,18 @@ internal class ProteccionLocal(private val archivo: ArchivoSnapshotLocal, privat
                 lectura = l, snapshot = true)
         }
     }
+    /** Compatibilidad de lectura; preparar Lock Task jamás restaura ni altera protección. */
+    fun permitePrepararControl(): Boolean {
+        val e = consultar()
+        if (e.causa != CausaProteccion.NINGUNA) return false
+        return when (e.fase) {
+            FaseProteccion.SIN_SNAPSHOT -> !e.snapshot && e.lectura == LecturaProteccion(false, false, false, false)
+            FaseProteccion.ACTIVA -> e.snapshot && e.lectura?.let {
+                it.uninstallEfectivo && it.controlPropio && it.controlEfectivo
+            } == true // consultar ya verificó snapshot y contribuciones propias/globales.
+            else -> false // Parcial, corrupta o incierta: no se interpreta como desactivada.
+        }
+    }
     fun aplicar(): EstadoProteccion = intentar {
         autorizar(); puerto.validar()
         exigirProteccion(archivo.leer() == null, CausaProteccion.BASELINE)

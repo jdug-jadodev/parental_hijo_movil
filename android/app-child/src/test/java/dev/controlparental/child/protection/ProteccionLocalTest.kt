@@ -125,4 +125,45 @@ class ProteccionLocalTest {
         assertEquals(CausaProteccion.AJENA, m.restaurar().causa)
         assertEquals(n + 1, p.writes); assertTrue(p.propio && p.global); assertNotNull(f.bytes)
     }
+    @Test fun `preparar control acepta proteccion activa propia y conserva bytes y politicas`() {
+        assertEquals(FaseProteccion.ACTIVA, m.aplicar().fase)
+        val bytes = f.bytes!!.copyOf(); val n = p.writes; val lectura = p.leer()
+        vigente = false // La comprobación NO concede autoridad ni la necesita para leer.
+        val recreado = ProteccionLocal(f, p) { false }
+        repeat(3) { assertTrue(recreado.permitePrepararControl()) }
+        assertArrayEquals(bytes, f.bytes); assertEquals(n, p.writes); assertEquals(lectura, p.leer())
+        assertEquals(CausaProteccion.AUTORIDAD, recreado.restaurar().causa)
+    }
+    @Test fun `preparar control conserva baseline sin proteccion y rechaza restricciones sin snapshot`() {
+        assertTrue(m.permitePrepararControl()); assertNull(f.bytes); assertEquals(0, p.writes)
+        p.u = true; assertFalse(m.permitePrepararControl())
+        p.u = false; p.propio = true; assertFalse(m.permitePrepararControl())
+        p.propio = false; p.global = true; assertFalse(m.permitePrepararControl())
+        p.global = false; p.ajeno = true; assertFalse(m.permitePrepararControl())
+        assertNull(f.bytes); assertEquals(0, p.writes)
+    }
+    @Test fun `preparar control no acepta parcial ni snapshot corrupto o perdido`() {
+        m.aplicar(); val bytes = f.bytes!!.copyOf(); val n = p.writes
+        p.propio = false; assertFalse(m.permitePrepararControl())
+        p.propio = true; p.u = false; assertFalse(m.permitePrepararControl())
+        p.u = true
+        for (b in listOf<ByteArray?>(null, byteArrayOf(0), bytes.copyOf().also { it[5] = (it[5].toInt() xor 1).toByte() })) {
+            f.bytes = b; assertFalse(m.permitePrepararControl()); assertArrayEquals(b, f.bytes)
+        }
+        assertEquals(n, p.writes)
+    }
+    @Test fun `preparar control comprueba de nuevo cambios ajenos capacidad e IO`() {
+        m.aplicar(); val n = p.writes; val bytes = f.bytes!!.copyOf()
+        assertTrue(m.permitePrepararControl())
+        p.global = true; assertFalse(m.permitePrepararControl())
+        p.global = false; p.incompatible = true; assertFalse(m.permitePrepararControl())
+        val roto = object : ArchivoSnapshotLocal {
+            override fun leer(): ByteArray? = throw java.io.IOException()
+            override fun escribir(bytes: ByteArray) { fail("No debe escribir") }
+            override fun borrar() { fail("No debe borrar") }
+        }
+        p.incompatible = false
+        assertFalse(ProteccionLocal(roto, p) { true }.permitePrepararControl())
+        assertEquals(n, p.writes); assertArrayEquals(bytes, f.bytes)
+    }
 }

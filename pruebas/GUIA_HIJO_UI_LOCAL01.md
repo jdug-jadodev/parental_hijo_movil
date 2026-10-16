@@ -1,5 +1,19 @@
 # Control local — guía breve del APK nuevo
 
+## ¿Qué ocurre al liberar RAM?
+
+No se borra la configuración guardada. Código adulto/pregunta se conservan en
+almacenamiento cifrado; la protección queda en Android. La sesión adulta y el
+permiso de uso son temporales: si se cierra el proceso, hay que entrar y autorizar
+otra vez. No equivale a «Borrar datos» de la aplicación.
+
+**Corrección posterior preparada:** el APK instalado UI-LOCAL01 exigía protección
+desactivada para «Preparar control local». No desactives la protección: se corrigió
+esa incompatibilidad en LOCAL-COMPAT01, APKe097e002…33bce5 pendiente de actualización
+autorizada. Consultar `EVIDENCIA_HIJO_LOCAL_COMPAT01.md` antes de esa prueba.
+
+## Estado físico anterior a esa corrección
+
 **Actualizado en el A13 y protección activada con permiso directo posterior.**
 APK2b5ea130…15a821 verificado; UI/acceso adulto/cierre/emergencia visible confirmados
 por el propietario. Antidesinstalación y restricción de controles verificadas
