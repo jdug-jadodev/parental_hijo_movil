@@ -1,10 +1,11 @@
 # Control local — guía breve del APK nuevo
 
-**Todavía no instalado.** Esta guía describe las etiquetas del APK preparado,
-no la interfaz del APK anterior. No activar protección ni preparar control a
-ciegas: antes se coordina autorización directa nueva para actualizar y probar
-el A13 con acceso adulto y salida/emergencia comprobados. Botón físico averiado;
-no reiniciar ni cortar red/energía. A56 fuera de alcance.
+**Actualizado en el A13 y protección activada con permiso directo posterior.**
+APK2b5ea130…15a821 verificado; UI/acceso adulto/cierre/emergencia visible confirmados
+por el propietario. Antidesinstalación y restricción de controles verificadas
+por lecturaADB tras activación manual. «Preparar control local» y nuevos permisos
+todavía NO ejecutados: coordinar esa fase concreta antes de probarla. Botón físico
+averiado; no reiniciar ni cortar red/energía. A56 fuera de alcance.
 
 ## Uso habitual (después de la actualización/prueba autorizadas)
 
@@ -29,7 +30,8 @@ no reiniciar ni cortar red/energía. A56 fuera de alcance.
 coordinada: impide desinstalar el hijo y restringe controles de TODAS las apps
 (borrado, deshabilitar, forzar detención). No añade bloqueo general de instalación.
 **Restaurar protección anterior** también exige código. No garantiza resistencia
-a root/reset físico. Última lectura física conocida mostraba protección inactiva.
+a root/reset físico. Última lectura posterior a la activación acredita protección
+activa; la lectura inactiva F04 corresponde al estado anterior.
 
 Si los botones de permitir están desactivados, preparar/reanudar el control
 desde Seguridad durante la prueba autorizada. **Preparar control local** deja

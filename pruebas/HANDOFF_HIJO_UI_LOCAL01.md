@@ -1,5 +1,18 @@
 # Relevo — HIJO-UI-LOCAL01
 
+ACTUALIZACIÓN POSTENTREGA CERRADA: propietario dio permiso DIRECTO y confirmó
+preparación física. UNA actualización A13 completada/verificada APK2b5ea130…15a821,
+Owner/políticas/directorio continuos; UI/adulto/salidaemergencia confirmados.
+Después autorizaciónDIRECTA «Sí, activar y comprobar», activación MANUAL adulta:
+«Protección activa». ADBleyó uninstallBlockedhijo=true/no_control_appsusuario=true
+resueltos, mismoOwner; globalindependiente sinadmins/null. POSTprotección adulto/
+cierre/emergencia visible confirmados «Sí, todo funciona». No desinstalación,
+recovery/reset/cambiodecódigo ni llamada probados. No se ejecutó «Preparar control
+local» ni permiso/temporizador/red/boot; siguiente fase sólo con alcance directo
+nuevo, no otra instalación ni remoto. Ver `EVIDENCIA_HIJO_UI_LOCAL01_ACTUALIZACION.md`.
+Párrafos inferiores conservan preparación previa, superada en instalación y
+protección. Detener después del commit documental.
+
 **Preparación local terminada, validación física pendiente.** Bloque de interfaz
 `af7908d`; cierre en commit de esta entrega. C8-T10 pausada/NO finalizada en
 `490495d`, con sus avances y registros conservados. No reanudar mensajes antiguos
