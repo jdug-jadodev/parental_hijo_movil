@@ -1,13 +1,12 @@
 # Control local — guía breve del APK nuevo
 
-**Fallo pendiente encontrado después:** al terminar el proceso del hijo en una
-prueba autorizada con otraapp abierta, no volvió al bloqueo. La recuperación
-posterior muestra «Estado por comprobar» y «Bloquear ahora» no quedó aplicado.
-La protección antidesinstalación sigue activa, pero **no confiar actualmente en
-el bloqueo por tiempo como garantía para uso sin supervisión**. No borrar datos
-ni retirar protección para intentar arreglarlo. Ver `EVIDENCIA_HIJO_LOCAL_PROCESO01.md`.
-La investigación se retomó a petición del propietario. Hay una corrección con
-pruebas locales aprobadas, todavía pendiente de instalar y comprobar en el A13.
+**Corrección instalada y comprobada:** «Bloquear ahora» funciona después de permitir
+uso. En la prueba coordinada de muerte del proceso con Calculadora delante,
+el A13 volvió solo al bloqueo; primera lectura LOCKED a los **5,18 segundos**.
+Hay una ventana de recuperación: no es instantáneo ni un plazo máximo garantizado.
+La protección antidesinstalación se conservó y quedó bloqueado al terminar.
+Si reaparece «Estado por comprobar», comunicar el caso sin borrar datos ni retirar
+protección. Detalles y límites: `EVIDENCIA_HIJO_LOCAL_PROCESO01.md`.
 
 Última comprobación adicional: el propietario informó bloqueo correcto al
 probar sin internet y desinstalación normal impedida. Aceptó esas pruebas locales.

@@ -1,4 +1,81 @@
-# LOCAL-PROCESO01 — fallo físico y cierre solicitado
+# LOCAL-PROCESO01 — fallo físico, corrección y comprobación
+
+## Resultado final de esta continuación
+
+Código en `8400a1c` y `270dd65`. Los dos casos coordinados ahora funcionan:
+**bloqueo manual después de permitir uso** y **recuperación automática tras matar
+el proceso con otra app delante**. Último ADB: **LOCKED**, proceso presente,
+Owner y protección conservados. No certifica todos los casos H12 ni bloqueo sin
+interrupción: se observó una ventana de recuperación de aproximadamente5,2s.
+
+### Segunda actualización y confirmación de la causa
+
+Permiso DIRECTO **«Sí, actualizar y probar»** para UNA actualización adicional,
+lecturas de bloqueo/trazas y prueba manual. Único A13SM-A135M reconfirmado, API34,
+APK previo56739f57…93e235 igual al verificado. UNA install-r-t **Success** al nuevo
+SHA256 **29bcc2ed0e91b3a5b8cc62990fc315ebe75e7ed0511aabecbc9851f6ee8af93d**,
+hash instalado confirmado. Cero diferencias de Owner/protección/directorio/
+antigüedad respecto al baseline. Continuidad de directorio no es una auditoría
+semántica de credenciales/PAIR: no se leyeron esos contenidos.
+
+La traza propia en el A13 mostró **LISTA_VACIA_ANDROID elementos=1 vacios=1**:
+la API efectivamente devolvía el único string vacío. A continuación
+**fase=LOCKED causa=NINGUNA**, READBACK_LOCKED y ADBLOCKED. La compatibilidad
+limitada resuelve esta discrepancia; no se borró ni recapturó snapshot, ni se
+retiró protección para lograrlo. La hipótesis AOSP de la sección siguiente queda
+confirmada en la frontera de API de este dispositivo.
+
+### Ciclo manual después de permitir
+
+Propietario concedió NORMAL2min, cerró acceso adulto, abrió Calculadora y volvió
+a BLOQUEAR AHORA antes del vencimiento: **«Sí, funciona todo»**, adulto y emergencia
+visibles. Logs propios: AUTORIZACION_LOCAL_NORMAL gen13, inicio2632811ms y plazo
+2752811ms; RESTAURADO/NONE, BLOQUEAR_ADULTO gen14 a2683183ms y LOCKED/NINGUNA.
+Estos elapsed son del A13. ADB posterior confirmó **LOCKED**: el resultado no se
+deduce sólo de la etiqueta de la interfaz ni del vencimiento del tiempo.
+
+### Muerte real del proceso corregido
+
+Permiso DIRECTO nuevo **«Sí, probar y recuperar»** para UNA terminación del proceso
+propio, hasta30s de observación y apertura del hijo sólo si falla. Preparación
+humana **«Lista, Calculadora abierta»** con otro NORMAL2min. Preflight confirmó
+APK29bcc2ed…8af93d, modelo, UID de depuración, PID único, NONE y otra app reanudada;
+no se guardó contenido/nombre de esa app porADB. Cada comando dirigido al A13
+mediante adb-s, sin seriales en repositorio, A56 sin consulta dirigida.
+
+UNA `run-as dev.controlparental.child /system/bin/kill -9 <pid>` con salida correcta.
+No force-stop/root/reboot/red/apagar pantalla ni segunda terminación:
+
+| Transcurrido del host (ms) | Proceso | LockTask |
+|---:|---|---|
+| 346 | AUSENTE | NONE |
+| 1585 | PID_NUEVO | NONE |
+| 2799 | PID_NUEVO | NONE |
+| 4003 | PID_NUEVO | NONE |
+| 5182 | PID_NUEVO | LOCKED |
+
+Stopwatch del host incluye latenciaADB; primera muestra LOCKED a5182ms, anterior
+NONE a4003ms. No afirmar instante exacto ni garantía de máximo5,182s. **No fue
+necesaria apertura de recuperación porADB.** Nuevo proceso registró carga
+BLOQUEADO/sin vencimiento ni permiso, SOLICITAR_LOCKED y LOCKED/NINGUNA.
+Propietario confirmó **«Sí, volvió solo y funciona»**, sin intervenir, acceso
+adulto/cierre/emergencia visible correctos; lo dejó bloqueado. Lectura final:
+**LOCKED/proceso presente**, protección y Owner con cero diferencias.
+
+### Cierre y límites
+
+Último APK instalado29bcc2ed…8af93d; JVM172/0fallos/builddebug/lintRelease0errores/
+27avisos ya acreditados abajo, no suites repetidas tras la prueba física.
+Guía/ESTADO/relevo actualizados. Esta continuación consumió dos permisos de
+actualización (una ejecución por permiso) y uno de muerte de proceso. No más
+operaciones físicas sin alcance nuevo. No nuevo push ni trabajo remoto.
+
+Pendientes generales conservados: pantalla apagada/otra app hasta vencimiento,
+recuperación por pregunta completa, marcador de emergencia bajo políticas actuales,
+otros métodos de terminar procesos y variantes de reinicio. El reinicio humano
+anterior sigue siendo evidencia histórica, no repetido con este APK. La ventana
+de recreación existe y Android decide el plazo; el arreglo no promete ejecución
+permanente ni protección frente a root/reset físico.
 
 ## Corrección retomada — 15 de octubre de 2026
 

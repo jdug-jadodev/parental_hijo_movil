@@ -1,5 +1,17 @@
 # Relevo — HIJO-UI-LOCAL01
 
+**CIERRE ACTUAL LOCAL-PROCESO01:** correcciones8400a1c/270dd65 instaladas mediante
+dos permisos concretos, último APK29bcc2ed…8af93d. Caso de lista vacía con un string
+vacío confirmado por API del A13/API34; bloqueo real recuperado. NORMAL2min→otraapp→
+BLOQUEAR AHORA correcto, logs/ADBLOCKED + reporte humano. UNA muerte nueva del
+proceso autorizada: ausente346ms, PIDnuevo1585ms, NONE aún4003ms y LOCKED5182ms;
+recuperación automática sin apertura porADB ni intervención humana. FinalLOCKED,
+Owner/protección conservados y adulto/cierre/emergencia visibles confirmados.
+Ventana aproximada5,2s, no garantía de bloqueo instantáneo ni máximo universal.
+JVM172 sin fallos/build/lint correctos; evidencia completa en LOCAL_PROCESO01.
+Permisos consumidos; siguiente sólo caso concreto nuevo. Párrafos inferiores
+históricos; ya no describen el estado final de esta continuación.
+
 **AVANCE MÁS RECIENTE:** primera corrección8400a1c ya instalada con autorización,
 SHA56739f57…93e235. Aún FALLA bloqueo: NONE/POLITICA_AJENA. Snapshot técnico leído
 con permiso separado: íntegro/lista0/flags16. Compatible con serializador AOSP14
