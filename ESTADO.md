@@ -2,8 +2,10 @@
 
 Última actualización: 15 de octubre de 2026
 Commit de partida: ac7d801 (C01 completada)
-Tarea actual: HIJO-C8-F04 — preparación local de actualización conservadora
-Estado: APK_C8_ACTUALIZADO_CON_PERMISO_DIRECTO_PENDIENTE_UI_MANUAL — propietario respondió sí directamente a alcanceADB/UNAactualización y confirmación NUEVA de pantalla/acceso adulto/salida-emergencia. ÚnicoA13SM-A135M/adb-s por operación, UNAinstall-r-t Success, APKposterior SHA6221f3…250751/certificado exactos. DeviceOwner/políticas/directorio de datos continúan, no lectura ni validación semántica de secretos/legado. Falta propietario comprobar UIposterior manual; no ceremonia/canalC8 autorizados. Evidencia `pruebas/HIJO_C8_F04_PREPARACION.md`.
+Tarea actual: HIJO-UI-LOCAL01 — interfaz principal de control local
+Prioridad explícita del propietario: C8-T10 PAUSADA en checkpoint parcial, sin completar build/lint/entrega ni repetir cruces. Sus avances se conservan, sin reset/revert/borrado de identidades, PAIR o pendientes. Desarrollo local autorizado; NO ADB ni instalación ni endurecimiento físico. F04: propietario confirmó posteriormente acceso adulto y salida/emergencia sin errores (reporte humano, no nueva lectura física).
+Checkpoint anterior C8-T10 (histórico, NO instrucción de continuar):
+Estado: EN_CURSO_BLOQUE1_MAIN_Y_CRUCE_NODE_V2_CORRECTOS — contrato2 exactoSHA350e2ca4bf10c6f5aff71326c8fa159e8d3772ec208a027c46e34194db22e564 confirmado; scopeadulto/oferta/codec/máquina/WSS/UI600000 sin ampliar general/canalCP2/uso. Focal7core67app0fallos; UNcruceTLSNodec8.v2exit0/framePAIR QP3Vb9jhUeYf4k1_Rd5BpqWbOpJIx-phq-a0RBm1iKA. Falta revisión/regresiónfinal/builddebug-lint-APK/hash/relevo. Evidencia `pruebas/EVIDENCIA_HIJO_C8_T10.md`. SinADB/install/endpointpúblico; continuar MISMA unidad hastaentrega.
 
 ## C8-F04 — actualización autorizada completada, comprobación UI pendiente
 

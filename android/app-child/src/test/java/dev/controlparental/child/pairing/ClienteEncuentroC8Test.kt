@@ -23,10 +23,10 @@ class ClienteEncuentroC8Test {
         override fun reservar(bytes: ByteArray) { reserva = bytes.copyOf(); trasReserva() }
         override fun escribirRegistro(bytes: ByteArray) { registro = bytes.copyOf(); trasRegistro(); if (romperReadback) registro = byteArrayOf(0) }
     }
-    private inner class Lab {
+    private inner class Lab(val version: Int = 1) {
         var ahora = 10L; var vivo = true; var boot = 5; var contextoDisponible = true
         val hijo = clave(); val padre = clave(); val origen = "https://relay.invalid"
-        val sesion = SesionAdulto({ ahora }, { boot })
+        val sesion = SesionAdulto({ ahora }, { boot }, soloC8V2 = version == 2)
         val g: TicketAdulto; val marco: MarcoSesionAdulto
         val ofertas: OfertasRam; val ref: ReferenciaOferta; val caso: ValidacionPairRam
         val enviados = mutableListOf<FrameC8>(); val codigos = mutableListOf<String>()
@@ -42,29 +42,34 @@ class ClienteEncuentroC8Test {
             }
         }
         val socket = object : SocketC8 {
-            override fun enviar(bytes: ByteArray): Boolean { if (falloEnvio) return false; enviados.add(CodecC8.leer(bytes)); return true }
+            override fun enviar(bytes: ByteArray): Boolean { if (falloEnvio) return false; enviados.add(CodecC8.leer(bytes, version)); return true }
             override fun cerrar(codigo: Int) { cierres++ }
         }
         init {
-            sesion.reanudar(); val entrada = sesion.solicitar(FinAdulto.ENTRAR)!!
-            check(sesion.completar(entrada, ResultadoAdulto(TipoAdulto.AUTENTICADO, revision = 9)))
+            sesion.reanudar()
+            if (version == 1) {
+                val entrada = sesion.solicitar(FinAdulto.ENTRAR)!!
+                check(sesion.completar(entrada, ResultadoAdulto(TipoAdulto.AUTENTICADO, revision = 9)))
+            }
             g = ticket(FinAdulto.GENERAR_OFERTA); marco = sesion.marcoAcreditado(g)!!
             ofertas = OfertasRam({ ahora }, { if (contextoDisponible) ContextoOferta(boot, publica(hijo)) else null },
-                { sesion.accionVigente(g) && almacen.cargar() is CargaPairCp2.Ausente }, vidaSesion = { vivo && sesion.marcoVigente(marco) })
+                { sesion.accionVigente(g) && almacen.cargar() is CargaPairCp2.Ausente }, vidaSesion = { vivo && sesion.marcoVigente(marco) },
+                marcoC8V2 = if (version == 2) marco else null)
             ref = ofertas.generar(); caso = ValidacionPairRam(ofertas, sesion)
             cliente = ClienteEncuentroC8({ ahora }, origen, ref, marco.limite, { vivo && ofertas.vigente(ref) }, firmante,
                 { codigos.add(it) }, { reclamada = true; codigos.clear() }, { aceptacionRecibida = it.copyOf() },
-                { vivo = false; aceptacionRecibida?.fill(0); aceptacionRecibida = null; codigos.clear(); caso.cancelar(); ofertas.cancelar(); sesion.cerrar() })
+                { vivo = false; aceptacionRecibida?.fill(0); aceptacionRecibida = null; codigos.clear(); caso.cancelar(); ofertas.cancelar(); sesion.cerrar() }, version)
         }
         fun ticket(fin: FinAdulto) = sesion.solicitar(fin)!!.also { check(sesion.autorizarAccion(it, ResultadoAdulto(TipoAdulto.AUTENTICADO, revision = 9))) }
+        fun f(kind: String, textos: Map<String, String> = emptyMap(), numeros: Map<String, Long> = emptyMap()) = CodecC8.crear(kind, textos, numeros, version)
         fun recibir(f: FrameC8) = cliente.recibir(CodecC8.escribir(f))
         fun reto(origenReto: String = origen) {
-            cliente.abierto(socket, "c8.v1")
-            recibir(CodecC8.crear("CHALLENGE", mapOf("connectionId" to UUID.randomUUID().toString(), "nonceB64" to ref.oferta.enrollNonce, "relayOrigin" to origenReto)))
+            cliente.abierto(socket, CodecC8.protocolo(version))
+            recibir(f("CHALLENGE", mapOf("connectionId" to UUID.randomUUID().toString(), "nonceB64" to ref.oferta.enrollNonce, "relayOrigin" to origenReto)))
         }
-        fun publicar() { reto(); ahora += 500; recibir(CodecC8.crear("READY")) }
-        fun codigo() { publicar(); recibir(CodecC8.crear("CODE", mapOf("code" to "ABCDEFGH"), mapOf("remainingMs" to 110000))) }
-        fun reclamar() { codigo(); recibir(CodecC8.crear("CLAIMED", mapOf("parentPublicKeyB64" to publica(padre)), mapOf("remainingMs" to 100000))) }
+        fun publicar() { reto(); ahora += 500; recibir(f("READY")) }
+        fun codigo() { publicar(); recibir(f("CODE", mapOf("code" to "ABCDEFGH"), mapOf("remainingMs" to if (version == 2) 600000 else 110000))) }
+        fun reclamar() { codigo(); recibir(f("CLAIMED", mapOf("parentPublicKeyB64" to publica(padre)), mapOf("remainingMs" to if (version == 2) 600000 else 100000))) }
         fun aceptacion() = AceptacionPairCp2(UUID.randomUUID().toString(), ref.oferta.enrollId, ref.oferta.enrollNonce,
             publica(padre), publica(hijo), origen, HashesPairCp2(ref.oferta.enrollNonce, ref.oferta.enrollNonce, ref.oferta.enrollNonce))
         fun firmar(a: AceptacionPairCp2 = aceptacion()): ByteArray {
@@ -72,7 +77,7 @@ class ClienteEncuentroC8Test {
             val s = Signature.getInstance("SHA256withECDSA").run { initSign(padre.private); update("CPv2/PAIR\n".toByteArray()); update(p); sign() }
             return CodecPairCp2.escribirSobre(SobrePairCp2(Base64Cp1.codificar(p), Base64Cp1.codificar(s)))
         }
-        fun entregar(original: ByteArray = firmar()) { recibir(CodecC8.crear("PAIR", mapOf("pairB64" to Base64Cp1.codificar(original)))) }
+        fun entregar(original: ByteArray = firmar()) { recibir(f("PAIR", mapOf("pairB64" to Base64Cp1.codificar(original)))) }
         fun datos() = DatosConfirmadosPair(publica(padre), CodecPairCp2.huellaPublica(publica(padre)), CodecPairCp2.huellaPublica(publica(hijo)), origen)
         fun validar(datos: DatosConfirmadosPair = datos()): ValidacionPair? {
             val c = caso.confirmar(ref, ticket(FinAdulto.VALIDAR_PAIR), datos) ?: return null
@@ -215,5 +220,40 @@ class ClienteEncuentroC8Test {
             l.ahora < l.cliente.limiteVigencia && l.sesion.accionVigente(t) && l.caso.resultadoActual() === v
         }
         assertEquals(ResultadoGuardarPair.RECHAZADO, resultado); assertNull(l.disco.reserva); assertNull(l.disco.registro)
+    }
+    @Test fun c8v2GuardaYReadbackDespuesDe120Y300SinTopeResidual() {
+        for (tiempo in listOf(120011L, 300011L, 599999L)) {
+            val l = Lab(2); l.reclamar(); l.ahora = tiempo
+            assertTrue(l.cliente.comprobar()); assertTrue(l.ofertas.vigente(l.ref))
+            assertEquals(l.marco.limite, l.ref.limite); assertEquals(2, l.ref.c8Version)
+            val original = l.firmar(); l.entregar(original); val v = l.validar()!!
+            assertEquals(ResultadoGuardarPair.GUARDADO, l.guardar(v))
+            val s = (AlmacenPairCp2(l.disco).cargar() as CargaPairCp2.Guardado).snapshot
+            assertArrayEquals(original, s.integridad.bytesFrame()); assertTrue(descripcionEstadoPair(CargaPairCp2.Guardado(s)).contains("GUARDADO LOCALMENTE"))
+            l.cliente.cerrar(); assertTrue(l.almacen.cargar() is CargaPairCp2.Guardado)
+            assertEquals(1, l.enviados.count { it.kind == "PUBLISH" }); assertEquals(599500L, l.enviados.first { it.kind == "PUBLISH" }.numero("ttlMs"))
+        }
+    }
+    @Test fun c8v2ExpiraExacto600000DesdeFreshNoRenuevaConTickets() {
+        val l = Lab(2); l.reclamar(); l.ahora = l.marco.limite - 1
+        l.entregar(); assertNotNull(l.validar())
+        assertTrue(l.cliente.comprobar()); l.ticket(FinAdulto.GUARDAR_PAIR)
+        l.ahora = l.marco.limite
+        assertFalse(l.cliente.comprobar()); assertNull(l.aceptacionRecibida); assertNull(l.caso.resultadoActual())
+        assertTrue(l.almacen.cargar() is CargaPairCp2.Ausente)
+    }
+    @Test fun c8v2AuthSigueDiezSegundosYVentanaServidorPuedeAcortar() {
+        val l = Lab(2); l.reto(); l.ahora += 10000; l.recibir(l.f("READY")); assertEquals(FaseC8.CERRADA, l.cliente.fase)
+        val b = Lab(2); b.publicar(); b.recibir(b.f("CODE", mapOf("code" to "ABCDEFGH"), mapOf("remainingMs" to 50)))
+        b.ahora += 50; assertFalse(b.cliente.comprobar()); assertTrue(b.ahora < b.marco.limite)
+    }
+    @Test fun c8v2RechazaR1YDatosPreviosNoSeReemplazanAlCerrar() {
+        val a = Lab(2); a.cliente.abierto(a.socket, "c8.v1"); assertEquals(FaseC8.CERRADA, a.cliente.fase)
+        val b = Lab(2); b.reto(); b.recibir(CodecC8.crear("READY")); assertEquals(FaseC8.CERRADA, b.cliente.fase)
+        val l = Lab(2); l.reclamar(); l.ahora = 301000; l.entregar(); val v = l.validar()!!
+        l.disco.trasReserva = { l.cliente.cerrar() }
+        assertEquals(ResultadoGuardarPair.INCIERTO, l.guardar(v)); assertTrue(AlmacenPairCp2(l.disco).cargar() is CargaPairCp2.Incierta)
+        assertTrue(descripcionEstadoPair(l.almacen.cargar()).contains("INCIERTO")); assertNotNull(l.disco.reserva)
+        assertEquals(ResultadoGuardarPair.RECHAZADO, AlmacenPairCp2(l.disco).guardar(v, ConsentimientoPair(v.consentimiento, 5, l.ref.generacion, 9, l.ahora)) { true })
     }
 }

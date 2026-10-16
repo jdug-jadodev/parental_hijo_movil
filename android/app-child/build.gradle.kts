@@ -42,6 +42,7 @@ tasks.withType<Test>().configureEach {
     testLogging.events("skipped", "failed")
     if (rutaRelay != null) {
         systemProperty("rutaRelay", rutaRelay)
+        systemProperty("versionC8", providers.gradleProperty("versionC8").orElse("1").get())
         outputs.upToDateWhen { false }
         testLogging.showStandardStreams = true
     }

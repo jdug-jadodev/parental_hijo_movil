@@ -3,6 +3,7 @@ package dev.controlparental.child.pairing
 import dev.controlparental.protocol.*
 import java.security.SecureRandom
 import java.util.UUID
+import dev.controlparental.child.local.MarcoSesionAdulto
 
 /** Documento óptico sin firma ni autoridad; separado de CodecCp1. */
 internal data class OfertaCp2(val childPublicKeyB64: String, val enrollId: String, val enrollNonce: String)
@@ -63,12 +64,12 @@ internal class EntropiaSegura : EntropiaOferta {
 
 internal data class ContextoOferta(val boot: Int, val identidad: String)
 internal class ReferenciaOferta(val generacion: Long, val contexto: ContextoOferta, val inicio: Long, val limite: Long,
-    val oferta: OfertaCp2)
+    val oferta: OfertaCp2, val c8Version: Int = 1)
 
 /** Una sola referencia RAM; el puerto de autoridad nunca es un permiso parental. */
 internal class OfertasRam(private val ahora: () -> Long, private val contexto: () -> ContextoOferta?,
     private val autorizada: () -> Boolean, private val entropia: EntropiaOferta = EntropiaSegura(),
-    private val vidaSesion: () -> Boolean = autorizada) {
+    private val vidaSesion: () -> Boolean = autorizada, private val marcoC8V2: MarcoSesionAdulto? = null) {
     private var generacion = 0L
     private var actual: ReferenciaOferta? = null
     private var ultimo = -1L
@@ -86,10 +87,11 @@ internal class OfertasRam(private val ahora: () -> Long, private val contexto: (
         val nonce = entropia.bytes(32); require(nonce.size == 32)
         val o = OfertaCp2(c.identidad, UUID(mitad(0), mitad(8)).toString(), Base64Cp1.codificar(nonce))
         CodecOfertaCp2.validar(o)
-        val limite = Math.addExact(n, 300_000)
+        check(marcoC8V2 == null || marcoC8V2.c8Version == 2)
+        val limite = marcoC8V2?.let { minOf(it.limite, Math.addExact(n, 600_000)) } ?: Math.addExact(n, 300_000)
         check(autorizada() && contexto() == c && generacion == solicitada)
         val fin = ahora(); check(fin >= n && fin < limite); ultimo = fin
-        return ReferenciaOferta(solicitada, c, n, limite, o).also { actual = it }
+        return ReferenciaOferta(solicitada, c, n, limite, o, if (marcoC8V2 != null) 2 else 1).also { actual = it }
     }
     @Synchronized fun vigente(ref: ReferenciaOferta): Boolean {
         if (actual !== ref || ref.generacion != generacion) return false

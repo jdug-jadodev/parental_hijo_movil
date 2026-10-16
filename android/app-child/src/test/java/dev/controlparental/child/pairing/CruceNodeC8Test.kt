@@ -108,11 +108,16 @@ class CruceNodeC8Test {
         val ruta = System.getProperty("rutaRelay")
         if (ruta.isNullOrBlank()) println("OMITIDA C8-X01 Node: requiere -PrutaRelay explícita; sin conexión ni proceso")
         assumeTrue("C8-X01 requiere -PrutaRelay explícita", !ruta.isNullOrBlank())
+        val version = (System.getProperty("versionC8", "1") ?: "1").toInt()
+        val duracion = CodecC8.duracion(version)
+        val etiqueta = if (version == 2) "C8-T10" else "C8-X01"
         val tls = TlsEfimeroC8()
         val puerto = ServerSocket(0, 1, InetAddress.getByName("127.0.0.1")).use { it.localPort }
         Nodo(ruta!!).use { nodo ->
-            nodo.escribir("role" to TextoJson("CHILD"), "port" to EnteroJson(puerto.toLong()),
-                "certPem" to TextoJson(tls.certPem()), "keyPem" to TextoJson(tls.keyPem()))
+            val init = listOf("role" to TextoJson("CHILD"), "port" to EnteroJson(puerto.toLong()),
+                "certPem" to TextoJson(tls.certPem()), "keyPem" to TextoJson(tls.keyPem())) +
+                (if (version == 2) listOf("version" to EnteroJson(2)) else emptyList())
+            nodo.escribir(*init.toTypedArray())
             val ready = nodo.esperar("READY")
             fun ObjetoJson.texto(k: String) = (campos[k] as? TextoJson)?.texto ?: error("Campo de pipe ausente")
             val origen = ready.texto("origin")
@@ -123,10 +128,13 @@ class CruceNodeC8Test {
             val publicaHijo = Base64Cp1.codificar(par.public.encoded)
             val inicio = System.nanoTime()
             fun ahora() = (System.nanoTime() - inicio) / 1_000_000 + 1
-            val sesion = SesionAdulto(::ahora, { 7 })
-            sesion.reanudar(); val entrar = sesion.solicitar(FinAdulto.ENTRAR)!!
+            val sesion = SesionAdulto(::ahora, { 7 }, soloC8V2 = version == 2)
+            sesion.reanudar()
             // Puerto adulto ficticio acreditado. No código real, ni acceso a credencial/Keystore Android.
-            check(sesion.completar(entrar, ResultadoAdulto(TipoAdulto.AUTENTICADO, revision = 9)))
+            if (version == 1) {
+                val entrar = sesion.solicitar(FinAdulto.ENTRAR)!!
+                check(sesion.completar(entrar, ResultadoAdulto(TipoAdulto.AUTENTICADO, revision = 9)))
+            }
             fun ticket(fin: FinAdulto) = sesion.solicitar(fin)!!.also {
                 check(sesion.autorizarParaLaboratorio(it))
             }
@@ -137,7 +145,7 @@ class CruceNodeC8Test {
             val ofertas = OfertasRam(::ahora, { ContextoOferta(7, publicaHijo) },
                 { sesion.accionVigente(g) && almacen.cargar() is CargaPairCp2.Ausente }, vidaSesion = {
                     vivo.get() && sesion.marcoVigente(marco) && (modeloRef.get()?.let { ahora() < it.limiteVigencia } ?: true)
-                })
+                }, marcoC8V2 = if (version == 2) marco else null)
             val ref = ofertas.generar(); val caso = ValidacionPairRam(ofertas, sesion)
             val recibida = ArrayBlockingQueue<ByteArray>(1); val fallo = AtomicBoolean()
             val publicaciones = AtomicInteger(); val auths = AtomicInteger(); val codigos = AtomicInteger(); val reclamaciones = AtomicInteger()
@@ -152,25 +160,25 @@ class CruceNodeC8Test {
                 { reclamaciones.incrementAndGet() }, { bytes -> check(recibida.offer(bytes)) }, {
                     vivo.set(false); ofertas.cancelar(); caso.cancelar(); sesion.cerrar()
                     if (!finEsperado.get()) fallo.set(true)
-                })
+                }, version)
             modeloRef.set(modelo)
             val puente = OkHttpClient.Builder().sslSocketFactory(tls.contexto.socketFactory, tls.gestor)
                 .retryOnConnectionFailure(false).followRedirects(false).followSslRedirects(false)
                 .addInterceptor { c -> c.proceed(c.request().newBuilder().removeHeader("Sec-WebSocket-Extensions").removeHeader("Origin").build()) }.build()
             val reloj = Executors.newSingleThreadScheduledExecutor()
             val ws = puente.newWebSocket(Request.Builder().url("wss://127.0.0.1:$puerto/pair")
-                .header("Sec-WebSocket-Protocol", "c8.v1").build(), object : WebSocketListener() {
+                .header("Sec-WebSocket-Protocol", CodecC8.protocolo(version)).build(), object : WebSocketListener() {
                 override fun onOpen(webSocket: WebSocket, response: Response) {
                     if (response.headers.values("Sec-WebSocket-Extensions").isNotEmpty()) { fallo.set(true); modelo.cerrar(1008); return }
                     modelo.abierto(object : SocketC8 {
                         override fun enviar(bytes: ByteArray): Boolean {
-                            val f = CodecC8.leer(bytes)
+                            val f = CodecC8.leer(bytes, version)
                             when (f.kind) {
                                     "AUTH" -> auths.incrementAndGet()
                                     "PUBLISH" -> {
                                         publicaciones.incrementAndGet()
                                         check(CodecC8.documento(f.texto("offerB64")).contentEquals(CodecOfertaCp2.escribir(ref.oferta)))
-                                        check(f.numero("ttlMs") in 1..120000 && ahora() < marco.limite)
+                                        check(f.numero("ttlMs") in 1..duracion && ahora() < marco.limite)
                                     }
                             }
                             return webSocket.send(bytes.toString(Charsets.US_ASCII))
@@ -211,7 +219,7 @@ class CruceNodeC8Test {
                 finEsperado.set(true); val exit = nodo.finalizar()
                 modelo.cerrar(); check(caso.resultadoActual() == null && almacen.cargar() is CargaPairCp2.Guardado)
                 original.fill(0)
-                println("C8-X01 CHILD EJECUTADO NodeTLSreal exit=$exit eventos=${nodo.eventos.get()} AUTH=1 PUBLISH=1 CLAIM=1 PAIR=1 reserva=1 escritura=1")
+                println("$etiqueta CHILD c8.v$version EJECUTADO NodeTLSreal exit=$exit eventos=${nodo.eventos.get()} AUTH=1 PUBLISH=1 CLAIM=1 PAIR=1 reserva=1 escritura=1")
                 println("PAIRframeSha256B64=$hashFrame payloadSha256B64=${v.payloadSha256B64}; PENDIENTE/noUSO; contraparteNode sintética")
             } finally {
                 finEsperado.set(true); modelo.cerrar(); ws.cancel(); reloj.shutdownNow()

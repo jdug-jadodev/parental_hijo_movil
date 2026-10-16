@@ -69,4 +69,27 @@ class C8Test {
         val b = CodecC8.escribirPrueba(prueba); assertEquals(prueba, CodecC8.leerPrueba(b))
         falla { CodecC8.leerPrueba(b + byteArrayOf(32)) }
     }
+    @Test fun c8v2NoAmpliaC8v1NiAceptaFramesOProofCruzados() {
+        val v2 = CodecC8.crear("PUBLISH", mapOf("offerB64" to "e30"), mapOf("ttlMs" to 600000), version = 2)
+        assertEquals(2, CodecC8.leer(CodecC8.escribir(v2), 2).version)
+        falla { CodecC8.leer(CodecC8.escribir(v2)) }
+        falla { CodecC8.leer(CodecC8.escribir(CodecC8.crear("READY")), 2) }
+        falla { CodecC8.crear("PUBLISH", mapOf("offerB64" to "e30"), mapOf("ttlMs" to 600001), 2) }
+        falla { CodecC8.crear("PUBLISH", mapOf("offerB64" to "e30"), mapOf("ttlMs" to 600000)) }
+        falla { CodecC8.crear("READY", version = 3) }
+        val p = prueba.copy(version = 2); val b = CodecC8.escribirPrueba(p)
+        assertEquals(p, CodecC8.leerPrueba(b, 2)); falla { CodecC8.leerPrueba(b) }
+        assertEquals("c8.v2", CodecC8.protocolo(2)); assertEquals(120000L, CodecC8.duracion(1))
+    }
+    @Test fun dominioC8v2TieneLfRealYRechazaFirmaV1AunquePayloadSeaV2() {
+        val p = prueba.copy(version = 2); val f = CriptografiaC8.firmarHijo(p, firmante)
+        CriptografiaC8.verificar(f, p)
+        falla { CriptografiaC8.verificar(f, prueba) }
+        for (dominio in listOf("C8v1/PROOF\n", "C8v2/PROOF\\n", "C8v2/PROOF\r\n")) {
+            val b = CodecC8.escribirPrueba(p)
+            val incorrecta = CodecC8.crear("AUTH", mapOf("payloadB64" to Base64Cp1.codificar(b),
+                "sigB64" to Base64Cp1.codificar(firmante.firmar(dominio.toByteArray() + b))), version = 2)
+            falla { CriptografiaC8.verificar(incorrecta, p) }
+        }
+    }
 }

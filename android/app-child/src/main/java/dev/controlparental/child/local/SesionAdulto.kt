@@ -2,11 +2,14 @@ package dev.controlparental.child.local
 
 internal enum class FinAdulto { ALTA, ENTRAR, RECUPERAR, CAMBIAR, BLOQUEAR, SALIR_ENSAYO, PROTEGER_APP, RESTAURAR_APP, ARMAR_BOOT, FINALIZAR_BOOT, ARMAR_RED, USO_NORMAL, USO_OFFLINE, BLOQUEAR_RED, FINALIZAR_RED, USO_TIEMPO_NORMAL, USO_TIEMPO_OFFLINE, GENERAR_OFERTA, INICIALIZAR_IDENTIDAD, VALIDAR_PAIR, GUARDAR_PAIR, CONECTAR_CP2 }
 internal class TicketAdulto(val epoca: Long, val fin: FinAdulto, val boot: Int, val limite: Long)
-internal class MarcoSesionAdulto internal constructor(val revision: Long, val boot: Int, val limite: Long)
-internal enum class AutoridadAdulto { CERRADA, ADMINISTRAR, CAMBIAR_CODIGO }
+internal class MarcoSesionAdulto internal constructor(val revision: Long, val boot: Int, val limite: Long, val c8Version: Int = 1)
+internal enum class AutoridadAdulto { CERRADA, ADMINISTRAR, CAMBIAR_CODIGO, VINCULAR_C8_V2 }
 
 /** Autoridad solo RAM; no escribe ni concede permiso de uso y no conoce CP/1. */
-internal class SesionAdulto(private val ahora: () -> Long, private val boot: () -> Int) {
+internal class SesionAdulto(private val ahora: () -> Long, private val boot: () -> Int, private val soloC8V2: Boolean) {
+    constructor(ahora: () -> Long, boot: () -> Int) : this(ahora, boot, false)
+    private val finesC8V2 = setOf(FinAdulto.GENERAR_OFERTA, FinAdulto.VALIDAR_PAIR, FinAdulto.GUARDAR_PAIR)
+    private var iniciadaC8V2 = false
     private val finesAccion = setOf(FinAdulto.BLOQUEAR, FinAdulto.SALIR_ENSAYO, FinAdulto.PROTEGER_APP, FinAdulto.RESTAURAR_APP, FinAdulto.ARMAR_BOOT, FinAdulto.FINALIZAR_BOOT,
         FinAdulto.ARMAR_RED, FinAdulto.USO_NORMAL, FinAdulto.USO_OFFLINE, FinAdulto.BLOQUEAR_RED, FinAdulto.FINALIZAR_RED,
         FinAdulto.USO_TIEMPO_NORMAL, FinAdulto.USO_TIEMPO_OFFLINE, FinAdulto.GENERAR_OFERTA, FinAdulto.INICIALIZAR_IDENTIDAD, FinAdulto.VALIDAR_PAIR, FinAdulto.GUARDAR_PAIR, FinAdulto.CONECTAR_CP2)
@@ -36,12 +39,18 @@ internal class SesionAdulto(private val ahora: () -> Long, private val boot: () 
     }
     @Synchronized fun solicitar(fin: FinAdulto): TicketAdulto? {
         if (!primerPlano || boot() < 0 || ahora() < ultimo) return null
+        if (soloC8V2) {
+            if (fin !in finesC8V2) return null
+            if (!iniciadaC8V2 && fin != FinAdulto.GENERAR_OFERTA) return null
+            if (iniciadaC8V2 && (marco == null || !marcoVigente(marco!!))) return null
+        }
         if (fin == FinAdulto.CAMBIAR && estado() != AutoridadAdulto.CAMBIAR_CODIGO) return null
-        if (fin in finesAccion && estado() != AutoridadAdulto.ADMINISTRAR) return null
-        if (fin in finesPair && (marco == null || !marcoVigente(marco!!))) return null
+        if (!soloC8V2 && fin in finesAccion && estado() != AutoridadAdulto.ADMINISTRAR) return null
+        if (!soloC8V2 && fin in finesPair && (marco == null || !marcoVigente(marco!!))) return null
         accionAcreditada = null
         val t = ahora(); ultimo = t
-        val vencimiento = if (fin in finesPair) minOf(marco!!.limite, Math.addExact(t, 120_000))
+        val vencimiento = if (soloC8V2) marco?.limite ?: Math.addExact(t, 120_000)
+            else if (fin in finesPair) minOf(marco!!.limite, Math.addExact(t, 120_000))
             else if (fin == FinAdulto.CAMBIAR) minOf(limite, Math.addExact(t, 120_000))
             else Math.addExact(t, 120_000)
         return TicketAdulto(++epoca, fin, boot(), vencimiento).also { ticket = it }
@@ -73,6 +82,18 @@ internal class SesionAdulto(private val ahora: () -> Long, private val boot: () 
         if (estado() == AutoridadAdulto.CAMBIAR_CODIGO) revision else null
     /** Exige otro código válido para cada operación, ligado a revisión y propósito. */
     @Synchronized fun autorizarAccion(t: TicketAdulto, r: ResultadoAdulto): Boolean {
+        if (soloC8V2) {
+            if (!vigente(t) || t.fin !in finesC8V2 || r.tipo != TipoAdulto.AUTENTICADO || r.revision <= 0) return false
+            if (!iniciadaC8V2) {
+                if (t.fin != FinAdulto.GENERAR_OFERTA) return false
+                iniciadaC8V2 = true; revision = r.revision; arranque = t.boot
+                limite = Math.addExact(ahora(), 600_000)
+                marco = MarcoSesionAdulto(revision, arranque, limite, c8Version = 2)
+                autoridad = AutoridadAdulto.VINCULAR_C8_V2
+            } else if (r.revision != revision || marco == null || !marcoVigente(marco!!)) return false
+            accionAcreditada = t
+            return true // No ampliar la administración general ni renovar el marco/ticket.
+        }
         if (!vigente(t) || t.fin !in finesAccion ||
             r.tipo != TipoAdulto.AUTENTICADO || r.revision != revision) return false
         accionAcreditada = t; limite = t.limite; arranque = t.boot
@@ -84,9 +105,12 @@ internal class SesionAdulto(private val ahora: () -> Long, private val boot: () 
     /** Cambiar propósito no renueva la sesión original; cerrar/reabrir no revive el objeto anterior. */
     @Synchronized fun marcoVigente(m: MarcoSesionAdulto): Boolean {
         val n = ahora()
-        val valido = marco === m && estado() == AutoridadAdulto.ADMINISTRAR && revision == m.revision &&
+        val esperada = if (soloC8V2) AutoridadAdulto.VINCULAR_C8_V2 else AutoridadAdulto.ADMINISTRAR
+        val valido = marco === m && estado() == esperada && revision == m.revision &&
             boot() == m.boot && n < m.limite
         if (!valido && marco === m) marco = null
         return valido
     }
+    @Synchronized fun vinculacionVigente(): Boolean = soloC8V2 &&
+        (marco?.let { marcoVigente(it) } ?: (!iniciadaC8V2 && ticket?.let { vigente(it) } == true))
 }

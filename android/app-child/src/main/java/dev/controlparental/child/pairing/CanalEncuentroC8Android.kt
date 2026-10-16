@@ -2,6 +2,7 @@ package dev.controlparental.child.pairing
 
 import android.os.SystemClock
 import dev.controlparental.protocol.cp2.*
+import dev.controlparental.protocol.c8.CodecC8
 import dev.controlparental.child.security.FirmanteAndroidKeystore
 import android.content.Context
 import okhttp3.*
@@ -14,11 +15,12 @@ import java.util.concurrent.atomic.AtomicInteger
 /** WSS real, sin reintentos ni fallback a cp.v2/bootstrap/QR. Sólo sesión adulta foreground. */
 internal class CanalEncuentroC8Android(c: Context, origen: String, ref: ReferenciaOferta, marcoLimite: Long,
     vigente: () -> Boolean, codigo: (String) -> Unit, reclamada: () -> Unit,
-    candidata: (ByteArray) -> Unit, terminada: () -> Unit) : AutoCloseable {
+    candidata: (ByteArray) -> Unit, terminada: () -> Unit, private val version: Int = 1) : AutoCloseable {
     private val actor = ScheduledThreadPoolExecutor(1).apply { removeOnCancelPolicy = true }
     private val cerrado = AtomicBoolean()
     private val vivo = AtomicBoolean(true)
     val disponible: Boolean get() = vivo.get() && !cerrado.get() && SystemClock.elapsedRealtime() < modelo.limiteVigencia
+    val limiteVigencia get() = modelo.limiteVigencia
     private val pendientes = AtomicInteger()
     private var ws: WebSocket? = null
     private val cliente = OkHttpClient.Builder().retryOnConnectionFailure(false)
@@ -39,7 +41,7 @@ internal class CanalEncuentroC8Android(c: Context, origen: String, ref: Referenc
                 check(disponible && vigente() && publica == ref.contexto.identidad)
                 return existente.firmarBytes(bytes).also { check(disponible && vigente() && publica == ref.contexto.identidad) }
             }
-        }, codigo, reclamada, candidata, { vivo.set(false); terminada(); close() })
+        }, codigo, reclamada, candidata, { vivo.set(false); terminada(); close() }, version)
     private var reloj: java.util.concurrent.ScheduledFuture<*>? = null
     private val iniciada = AtomicBoolean()
     private fun ejecutar(accion: () -> Unit) {
@@ -53,7 +55,7 @@ internal class CanalEncuentroC8Android(c: Context, origen: String, ref: Referenc
         ejecutar {
             if (!modelo.comprobar()) return@ejecutar
             reloj = actor.scheduleWithFixedDelay({ modelo.comprobar() }, 100, 100, TimeUnit.MILLISECONDS)
-            ws = cliente.newWebSocket(Request.Builder().url(url).header("Sec-WebSocket-Protocol", "c8.v1").build(), object : WebSocketListener() {
+            ws = cliente.newWebSocket(Request.Builder().url(url).header("Sec-WebSocket-Protocol", CodecC8.protocolo(version)).build(), object : WebSocketListener() {
                 override fun onOpen(webSocket: WebSocket, response: Response) {
                     if (!disponible) { webSocket.cancel(); return }
                     ejecutar {

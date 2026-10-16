@@ -15,7 +15,8 @@ internal class ClienteEncuentroC8(private val ahora: () -> Long, private val ori
     referencia: ReferenciaOferta, private val marcoLimite: Long,
     vigente: () -> Boolean, firmante: FirmanteAuthCp2,
     private val codigo: (String) -> Unit, private val reclamada: () -> Unit,
-    private val candidata: (ByteArray) -> Unit, private val terminada: () -> Unit) {
+    private val candidata: (ByteArray) -> Unit, private val terminada: () -> Unit, private val version: Int = 1) {
+    private val duracion = CodecC8.duracion(version)
     var fase = FaseC8.RETO; private set
     private var referenciaActual: ReferenciaOferta? = referencia
     private var firmanteActual: FirmanteAuthCp2? = firmante
@@ -29,10 +30,10 @@ internal class ClienteEncuentroC8(private val ahora: () -> Long, private val ori
     private var publicaPadre: String? = null
     private var tokens = 20L
     private var reposicion = ultimo
-    init { CodecPairCp2.origenExacto(origen) }
+    init { CodecPairCp2.origenExacto(origen); require(referencia.c8Version == version) }
     @Synchronized fun abierto(s: SocketC8, protocolo: String?) {
         if (fase == FaseC8.CERRADA) { s.cerrar(1008); return }
-        if (socket != null || protocolo != "c8.v1") { s.cerrar(1008); cerrar(); return }
+        if (socket != null || protocolo != CodecC8.protocolo(version)) { s.cerrar(1008); cerrar(); return }
         socket = s; comprobar()
     }
     @Synchronized fun comprobar(): Boolean {
@@ -55,14 +56,14 @@ internal class ClienteEncuentroC8(private val ahora: () -> Long, private val ori
             val intervalos = (n - reposicion) / 100
             tokens = minOf(20, tokens + intervalos); reposicion += intervalos * 100
             check(tokens > 0); tokens--
-            val f = CodecC8.leer(bytes)
+            val f = CodecC8.leer(bytes, version)
             if (f.kind == "UNAVAILABLE") { cerrar(); return }
             when (fase) {
                 FaseC8.RETO -> {
                     check(f.kind == "CHALLENGE" && f.texto("relayOrigin") == origen)
                     retoRecibido = ahora(); limite = minOf(marcoLimite, referencia.limite, Math.addExact(retoRecibido, 10_000))
                     fase = FaseC8.FIRMANDO // Consumir ANTES de firmar: no replay/reentrada de reto.
-                    val p = PruebaC8(f.texto("connectionId"), f.texto("nonceB64"), referencia.contexto.identidad, origen, "CHILD")
+                    val p = PruebaC8(f.texto("connectionId"), f.texto("nonceB64"), referencia.contexto.identidad, origen, "CHILD", version)
                     val auth = CriptografiaC8.firmarHijo(p, firmanteActual ?: error("Identidad no disponible"))
                     check(fase == FaseC8.FIRMANDO && comprobar()); fase = FaseC8.AUTH; enviar(auth)
                 }
@@ -70,10 +71,10 @@ internal class ClienteEncuentroC8(private val ahora: () -> Long, private val ori
                     check(f.kind == "READY" && retoRecibido >= 0 && ahora() - retoRecibido < 10_000)
                     val nPublicacion = ahora() // DESPUÉS de CHALLENGE, inmediatamente antes de PUBLISH.
                     check(comprobar())
-                    limite = minOf(marcoLimite, referencia.limite, Math.addExact(nPublicacion, 120_000), Math.addExact(retoRecibido, 120_000))
-                    val ttl = limite - nPublicacion; check(ttl in 1..120_000)
+                    limite = minOf(marcoLimite, referencia.limite, Math.addExact(nPublicacion, duracion), Math.addExact(retoRecibido, duracion))
+                    val ttl = limite - nPublicacion; check(ttl in 1..duracion)
                     fase = FaseC8.PUBLICADA
-                    enviar(CodecC8.crear("PUBLISH", mapOf("offerB64" to Base64Cp1.codificar(CodecOfertaCp2.escribir(referencia.oferta))), mapOf("ttlMs" to ttl)))
+                    enviar(CodecC8.crear("PUBLISH", mapOf("offerB64" to Base64Cp1.codificar(CodecOfertaCp2.escribir(referencia.oferta))), mapOf("ttlMs" to ttl), version))
                 }
                 FaseC8.PUBLICADA -> {
                     check(f.kind == "CODE"); acotar(f.numero("remainingMs")); fase = FaseC8.CODIGO
@@ -106,7 +107,7 @@ internal class ClienteEncuentroC8(private val ahora: () -> Long, private val ori
         limite = 0 // Invalida guardas de commit antes de cerrar socket o publicar callbacks.
         val s = socket; fase = FaseC8.CERRADA; socket = null; publicaPadre = null
         referenciaActual = null; firmanteActual = null; autoridadActual = null
-        if (codigoCierre == 1000) try { s?.enviar(CodecC8.escribir(CodecC8.crear("CANCEL"))) } catch (_: Exception) { /* Sin reintento. */ }
+        if (codigoCierre == 1000) try { s?.enviar(CodecC8.escribir(CodecC8.crear("CANCEL", version = version))) } catch (_: Exception) { /* Sin reintento. */ }
         try { s?.cerrar(codigoCierre) } finally { terminada() }
     }
 }
