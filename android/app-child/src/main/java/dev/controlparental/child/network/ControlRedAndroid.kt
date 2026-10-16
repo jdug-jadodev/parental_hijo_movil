@@ -187,6 +187,18 @@ internal object ControlRedAndroid {
         } }
     }
     fun senal(c: Context, g: Long = epoca.get()) { ejecutor.execute { evaluar(c, g) } }
+    /** Señal protegida de pantalla/usuario: consolidar tiempo ANTES de comprobar reentrada. */
+    fun despertar(c: Context, evento: String) {
+        ejecutor.execute {
+            cargarSiExiste(c)
+            evaluar(c, epoca.get())
+            val m = modelo
+            val reentrar = requiereReentradaAlDespertar(m, cerrando)
+            m?.let { publicar(it, "DESPERTAR_$evento"); programar(c, it, epoca.get()) }
+            // No depender del flanco permitido→bloqueado: pudo ocurrir con pantalla apagada.
+            if (reentrar && !permiteUsoRAM) ArranquePilotoAndroid.senal(c, "DESPERTAR_$evento")
+        }
+    }
     private fun evaluar(c: Context, g: Long) {
         if (g != epoca.get() || cerrando || !listo) return
         if (!visible.vigente(condiciones(c))) { servicioTerminado(c); return }

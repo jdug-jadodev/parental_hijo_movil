@@ -65,11 +65,16 @@ internal object ArranquePilotoAndroid {
         val app = c.applicationContext
         receptor = object : BroadcastReceiver() {
             override fun onReceive(context: Context, i: Intent) {
-                if (i.action in setOf(Intent.ACTION_USER_UNLOCKED, Intent.ACTION_USER_PRESENT)) senal(app, i.action!!)
+                if (i.action in setOf(Intent.ACTION_USER_UNLOCKED, Intent.ACTION_USER_PRESENT))
+                    ControlRedAndroid.despertar(app, i.action!!)
             }
         }.also { app.registerReceiver(it, IntentFilter().apply {
             addAction(Intent.ACTION_USER_UNLOCKED); addAction(Intent.ACTION_USER_PRESENT)
-        }, Context.RECEIVER_NOT_EXPORTED) }
+        }, Context.RECEIVER_EXPORTED) } // Acciones protegidas: una app ordinaria no puede emitirlas.
+    }
+    private fun keyguardPendiente(c: Context): Boolean {
+        val kg = c.getSystemService(KeyguardManager::class.java)
+        return !c.getSystemService(UserManager::class.java).isUserUnlocked || kg.isKeyguardLocked || kg.isDeviceLocked
     }
     /** Antes de UserUnlocked solo DP; no abrir snapshot CE/registro adulto. */
     fun senal(c: Context, evento: String, terminar: () -> Unit = {}) {
@@ -81,7 +86,7 @@ internal object ArranquePilotoAndroid {
                 if (!r.armado) { fase = FasePiloto.FINALIZANDO; return@execute }
                 if (ControlRedAndroid.permiteUsoRAM) return@execute
                 escuchar(c); traza(c, evento, r)
-                if (!c.getSystemService(UserManager::class.java).isUserUnlocked || c.getSystemService(KeyguardManager::class.java).isKeyguardLocked) {
+                if (keyguardPendiente(c)) {
                     fase = FasePiloto.PENDIENTE_KEYGUARD; traza(c, "KEYGUARD", r); return@execute
                 }
                 val ref = r.enrolamiento to r.generacion
@@ -110,7 +115,7 @@ internal object ArranquePilotoAndroid {
                 enrolado = true
                 if (!r.armado) { fase = FasePiloto.FINALIZANDO; return@execute }
                 if (ControlRedAndroid.permiteUsoRAM) return@execute
-                if (!a.getSystemService(UserManager::class.java).isUserUnlocked || a.getSystemService(KeyguardManager::class.java).isKeyguardLocked) {
+                if (keyguardPendiente(a)) {
                     escuchar(a); fase = FasePiloto.PENDIENTE_KEYGUARD; return@execute
                 }
                 val ref = r.enrolamiento to r.generacion

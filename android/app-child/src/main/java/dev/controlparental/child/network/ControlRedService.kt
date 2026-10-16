@@ -19,7 +19,10 @@ import dev.controlparental.child.ui.LauncherActivity
 class ControlRedService : Service() {
     private var registrado = false
     private val desbloqueo = object : BroadcastReceiver() {
-        override fun onReceive(c: Context, i: Intent) { ControlRedAndroid.senal(c) }
+        override fun onReceive(c: Context, i: Intent) {
+            if (i.action in setOf(Intent.ACTION_SCREEN_ON, Intent.ACTION_USER_PRESENT, Intent.ACTION_USER_UNLOCKED))
+                ControlRedAndroid.despertar(c, i.action!!)
+        }
     }
     override fun onCreate() {
         super.onCreate()
@@ -38,8 +41,8 @@ class ControlRedService : Service() {
             startForeground(105, n, ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED)
             ControlRedAndroid.confirmarForeground()
             registerReceiver(desbloqueo, IntentFilter().apply {
-                addAction(Intent.ACTION_SCREEN_ON); addAction(Intent.ACTION_USER_PRESENT)
-            }, Context.RECEIVER_NOT_EXPORTED)
+                addAction(Intent.ACTION_SCREEN_ON); addAction(Intent.ACTION_USER_PRESENT); addAction(Intent.ACTION_USER_UNLOCKED)
+            }, Context.RECEIVER_EXPORTED) // Sólo broadcasts protegidos; incluye emisores privilegiados fuera del UID system.
             registrado = true
             ControlRedAndroid.observar(applicationContext)
         } catch (_: RuntimeException) {

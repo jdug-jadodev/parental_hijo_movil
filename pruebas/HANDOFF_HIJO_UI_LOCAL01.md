@@ -1,5 +1,13 @@
 # Relevo — HIJO-UI-LOCAL01
 
+**CASO ACTUAL LOCAL-PANTALLA01 (16/10):** NORMAL temporal vence dormido y sólo
+bloquea al abrir hijo. ADB autorizado confirmó expiración y PENDIENTE_KEYGUARD;
+el scheduler sí entregó. Corrección de recepción de avisos protegidos/reentrada
+al despertar preparada, JVM178 sin fallos/build/lint correctos. Candidato
+e3d3a0e5…b1c761 NO instalado; último físico29bcc2ed…8af93d. Pedir permiso nuevo
+para actualización y prueba con otra app/pantalla apagada/despertar por huella.
+Evidencia `EVIDENCIA_HIJO_LOCAL_PANTALLA01.md`; no reutilizar permisos anteriores.
+
 **COMPROBACIÓN POSTERIOR:** propietario confirmó reinicio manual correcto con la
 versión corregida: tras PINAndroid quedó bloqueado sin otro permiso, no abrió
 otras apps y mantuvo acceso adulto/emergencia disponibles. Guía NORMAL5min;
