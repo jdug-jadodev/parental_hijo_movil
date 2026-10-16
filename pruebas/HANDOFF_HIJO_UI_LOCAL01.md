@@ -1,5 +1,12 @@
 # Relevo — HIJO-UI-LOCAL01
 
+**AVANCE MÁS RECIENTE:** primera corrección8400a1c ya instalada con autorización,
+SHA56739f57…93e235. Aún FALLA bloqueo: NONE/POLITICA_AJENA. Snapshot técnico leído
+con permiso separado: íntegro/lista0/flags16. Compatible con serializador AOSP14
+que devuelve {""} para lista vacía. Segundo bloque normaliza sólo ese caso en la
+lectura y añade diagnóstico; JVM172 sin fallos/build/lint correctos. Candidato
+29bcc2ed…8af93d NO instalado; necesita permiso nuevo. Detalles y límites en evidencia.
+
 **CONTINUACIÓN ACTUAL:** el propietario pidió resolver LOCAL-PROCESO01 y anuló el
 cierre. Corrección de servicio/reentrada/bloqueo adulto preparada; 170 pruebas JVM
 sin fallos, buildDebug/lintRelease correctos (0 errores/27 avisos). Candidato

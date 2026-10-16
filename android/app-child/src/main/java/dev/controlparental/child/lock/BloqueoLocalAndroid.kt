@@ -6,6 +6,7 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
+import android.util.Log
 import java.io.File
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
@@ -59,6 +60,7 @@ internal object BloqueoLocalAndroid {
                 if (modelo.pendiente) handler.postDelayed({ ejecutor.execute { observar() } }, 100)
                 else {
                     inicioHabilitado.set(false); ocupado.set(false)
+                    Log.i("BloqueoLocal", "fase=${modelo.diagnostico.fase} causa=${modelo.diagnostico.causa}")
                     handler.post { entregar(modelo.diagnostico) }
                 }
             }

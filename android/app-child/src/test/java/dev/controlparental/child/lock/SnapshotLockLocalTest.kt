@@ -4,6 +4,31 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class SnapshotLockLocalTest {
+    @Test fun `lista vacia serializada por Android14 permite recuperar sin reescribir snapshot`() {
+        p.lista = emptySet(); p.flags = 16
+        adaptador.preparar(); val bytes = a.bytes!!.copyOf()
+        // Mismas operaciones join/split Java de LockTaskPolicySerializer, no un paquete válido.
+        p.lista = java.util.regex.Pattern.compile(";").split(p.lista.joinToString(";")).toSet()
+        assertEquals(setOf(""), p.lista)
+        assertNotEquals(CodecSnapshotLocal.decodificar(bytes).paquetes, p.lista)
+        adaptador.comprobarAlternancia(); adaptador.aplicarGuardado(); adaptador.solicitarInicio()
+        assertEquals(ModoLocal.LOCKED, p.estado)
+        assertEquals(setOf(p.paquete), p.lista); assertEquals(48, p.flags)
+        assertArrayEquals(bytes, a.bytes)
+        adaptador.restaurar(); p.estado = ModoLocal.NONE
+        assertTrue(adaptador.baselineConfirmado()); assertEquals(16, p.flags)
+        assertArrayEquals(bytes, a.bytes)
+    }
+    @Test fun `compatibilidad de vacio no oculta paquete ajeno espacios mezcla ni flags distintos`() {
+        p.lista = emptySet(); p.flags = 16; adaptador.preparar(); val bytes = a.bytes!!.copyOf()
+        for (lista in listOf(setOf("dev.ajeno"), setOf(" "), setOf("", "dev.ajeno"), setOf("", p.paquete))) {
+            p.lista = lista
+            try { adaptador.aplicarGuardado(); fail() } catch (e: FalloLocal) { assertEquals(CausaLocal.POLITICA_AJENA, e.causa) }
+        }
+        p.lista = setOf(""); p.flags = 12345
+        try { adaptador.aplicarGuardado(); fail() } catch (e: FalloLocal) { assertEquals(CausaLocal.POLITICA_AJENA, e.causa) }
+        assertEquals(0, p.writes); assertArrayEquals(bytes, a.bytes)
+    }
     @Test fun `uso libre conserva snapshot y permite bloquear despues sin pisar baseline`() {
         adaptador.preparar(); val bytes = a.bytes!!.copyOf()
         adaptador.aplicar(); adaptador.solicitarInicio(); adaptador.restaurar(); p.estado = ModoLocal.NONE
@@ -31,7 +56,7 @@ class SnapshotLockLocalTest {
         override val paquete = "dev.hijo"; override val featuresPropios = 48
         var lista = setOf("dev.previo"); var flags = 0; var estado = ModoLocal.NONE; var writes = 0
         override fun validar() {}
-        override fun leerPaquetes() = lista
+        override fun leerPaquetes() = paquetesLockLeidos(lista.toTypedArray())
         override fun leerFeatures() = flags
         override fun paquetes(valor: Set<String>) { lista = valor; writes++ }
         override fun features(valor: Int) { flags = valor; writes++ }

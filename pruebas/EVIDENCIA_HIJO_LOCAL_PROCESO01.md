@@ -2,6 +2,57 @@
 
 ## Corrección retomada — 15 de octubre de 2026
 
+### Avance posterior: primera actualización y fallo restante
+
+Código inicial `8400a1c`. Permiso DIRECTO **«Sí, actualizar y comprobar»** para
+lecturas, UNA actualización conservadora y prueba manual; trazas propias si falla.
+Único A13SM-A135M y mismo destino comprobados, cada comando dirigido con adb-s;
+A56 sin consultas dirigidas. APK previo e097e002…33bce5, paquete/versión/certificado
+comparados con candidato. La copia del APK se completó, pero PowerShell trató su
+progreso stderr como error: se reanudaron sólo lecturas verificando hash de la copia;
+no instalación intentada en esa primera salida fallida.
+
+UNA `install -r -t` **Success**, hash instalado
+**56739f579540f214b14292f3ab08a0f1db87b2fe6cf2f5b4d6697a59e493e235** confirmado.
+Protección/Owner/directorio/firstInstallTime sin diferencias respecto a preflight.
+El propietario probó BLOQUEAR AHORA y respondió **Estado por comprobar**; ADB
+confirmó NONE. Traces limitadas al PID propio y tags PilotoArranque/ControlRedLocal:
+carga bloqueada, observador/red operativos, BLOQUEAR_ADULTO y READBACK_ERROR.
+Diagnóstico visible reportado por propietario: **POLITICA_AJENA**. No kill/reboot.
+
+Permiso adicional **«Sí, comparar ese archivo»**: lectura puntual run-as/base64 de
+`no_backup/lock-local-v1.snapshot`, decodificada en RAM, sólo resumen en temporal
+externo. Checksum válido, versión1, paquetes0, flags16. No escritura ni borrado de
+snapshot, no lectura de credenciales/Keystore/PAIR/pending. Dumpsys DevicePolicy
+también muestra paquetes vacíos/flags16 para nuestro admin y política resuelta;
+ese texto no distingue conjunto vacío de conjunto con único string vacío.
+
+Fuente AOSP consultada y decodificada: Android14 `LockTaskPolicySerializer` guarda
+String.join(";", packages) y recupera Set.of(packagesStr.split(";")); para lista
+vacía produce **un elemento vacío**. No afirmar todavía que el firmware exacto
+del A13 hace esto hasta leer la traza de API de la siguiente versión.
+https://android.googlesource.com/platform/frameworks/base/+/refs/heads/android14-release/services/devicepolicy/java/com/android/server/devicepolicy/LockTaskPolicySerializer.java
+
+Segundo bloque: `lock/PaquetesLockLeidos.kt`, `PoliticasLockAndroid.kt`,
+`BloqueoLocalAndroid.kt`, `SnapshotLockLocalTest.kt`. Normalización exclusivamente
+de array con UN string vacío a conjunto vacío, en frontera de lectura Android;
+no recorta espacios ni filtra mezclas/paquetes/flags distintos, no migra snapshot
+ni adopta una política externa. Traza LISTA_VACIA_ANDROID sólo cuenta elementos y
+vacíos; traza de transición sólo fase/causa. Pruebas recrean join/split Java AOSP,
+enforcement con adaptador real/puertos falsos y conservación byte a byte del
+snapshot; rechazan paquetes ajenos, espacios, mezcla y flags distintos sin writes.
+
+Mismo comando focal documentado abajo: **SUCCESS18s/17 ejecutadas/53 UP-TO-DATE**,
+**172 casos/0 fallos/0 errores/0 omitidos**, 2 nuevos (12 nuevos en toda corrección).
+BuildDebug/lintRelease correctos, 0 errores/27 avisos; diff-check correcto.
+Nuevo APK NO INSTALADO SHA256
+**29bcc2ed0e91b3a5b8cc62990fc315ebe75e7ed0511aabecbc9851f6ee8af93d**,
+apksigner válido/certificado histórico igual. Último instalado sigue56739f57…93e235.
+Siguiente: pedir otro permiso concreto de UNA actualización y repetir bloqueo;
+terminación de proceso aún NO autorizada para esta continuación.
+
+### Primera corrección local (histórico de preparación)
+
 El propietario anuló el cierre: **«no, retomemos, necesito solucionar eso especifico»**.
 Se continúa este subcaso de H12 (muerte de proceso), con las rutas locales de
 enforcement/servicio H06/H07. Se consultaron SPEC H5/H7, ADR-H-001/004 y la API

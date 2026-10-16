@@ -7,6 +7,7 @@ import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Context
 import android.util.AtomicFile
+import android.util.Log
 import dev.controlparental.child.admin.ChildAdminReceiver
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -52,7 +53,13 @@ internal class PoliticasLockAndroid(c: Context, private val actividad: Activity?
         exigirLocal(kg.isDeviceSecure, CausaLocal.BASELINE)
         exigirLocal(!kg.isKeyguardLocked && !kg.isDeviceLocked, CausaLocal.KEYGUARD)
     }
-    override fun leerPaquetes() = dpm.getLockTaskPackages(admin).toSet()
+    override fun leerPaquetes(): Set<String> {
+        val originales = dpm.getLockTaskPackages(admin)
+        val paquetes = paquetesLockLeidos(originales)
+        if (originales.size == 1 && originales[0].isEmpty())
+            Log.i("BloqueoLocal", "evento=LISTA_VACIA_ANDROID elementos=1 vacios=1")
+        return paquetes
+    }
     override fun leerFeatures() = dpm.getLockTaskFeatures(admin)
     override fun paquetes(valor: Set<String>) { owner(); dpm.setLockTaskPackages(admin, valor.toTypedArray()) }
     override fun features(valor: Int) { owner(); dpm.setLockTaskFeatures(admin, valor) }
