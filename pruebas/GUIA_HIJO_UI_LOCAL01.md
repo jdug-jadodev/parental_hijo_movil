@@ -1,5 +1,10 @@
 # Control local — guía breve del APK nuevo
 
+Última comprobación adicional: el propietario informó bloqueo correcto al
+probar sin internet y desinstalación normal impedida. Aceptó esas pruebas locales.
+Evidencia `EVIDENCIA_HIJO_LOCAL_VALID01.md`: no sustituye los casos todavía
+pendientes de pantalla apagada, proceso muerto, reinicio y recuperación/emergencia.
+
 ## ¿Qué ocurre al liberar RAM?
 
 No se borra la configuración guardada. Código adulto/pregunta se conservan en

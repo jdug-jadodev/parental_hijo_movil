@@ -1,5 +1,13 @@
 # Relevo — HIJO-UI-LOCAL01
 
+ÚLTIMA RONDA: `pruebas/EVIDENCIA_HIJO_LOCAL_VALID01.md`. Propietario reportó que
+probó sininternet→bloqueo y desinstalaciónnormalimpedida, y dio por exitosa esa
+prueba. Ronda cerrada PARCIAL; no certificaciónfinal. LecturasADB autorizadas
+acreditaron APKe097e002…33bce5/protecciónactiva/procesopresente y snapshotNONE/
+pantallaON durante sus pruebas. Estadofinal no reconsultado. Ningún cambio
+ejecutado porADB. Pantallaapagada/procesomuerto/reinicio/recuperación/marcador
+deemergencia bajo políticasactuales siguen pendientes; no asumir otros aprobados.
+
 CONTINUACIÓN MÁS RECIENTE: `pruebas/EVIDENCIA_HIJO_LOCAL_COMPAT01.md` sustituye
 el pendiente de preparar control. Corrección8cc4823 permite protecciónpropiaactiva
 verificada, APKe097e002…33bce5 actualizado con permisoDIRECTO nuevo, protección
