@@ -2,6 +2,79 @@
 
 16 de octubre de 2026. Continuación focal de H12/H-POWER-01, base `40df856`.
 
+## Resultado final — corrección instalada y caso reproducido correctamente
+
+Código `f47fc5b`. **El permiso NORMAL venció con la pantalla apagada y el A13
+volvió solo al bloqueo parental al despertar, sin abrir manualmente el hijo.**
+ADB confirmó LOCKED; protección y Owner conservados. Propietario confirmó
+acceso adulto/cierre y emergencia visible correctos al terminar, dejándolo bloqueado.
+
+### Autorización y actualización
+
+Permiso DIRECTO **«Sí, actualizar y probar»** para UNA actualización conservadora,
+NORMAL1min con Calculadora delante, UN apagado porADB y despertar humano tras
+vencimiento; despertar porADB sólo si el propietario no pudiera. Lecturas propias
+de trazas/pantalla/LockTask/protección. No autorización reboot/kill/force-stop/borrado.
+
+Único A13SM-A135M reconfirmado, mismo destino explícito adb-s; APK previo29bcc2ed…8af93d
+igual al verificado. Candidato e3d3a0e5…b1c761 de firma/paquete compatibles verificados
+abajo. UNA install-r-t **Success**, hash instalado completo
+**e3d3a0e5b22ab9c5a0165406751eccc6441722d19ed8683b2eb58bf1efb1c761**.
+Cero diferencias Owner/protección/directorio/firstInstallTime antes-después.
+No lectura semántica de credenciales/PAIR/Keystore ni cambios de protección.
+
+### Ensayo físico realmente ejecutado
+
+1. Propietario concedió NORMAL1min y confirmó **«Lista, Calculadora delante»**.
+   ADB confirmó NONE/otra app reanudada/PID propio, sin guardar contenido de esa app.
+   Traza inicio44271783/deadline44331783, diferencia60000ms, gen30.
+2. Comprobación monotónica antes de apagar aproximadamente44293920ms: quedaban
+   37863ms del permiso. UN `input keyevent KEYCODE_SLEEP`, salida correcta.
+   Las primeras comprobaciones host exigían `mWakefulness=Asleep` y se detuvieron;
+   Samsung estaba en **Dozing**. No se repitió KEYCODE_SLEEP. Se consultó el estado
+   real de display: **mScreenState=OFF/mScreenReady=true**, Keyguard showing=true.
+   Fue un error del criterio de lectura host, no un error nuevo de la aplicación.
+3. La alarma llegó con pantalla apagada y revocó permiso; esperó al Keyguard.
+   Al terminar la lectura ya había vencido el minuto. Se pidió despertar con
+   huella/PINAndroid, sin abrir el hijo ni pulsar BLOQUEAR AHORA. El despertar
+   ocurrió aproximadamente6min después del deadline; no se realizó a los5s
+   inicialmente previstos por el script.
+4. Propietario respondió **«Volvió solo al bloqueo»**. Logs registraron SCREEN_ON,
+   USER_PRESENT (recibido por ambos receptores/coalescido), SOLICITAR_LOCKED y
+   READBACK_LOCKED. ADB posterior **LOCKED**, displayON, misma protección/Owner.
+   No apertura del hijo ni KEYCODE_WAKEUP porADB: no hizo falta recuperación.
+5. Comprobación humana final **«Sí, todo correcto»**: acceso adulto/salida,
+   emergencia visible y dejado bloqueado. No llamada ni prueba completa del marcador.
+
+| Evento | elapsedRealtime A13 (ms) | Resultado |
+|---|---:|---|
+| Inicio permiso | 44271783 | NORMAL1min, gen30 |
+| USO_APLICADO_NONE | 44271987 | Uso aplicado |
+| Deadline original | 44331783 | No renovado al apagar |
+| ENTREGA_PLAZO | 44331834 | +51ms, no significa LOCKED |
+| PLAZO_REEVALUADO | 44331856 | +73ms, BLOQUEADO/gen31 |
+| KEYGUARD pendiente | 44331926 | Espera segura de PIN/huella |
+| SCREEN_ON | 44693577 | Permiso sigue revocado/gen31 |
+| Primer USER_PRESENT | 44693914 | Nueva solicitud de reentrada |
+| SOLICITAR_LOCKED | 44694089 | Intento oficial |
+| READBACK_LOCKED | 44694588 | +674ms desde USER_PRESENT/+1011ms desde SCREEN_ON |
+
+Los tiempos son lecturas de la app en este ensayo; no garantizan cero ventana
+ni un máximo universal. USB conectado y mStayOn=true en baseline; el apagado por
+tecla se comprobó con displayOFF. **mWakefulness=Dozing no acredita DeviceIdle/Doze
+profundo**: no se forzó Doze ni se probó reposo natural desconectado prolongado.
+
+### Cierre
+
+Último APK instalado e3d3a0e5…b1c761. JVM178/0fallos/build/lint ya acreditados,
+sin cambios de código ni otra compilación después de instalar. Sólo cierre
+documental: ESTADO, esta evidencia, guía y relevo. No nuevo push.
+Permisos de instalación/apagado consumidos; próximo caso requiere alcance nuevo.
+OFFLINEtemporal físico, despertar antes de vencer, reposo profundo/batería/firmware
+distintos y validación final general siguen sin acreditarse por este único caso.
+
+## Preparación y diagnóstico anteriores al ensayo (histórico)
+
 ## Fallo reportado y diagnóstico autorizado
 
 El propietario reporta: NORMAL por tiempo, pantalla apagada al vencer; al despertar

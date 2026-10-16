@@ -1,9 +1,10 @@
 # Control local — guía breve del APK nuevo
 
-**Fallo nuevo de pantalla apagada (16/10):** el tiempo vence, pero el bloqueo
-puede quedar pendiente hasta abrir el hijo. Hay una corrección preparada,
-todavía pendiente de instalar y probar: `EVIDENCIA_HIJO_LOCAL_PANTALLA01.md`.
-Mientras tanto, no dar por comprobado el bloqueo automático después de dormir.
+**Pantalla apagada corregida y probada (16/10):** con NORMAL1min y Calculadora
+delante, el tiempo venció mientras la pantalla estaba apagada. Al despertar,
+el A13 volvió solo al bloqueo sin abrir el hijo; Android confirmó LOCKED unos
+0,67s después del aviso de desbloqueo. Es el resultado de ese ensayo, no un plazo
+garantizado ni validación de reposo profundo. Detalles: `EVIDENCIA_HIJO_LOCAL_PANTALLA01.md`.
 
 **Corrección instalada y comprobada:** «Bloquear ahora» funciona después de permitir
 uso. En la prueba coordinada de muerte del proceso con Calculadora delante,

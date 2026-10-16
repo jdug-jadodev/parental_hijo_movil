@@ -1,5 +1,15 @@
 # Relevo — HIJO-UI-LOCAL01
 
+**CIERRE LOCAL-PANTALLA01:** códigof47fc5b instalado con permiso directo,
+APKe3d3a0e5…b1c761 verificado. NORMAL1min/Calculadora/UNapagadoADB, pantallaOFF,
+alarma+51ms y revocación+73ms. Despertar humano: USER_PRESENT recibido y LOCKED
+674ms después, sin abrir el hijo; ADBLOCKED/Owner-protección iguales. Usuario
+confirma bloqueo automático y adulto/cierre/emergencia visibles/dejado bloqueado.
+JVM178 sin fallos/build/lint correctos. No confundir Dozing de energía con prueba
+de Doze profundo: USB conectado, sin DeviceIdle forzado. Evidencia completa
+LOCAL_PANTALLA01. Permisos consumidos, no push nuevo, siguiente caso concreto.
+El párrafo siguiente conserva la preparación anterior al ensayo.
+
 **CASO ACTUAL LOCAL-PANTALLA01 (16/10):** NORMAL temporal vence dormido y sólo
 bloquea al abrir hijo. ADB autorizado confirmó expiración y PENDIENTE_KEYGUARD;
 el scheduler sí entregó. Corrección de recepción de avisos protegidos/reentrada
