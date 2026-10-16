@@ -1,5 +1,12 @@
 # Relevo — HIJO-UI-LOCAL01
 
+**COMPROBACIÓN POSTERIOR:** propietario confirmó reinicio manual correcto con la
+versión corregida: tras PINAndroid quedó bloqueado sin otro permiso, no abrió
+otras apps y mantuvo acceso adulto/emergencia disponibles. Guía NORMAL5min;
+duración previa y latencia no medidas independientemente. Reporte humano «síiiii»,
+sin ADB ni instalación nueva; último APK verificado29bcc2ed…8af93d. Detalle en
+LOCAL_PROCESO01. Esperar siguiente caso concreto; pendientes generales conservados.
+
 **CIERRE ACTUAL LOCAL-PROCESO01:** correcciones8400a1c/270dd65 instaladas mediante
 dos permisos concretos, último APK29bcc2ed…8af93d. Caso de lista vacía con un string
 vacío confirmado por API del A13/API34; bloqueo real recuperado. NORMAL2min→otraapp→

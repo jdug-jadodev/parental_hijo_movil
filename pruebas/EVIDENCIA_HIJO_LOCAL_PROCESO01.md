@@ -8,6 +8,22 @@ el proceso con otra app delante**. Último ADB: **LOCKED**, proceso presente,
 Owner y protección conservados. No certifica todos los casos H12 ni bloqueo sin
 interrupción: se observó una ventana de recuperación de aproximadamente5,2s.
 
+### Reinicio manual posterior — confirmado por el propietario
+
+Después del cierre e952460, el propietario pidió probar el reinicio. Se indicó
+conceder NORMAL5min, reiniciar con tiempo disponible, introducir sólo el PIN de
+Android y comprobar el bloqueo sin nueva autorización adulta. Primero reportó
+«creo que funcionoooooo!»; ante la pregunta explícita sobre bloqueo tras el PIN,
+otras apps inaccesibles y acceso adulto/emergencia disponibles, confirmó **«síiiii»**.
+
+**Prueba manual correcta según reporte humano.** Corresponde a la continuación
+con el APK corregido, último hash verificado29bcc2ed…8af93d; no hubo nueva
+instalación ni consulta del hash. No ADB/reboot ejecutado por el agente, lectura
+posterior de LockTask, medición de latencia de arranque ni prueba de llamada.
+La duración propuesta fue5min; no se midió independientemente el tiempo previo.
+Se actualizan ESTADO, esta evidencia y el relevo. Sólo documentación: sin nuevos
+builds/tests ni push; siguiente acción, un caso concreto posterior del propietario.
+
 ### Segunda actualización y confirmación de la causa
 
 Permiso DIRECTO **«Sí, actualizar y probar»** para UNA actualización adicional,
@@ -72,8 +88,9 @@ operaciones físicas sin alcance nuevo. No nuevo push ni trabajo remoto.
 
 Pendientes generales conservados: pantalla apagada/otra app hasta vencimiento,
 recuperación por pregunta completa, marcador de emergencia bajo políticas actuales,
-otros métodos de terminar procesos y variantes de reinicio. El reinicio humano
-anterior sigue siendo evidencia histórica, no repetido con este APK. La ventana
+otros métodos de terminar procesos y variantes de reinicio. El reinicio manual
+posterior con la versión corregida está confirmado por el propietario arriba;
+no hay lectura ADB ni medición de su ventana de arranque. La ventana
 de recreación existe y Android decide el plazo; el arreglo no promete ejecución
 permanente ni protección frente a root/reset físico.
 
