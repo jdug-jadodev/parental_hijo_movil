@@ -19,6 +19,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Button
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.Card
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -48,6 +54,8 @@ import dev.controlparental.child.lock.BloqueoLocalAndroid
 import dev.controlparental.child.lock.ModoLocal
 import dev.controlparental.child.boot.ArranquePilotoAndroid
 import dev.controlparental.child.network.ControlRedAndroid
+import dev.controlparental.child.protection.ProteccionAndroid
+import android.os.SystemClock
 
 /** HOME no persistente. Reentrada piloto exclusivamente desde intención DP ya enrolada. */
 class LauncherActivity : ComponentActivity() {
@@ -60,14 +68,27 @@ class LauncherActivity : ComponentActivity() {
     private val consultaRecuperacion = AtomicInteger()
     private var bloqueadoLocal by mutableStateOf(false)
     @Volatile private var primerPlanoPiloto = false
+    private var resumenLocal by mutableStateOf(ResumenLocal("Comprobando estado…", "", "", "Protección por comprobar"))
+    private fun actualizarResumenLocal() {
+        resumenLocal = presentarEstadoLocal(
+            try { BloqueoLocalAndroid.modo(this) } catch (_: RuntimeException) { null },
+            ControlRedAndroid.uso, ControlRedAndroid.permiteUsoRAM, ControlRedAndroid.vencimientoUso,
+            SystemClock.elapsedRealtime(), ProteccionAndroid.estado)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MaterialTheme {
+            MaterialTheme(colorScheme = lightColorScheme(primary = Color(0xFF1F4B99), background = Color(0xFFF4F7FC), onBackground = Color(0xFF17243A))) {
+                LaunchedEffect(Unit) {
+                    while (true) {
+                        if (primerPlanoPiloto) actualizarResumenLocal()
+                        delay(1000)
+                    }
+                }
                 PantallaInicial(diagnostico, resultadoEmergencia, estadoComprobado,
-                    bloqueadoLocal,
+                    resumenLocal,
                     recuperacionVisible, recuperacion,
                     solicitarEmergencia = {
                         cerrarRecuperacion()
@@ -94,6 +115,8 @@ class LauncherActivity : ComponentActivity() {
         }
         bloqueadoLocal = try { BloqueoLocalAndroid.modo(this) == ModoLocal.LOCKED } catch (_: RuntimeException) { false }
         diagnostico = DeviceCapabilities(this).leerAdministracion()
+        ProteccionAndroid.consultar(applicationContext) { if (primerPlanoPiloto) actualizarResumenLocal() }
+        actualizarResumenLocal()
         val consulta = ++consultaEstado
         estadoComprobado = null
         if (diagnostico.esDeviceOwner != true) return
@@ -146,7 +169,7 @@ private fun PantallaInicial(
     diagnostico: DiagnosticoAdministracion,
     resultadoEmergencia: ResultadoAccesoEmergencia?,
     estadoComprobado: Boolean?,
-    bloqueadoLocal: Boolean,
+    resumen: ResumenLocal,
     recuperacionVisible: Boolean,
     recuperacion: EstadoPantallaRecuperacion,
     solicitarEmergencia: () -> Unit,
@@ -156,10 +179,11 @@ private fun PantallaInicial(
     abrirAdulto: () -> Unit,
     volver: () -> Unit,
 ) {
+    var detalles by remember { mutableStateOf(false) }
     LaunchedEffect(recuperacionVisible) {
         if (recuperacionVisible) while (true) { delay(1000); actualizarRecuperacion() }
     }
-    Surface(modifier = Modifier.fillMaxSize()) {
+    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
         Column(
             modifier = Modifier
                 .windowInsetsPadding(WindowInsets.safeDrawing)
@@ -167,38 +191,33 @@ private fun PantallaInicial(
                 .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            if (bloqueadoLocal) {
-                Text("BLOQUEADO — Lock Task MAIN observado", style = MaterialTheme.typography.headlineMedium)
-                Text("Piloto local. Acceso adulto y recuperación por pregunta disponibles; no bloqueo productivo de red/arranque acreditado.")
-                AccesoEmergenciaSistema(resultadoEmergencia, solicitarEmergencia)
-                Button(onClick = abrirAdulto) { Text("Acceso adulto: código o recuperación por pregunta") }
-                return@Column
+            Text("Mi teléfono", style = MaterialTheme.typography.titleLarge)
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text(resumen.estado, style = MaterialTheme.typography.headlineLarge)
+                    Text(resumen.tiempo, style = MaterialTheme.typography.titleLarge)
+                    Text(if (resumen.estado == "Bloqueado") "Un adulto puede darte permiso para usarlo." else resumen.modalidad)
+                }
             }
-            Text(
-                text = stringResource(if (estadoComprobado == false) R.string.estado_local_error else when (diagnostico.estadoPreparacion) {
-                    EstadoPreparacion.NO_CONFIGURADO -> R.string.titulo_inicial
-                    EstadoPreparacion.DIAGNOSTICO_NO_DISPONIBLE -> R.string.diagnostico_no_disponible
-                    EstadoPreparacion.BLOQUEADO_EN_PREPARACION -> R.string.bloqueado_preparacion
-                }),
-                style = MaterialTheme.typography.headlineMedium,
-            )
+            Button(onClick = abrirAdulto, modifier = Modifier.fillMaxWidth()) {
+                Text("Acceso adulto", modifier = Modifier.padding(10.dp))
+            }
             AccesoEmergenciaSistema(resultadoEmergencia, solicitarEmergencia)
-            Button(onClick = abrirAdulto) { Text("Acceso adulto local: código y pregunta") }
-            if (recuperacionVisible) {
-                RecoveryScreen(recuperacion, enviarCodigo, volver)
-            } else {
-                Button(onClick = abrirRecuperacion) { Text(stringResource(R.string.recuperacion_abrir)) }
+            OutlinedButton(onClick = { detalles = !detalles }, modifier = Modifier.fillMaxWidth()) { Text("Ayuda y recuperación") }
+            if (detalles || recuperacionVisible) {
+                Text("¿Olvidaste el código? Entra en Acceso adulto y toca «Olvidé mi código».")
+                Text(resumen.proteccion)
+                if (recuperacionVisible) RecoveryScreen(recuperacion, enviarCodigo, volver)
+                else OutlinedButton(onClick = abrirRecuperacion) { Text("Recuperación avanzada sin internet") }
+                Text("Diagnóstico", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(when (estadoComprobado) {
+                    true -> R.string.estado_local_comprobado
+                    false -> R.string.estado_local_error_detalle
+                    null -> R.string.estado_local_pendiente
+                }))
+                Text(text = stringResource(R.string.diagnostico_owner, textoDiagnostico(diagnostico.esDeviceOwner)))
+                Text("La protección no cubre root ni restablecimiento físico. No envíes códigos por chat.")
             }
-            Text(stringResource(when (estadoComprobado) {
-                true -> R.string.estado_local_comprobado
-                false -> R.string.estado_local_error_detalle
-                null -> R.string.estado_local_pendiente
-            }))
-            Text(text = stringResource(R.string.aviso_inicial))
-            Text(text = stringResource(R.string.aviso_laboratorio))
-            Text(text = stringResource(R.string.diagnostico_owner, textoDiagnostico(diagnostico.esDeviceOwner)))
-            Text(text = stringResource(R.string.diagnostico_admin, textoDiagnostico(diagnostico.administradorActivo)))
-            Text(text = stringResource(R.string.sin_quiosco))
         }
     }
 }

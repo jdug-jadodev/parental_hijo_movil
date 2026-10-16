@@ -78,6 +78,21 @@ class AccesoAdultoActivity : ComponentActivity() {
     private var sesionVinculacion: SesionAdulto? = null
     private var marcoVinculacion: dev.controlparental.child.local.MarcoSesionAdulto? = null
     private var relojVinculacion: TextView? = null
+    private val navegacion = NavegacionLocal()
+    private val guardiaVista = GuardiaVistaLocal()
+    private val revisionVista get() = guardiaVista.revision
+    private var resumenVista: TextView? = null
+    private val refresco = object : Runnable {
+        override fun run() {
+            if (!activa || resumenVista == null) return
+            resumenVista?.text = resumenActual().let { "${it.estado}\n${it.tiempo}\n${it.modalidad}\n${it.proteccion}" }
+            handler.postDelayed(this, 1000)
+        }
+    }
+    private fun resumenActual(): ResumenLocal = presentarEstadoLocal(
+        try { BloqueoLocalAndroid.modo(this) } catch (_: RuntimeException) { null },
+        ControlRedAndroid.uso, ControlRedAndroid.permiteUsoRAM, ControlRedAndroid.vencimientoUso,
+        SystemClock.elapsedRealtime(), ProteccionAndroid.estado)
     private val trabajoOferta = Executors.newSingleThreadExecutor { Thread(it, "oferta-local") }
     private val caducidad = object : Runnable {
         override fun run() {
@@ -86,14 +101,19 @@ class AccesoAdultoActivity : ComponentActivity() {
             val caducada = if (c8 != null) !c8.vinculacionVigente() else
                 (alta != null && !sesion.vigente(alta!!)) || (alta == null && sesion.estado() == AutoridadAdulto.CERRADA)
             if (caducada) {
-                cerrarAutoridad(); sesion.reanudar(); mensajePublico = "Asistente/autorización finalizados. El vínculo guardado no se borra: consulta su estado local abajo."; consultar()
+                cerrarAutoridad(); sesion.reanudar(); mensajePublico = "Sesión terminada. Entra de nuevo para administrar."; consultar()
             } else { actualizarRelojVinculacion(); handler.postDelayed(this, 1000) }
         }
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
-        columna = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(32, 48, 32, 32) }
+        columna = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(EstiloLocal.dp(this@AccesoAdultoActivity, 24), EstiloLocal.dp(this@AccesoAdultoActivity, 32),
+                EstiloLocal.dp(this@AccesoAdultoActivity, 24), EstiloLocal.dp(this@AccesoAdultoActivity, 24))
+            setBackgroundColor(EstiloLocal.fondo)
+        }
         setContentView(ScrollView(this).apply {
             importantForAutofill = View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS
             isSaveEnabled = false; addView(columna)
@@ -104,6 +124,7 @@ class AccesoAdultoActivity : ComponentActivity() {
     override fun onDestroy() { cerrarAutoridad(); trabajoOferta.shutdown(); super.onDestroy() }
 
     private fun limpiar() {
+        guardiaVista.retirar(); resumenVista = null; handler.removeCallbacks(refresco)
         relojVinculacion = null
         camaraPair?.close(); camaraPair = null
         imagenOferta?.setImageDrawable(null); imagenOferta = null
@@ -122,19 +143,13 @@ class AccesoAdultoActivity : ComponentActivity() {
         prompt?.cancel(); prompt = null; sesion.cerrar(); handler.removeCallbacksAndMessages(null)
     }
     private fun base(titulo: String) {
-        limpiar(); texto(titulo)
-        val modo = try { BloqueoLocalAndroid.modo(this).name } catch (_: RuntimeException) { "DESCONOCIDO" }
-        texto("Lock Task observado=$modo; transición=${BloqueoLocalAndroid.diagnostico.fase}/${BloqueoLocalAndroid.diagnostico.causa}")
-        val p = ProteccionAndroid.estado
-        texto("Protección de app=${p.fase}/${p.causa}; snapshot=${p.snapshot}; lectura=${p.lectura ?: "DESCONOCIDA"}")
-        texto("Piloto reinicio=${ArranquePilotoAndroid.fase}; enrolado=${ArranquePilotoAndroid.enrolado}. Si sigue armado, el siguiente reinicio exige bloqueo y nueva autoridad adulta.")
-        texto("Red=${ControlRedAndroid.validacion}; uso solicitado=${ControlRedAndroid.uso}; observador listo=${ControlRedAndroid.listo}; deadlinegracia=${ControlRedAndroid.deadline}; vencimientoUso=${ControlRedAndroid.vencimientoUso}. Plazo null: sin temporal activo. Aplicación real: ver Lock Task observado, no solo uso solicitado.")
-        boton("Emergencia / Keyguard del sistema") {
+        limpiar(); columna.addView(TextView(this).apply { text = titulo; EstiloLocal.texto(this, titulo = true) })
+        boton("Emergencia · pantalla del sistema") {
             cerrarAutoridad()
             EmergencyAccess(PolicyEnforcer(this)).irAPantallaBloqueo()
             if (activa) { sesion.reanudar(); consultar() }
         }
-        boton("Salir del acceso adulto") { cerrarAutoridad(); finish() }
+        boton("Cerrar acceso adulto") { cerrarAutoridad(); finish() }
         if (sesionVinculacion != null) {
             relojVinculacion = TextView(this).also { it.textSize = 20f; columna.addView(it) }
             referenciaPair?.let { ref ->
@@ -160,9 +175,15 @@ class AccesoAdultoActivity : ComponentActivity() {
             runOnUiThread { if (activa && consulta.get() == n && vista.parent === columna) vista.text = dev.controlparental.child.pairing.descripcionEstadoPair(carga) }
         }
     }
-    private fun texto(s: String) { columna.addView(TextView(this).apply { text = s; textSize = 18f }) }
+    private fun texto(s: String) { columna.addView(TextView(this).apply { text = s; EstiloLocal.texto(this) }) }
     private fun boton(s: String, habilitado: Boolean = true, accion: () -> Unit = {}) {
-        columna.addView(Button(this).apply { text = s; isEnabled = habilitado; setOnClickListener { accion() } })
+        val vista = revisionVista
+        columna.addView(Button(this).apply {
+            text = s; isEnabled = habilitado; EstiloLocal.boton(this)
+            setOnClickListener {
+                guardiaVista.ejecutar(vista, activa, accion)
+            }
+        })
     }
     private fun campo(titulo: String, codigo: Boolean = false, secreto: Boolean = true, maximo: Int = 256): EditText {
         texto(titulo)
@@ -171,6 +192,8 @@ class AccesoAdultoActivity : ComponentActivity() {
                 else InputType.TYPE_CLASS_TEXT or if (secreto) InputType.TYPE_TEXT_VARIATION_PASSWORD
                     else InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
             filters = arrayOf(InputFilter.LengthFilter(if (codigo) 10 else maximo))
+            setTextColor(EstiloLocal.tinta); setHintTextColor(EstiloLocal.tinta)
+            textSize = 20f; minHeight = EstiloLocal.dp(context, 56)
             isSaveEnabled = false; isSaveFromParentEnabled = false; isLongClickable = false
             importantForAutofill = View.IMPORTANT_FOR_AUTOFILL_NO
             imeOptions = EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING or EditorInfo.IME_FLAG_NO_EXTRACT_UI
@@ -186,7 +209,7 @@ class AccesoAdultoActivity : ComponentActivity() {
     }
     private fun consultar() {
         if (!activa) return
-        base("Acceso adulto local — comprobando almacén")
+        base("Comprobando acceso…")
         val n = consulta.incrementAndGet()
         val aceptado = AdultoAndroid.ejecutar(applicationContext, { it.resumen() }) { r ->
             runOnUiThread {
@@ -205,25 +228,23 @@ class AccesoAdultoActivity : ComponentActivity() {
         if (!aceptado) { texto("Operación anterior en curso. No se ha abierto acceso."); boton("Actualizar") { consultar() } }
     }
     private fun publica(mensaje: String = "") {
-        base("Acceso adulto local")
+        base("Acceso adulto")
         if (mensaje.isNotEmpty()) texto(mensaje)
-        mostrarEstadoVinculoLocal()
-        boton("Actualizar estado de vínculo — sin código ni nueva oferta") { consultar() }
         when (resumen.tipo) {
             TipoAdulto.SIN_CONFIGURAR -> {
-                texto("Alta presencial: la credencial Android solo protege la configuración inicial. No hay código universal.")
-                boton("Configurar código y pregunta con credencial Android") { autenticarAlta() }
+                texto("Crea un código privado y una pregunta de recuperación. Primero confirma tu credencial de Android.")
+                boton("Configurar acceso adulto") { autenticarAlta() }
             }
             TipoAdulto.CONFIGURADO -> {
                 if (resumen.esperaMs > 0) texto("Espera de seguridad activa. Código y respuesta comparten el límite de intentos.")
-                val codigo = campo("Código adulto: 5–10 dígitos, conserva ceros", codigo = true)
-                boton("Entrar en administración", resumen.esperaMs == 0L) {
+                val codigo = campo("Código adulto · 5–10 dígitos", codigo = true)
+                boton("Entrar", resumen.esperaMs == 0L) {
                     verificar(codigo.text.toString(), false)
                 }
-                boton("Olvidé el código: recuperar por pregunta", resumen.esperaMs == 0L) { recuperar() }
-                boton("Actualizar espera") { consultar() }
+                boton("Olvidé mi código", resumen.esperaMs == 0L) { recuperar() }
+                if (resumen.esperaMs > 0) boton("Comprobar espera") { consultar() }
             }
-            else -> texto("Almacén no disponible o con integridad no confirmada. Acceso cerrado: no se permite alta ni reemplazo. Emergencia disponible.")
+            else -> { texto("No se puede comprobar el acceso. No se han cambiado tus datos."); boton("Volver a comprobar") { consultar() } }
         }
     }
     private fun autenticarAlta() {
@@ -296,48 +317,71 @@ class AccesoAdultoActivity : ComponentActivity() {
         boton("Cancelar cambio") { cerrarAutoridad(); sesion.reanudar(); consultar() }
     }
     private fun administrar() {
-        base("Administración adulta autenticada")
-        texto("Sesión solo RAM, hasta2 minutos absolutos desde la solicitud. Salir/fondo cierra. No concede uso ni altera ningún permiso vigente.")
-        val modo = try { BloqueoLocalAndroid.modo(this) } catch (_: RuntimeException) { null }
-        val locked = modo == ModoLocal.LOCKED
-        val enroladoBoot = ArranquePilotoAndroid.enrolado
-        boton("BLOQUEAR AHORA — piloto MAIN", modo == ModoLocal.NONE && !enroladoBoot) { confirmarBloqueo(FinAdulto.BLOQUEAR) }
-        boton("SALIDA REVERSIBLE DE ENSAYO — no permiso productivo", locked && !enroladoBoot) { confirmarBloqueo(FinAdulto.SALIR_ENSAYO) }
-        boton("ARMAR PILOTO REINICIO — persistirá al reiniciar", !enroladoBoot && modo == ModoLocal.NONE) { confirmarBloqueo(FinAdulto.ARMAR_BOOT) }
-        boton("FINALIZAR ENSAYO REINICIO — desarmar y restaurar", enroladoBoot && !ControlRedAndroid.activo) { confirmarBloqueo(FinAdulto.FINALIZAR_BOOT) }
-        boton("ARMAR ENSAYO RED — FGS visible y bloqueo de boot", !enroladoBoot && !ControlRedAndroid.activo && modo == ModoLocal.NONE) { confirmarBloqueo(FinAdulto.ARMAR_RED) }
-        boton("REANUDAR OBSERVADOR RED — no concede uso", enroladoBoot && ControlRedAndroid.activo && !ControlRedAndroid.listo && ControlRedAndroid.uso == UsoLocal.BLOQUEADO) { confirmarBloqueo(FinAdulto.ARMAR_RED) }
-        boton("USO LIBRE NORMAL LOCAL — requiere internet validada", ControlRedAndroid.listo && ControlRedAndroid.validacion == ValidacionRed.VALIDADA) { confirmarBloqueo(FinAdulto.USO_NORMAL) }
-        boton("USO LIBRE EXCEPCIÓN OFFLINE LOCAL — autorización explícita", ControlRedAndroid.listo) { confirmarBloqueo(FinAdulto.USO_OFFLINE) }
-        boton("PERMITIR POR TIEMPO NORMAL LOCAL — elegir minutos", ControlRedAndroid.listo && ControlRedAndroid.validacion == ValidacionRed.VALIDADA) { confirmarBloqueo(FinAdulto.USO_TIEMPO_NORMAL) }
-        boton("PERMITIR POR TIEMPO OFFLINE LOCAL — excepción explícita", ControlRedAndroid.listo) { confirmarBloqueo(FinAdulto.USO_TIEMPO_OFFLINE) }
-        boton("BLOQUEAR AHORA — cancelar NORMAL y EXCEPCIÓN", ControlRedAndroid.activo) { confirmarBloqueo(FinAdulto.BLOQUEAR_RED) }
-        boton("FINALIZAR ENSAYO RED — cancelar observador, desarmar, restaurar", ControlRedAndroid.activo) { confirmarBloqueo(FinAdulto.FINALIZAR_RED) }
-        boton("PROTEGER APP — gestión global de aplicaciones", !ProteccionAndroid.estado.snapshot) { confirmarBloqueo(FinAdulto.PROTEGER_APP) }
-        boton("RESTAURAR PROTECCIÓN — baseline de ensayo", ProteccionAndroid.estado.snapshot) { confirmarBloqueo(FinAdulto.RESTAURAR_APP) }
-        boton("GENERAR OFERTA CP/2 — no vincula ni concede uso") { confirmarOferta(false) }
-        boton("VINCULAR POR CÓDIGO8 C8/2 — asistente hasta10 minutos") { confirmarOferta(false, c8 = true) }
-        boton("Consultar vínculo CP/2 local — no canal ni permiso") {
-            base("Estado local CP/2")
-            val n = consulta.incrementAndGet()
-            trabajoOferta.execute {
-                val carga = PairAndroid.cargar(applicationContext)
-                runOnUiThread {
-                    if (!activa || consulta.get() != n) return@runOnUiThread
-                    texto(when (carga) {
-                        is CargaPairCp2.Guardado -> carga.snapshot.estadoLocal
-                        CargaPairCp2.Ausente -> "Sin registro CP/2. No se ha generado oferta ni vínculo."
-                        CargaPairCp2.Incierta -> "CP/2 incierto: alta cerrada; no reparar ni reemplazar."
-                    })
-                    texto("Recuperación CP/2 y canal pendientes. No es APPLIED ni autoriza uso.")
-                }
+        if (!navegacion.abrir(PantallaLocal.CONTROL, sesion.estado() == AutoridadAdulto.ADMINISTRAR)) { consultar(); return }
+        base("Control del teléfono")
+        mostrarResumen()
+        boton("BLOQUEAR AHORA") { confirmarBloqueo(if (ControlRedAndroid.activo) FinAdulto.BLOQUEAR_RED else FinAdulto.BLOQUEAR) }
+        boton("PERMITIR LIBRE", ControlRedAndroid.listo) { elegirPermiso(false) }
+        boton("PERMITIR POR TIEMPO", ControlRedAndroid.listo) { elegirPermiso(true) }
+        if (!ControlRedAndroid.listo) texto("Para permitir uso, prepara el control en Seguridad. No se abrirá el teléfono automáticamente.")
+        boton("Seguridad y configuración") { seguridad() }
+        boton("Actualizar estado") { actualizarAdministracion() }
+        texto("Sesión de 2 minutos. Salir no cancela un permiso confirmado.")
+    }
+    private fun mostrarResumen() {
+        resumenVista = TextView(this).also { EstiloLocal.texto(it); columna.addView(it) }
+        handler.removeCallbacks(refresco); refresco.run()
+    }
+    private fun actualizarAdministracion() {
+        val vista = revisionVista
+        ProteccionAndroid.consultar(applicationContext) {
+            ControlRedAndroid.consultar(applicationContext) {
+                if (activa && revisionVista == vista && sesion.estado() == AutoridadAdulto.ADMINISTRAR) administrar()
             }
         }
-        boton("INICIALIZAR IDENTIDAD — solo alta presencial separada") { confirmarOferta(true) }
-        for (s in listOf("Red remota — pendiente", "Otras políticas de Ajustes — pendiente")) boton(s, false)
-        boton("Conectar piloto CP/2 — TLS/AUTH, STATE y ACK; sólo este primer plano", ControlRedAndroid.listo) { confirmarCanalCp2() }
-        texto("Historia de tiempo y avisos: NO DISPONIBLE, no cero. STATE y ACK firmados distinguen pendiente y efecto confirmado. No es producto final.")
-        boton("Cerrar sesión") { cerrarAutoridad(); sesion.reanudar(); consultar() }
+    }
+    private fun elegirPermiso(temporal: Boolean) {
+        if (sesion.estado() != AutoridadAdulto.ADMINISTRAR) { consultar(); return }
+        base(if (temporal) "Permitir por tiempo" else "Permitir libre")
+        texto("Elige cómo se usará el teléfono. Después confirmarás con tu código.")
+        boton("Normal · con internet", ControlRedAndroid.listo && ControlRedAndroid.validacion == ValidacionRed.VALIDADA) {
+            confirmarBloqueo(if (temporal) FinAdulto.USO_TIEMPO_NORMAL else FinAdulto.USO_NORMAL)
+        }
+        boton("Excepción · sin internet", ControlRedAndroid.listo) {
+            confirmarBloqueo(if (temporal) FinAdulto.USO_TIEMPO_OFFLINE else FinAdulto.USO_OFFLINE)
+        }
+        if (ControlRedAndroid.validacion != ValidacionRed.VALIDADA) texto("Internet no está validada. Puedes volver a comprobar o autorizar una excepción local.")
+        boton("Volver al control") { administrar() }
+    }
+    private fun seguridad() {
+        if (!navegacion.abrir(PantallaLocal.SEGURIDAD, sesion.estado() == AutoridadAdulto.ADMINISTRAR)) { consultar(); return }
+        base("Seguridad y configuración")
+        mostrarResumen()
+        boton("Activar protección de la app", !ProteccionAndroid.estado.snapshot) { confirmarBloqueo(FinAdulto.PROTEGER_APP) }
+        boton("Restaurar protección anterior", ProteccionAndroid.estado.snapshot) { confirmarBloqueo(FinAdulto.RESTAURAR_APP) }
+        val modo = try { BloqueoLocalAndroid.modo(this) } catch (_: RuntimeException) { null }
+        val preparar = !ArranquePilotoAndroid.enrolado && !ControlRedAndroid.activo && modo == ModoLocal.NONE
+        val reanudar = ArranquePilotoAndroid.enrolado && ControlRedAndroid.activo && !ControlRedAndroid.listo && ControlRedAndroid.uso == UsoLocal.BLOQUEADO
+        boton(if (reanudar) "Reanudar control local" else "Preparar control local", preparar || reanudar) { confirmarBloqueo(FinAdulto.ARMAR_RED) }
+        texto("Preparar deja el teléfono bloqueado, mantiene el aviso del sistema y exige nueva autorización tras reiniciar.")
+        boton("Cambiar código mediante mi pregunta") { cerrarAutoridad(); sesion.reanudar(); recuperar() }
+        boton("Diagnóstico y recuperación avanzada") { diagnosticoLocal() }
+        boton("Volver al control") { administrar() }
+    }
+    private fun diagnosticoLocal() {
+        if (!navegacion.abrir(PantallaLocal.DIAGNOSTICO, sesion.estado() == AutoridadAdulto.ADMINISTRAR)) { consultar(); return }
+        base("Diagnóstico local")
+        val modo = try { BloqueoLocalAndroid.modo(this) } catch (_: RuntimeException) { null }
+        texto("Lock Task: $modo\nTransición: ${BloqueoLocalAndroid.diagnostico}")
+        texto("Protección: ${ProteccionAndroid.estado}\nArranque: ${ArranquePilotoAndroid.fase}, enrolado=${ArranquePilotoAndroid.enrolado}")
+        texto("Red: ${ControlRedAndroid.validacion}; uso=${ControlRedAndroid.uso}; listo=${ControlRedAndroid.listo}; vencimiento=${ControlRedAndroid.vencimientoUso}")
+        texto("Vinculación y control remoto pausados. Los registros existentes se conservan.")
+        boton("Consultar vínculo guardado · sin conexión") { mostrarEstadoVinculoLocal() }
+        boton("Salida adulta del bloqueo inicial", modo == ModoLocal.LOCKED && !ArranquePilotoAndroid.enrolado) { confirmarBloqueo(FinAdulto.SALIR_ENSAYO) }
+        boton("Desactivar control local y restaurar", ControlRedAndroid.activo) { confirmarBloqueo(FinAdulto.FINALIZAR_RED) }
+        boton("Restaurar configuración de arranque", ArranquePilotoAndroid.enrolado && !ControlRedAndroid.activo) { confirmarBloqueo(FinAdulto.FINALIZAR_BOOT) }
+        texto("La protección usa APIs oficiales. No impide root o un restablecimiento físico. No restringe globalmente la instalación; compatibilidad de actualizaciones pendiente de prueba física.")
+        boton("Volver a Seguridad") { seguridad() }
     }
     private fun confirmarCanalCp2() {
         if (sesion.estado() != AutoridadAdulto.ADMINISTRAR) return
@@ -656,34 +700,43 @@ class AccesoAdultoActivity : ComponentActivity() {
         val offline = fin == FinAdulto.USO_OFFLINE || fin == FinAdulto.USO_TIEMPO_OFFLINE
         val red = temporal || fin in setOf(FinAdulto.ARMAR_RED, FinAdulto.USO_NORMAL, FinAdulto.USO_OFFLINE, FinAdulto.BLOQUEAR_RED, FinAdulto.FINALIZAR_RED)
         base(when (fin) {
-            FinAdulto.ARMAR_RED -> "Armar ensayo RED: notificación visible y boot bloqueado"
-            FinAdulto.USO_NORMAL -> "Uso libre NORMAL LOCAL con internet validada"
-            FinAdulto.USO_OFFLINE -> "Excepción OFFLINE LOCAL explícita"
-            FinAdulto.USO_TIEMPO_NORMAL -> "Permitir por tiempo NORMAL LOCAL"
-            FinAdulto.USO_TIEMPO_OFFLINE -> "Permitir por tiempo: excepción OFFLINE LOCAL"
-            FinAdulto.BLOQUEAR_RED -> "Bloquear ahora: revocar ambos usos"
-            FinAdulto.FINALIZAR_RED -> "Finalizar RED y devolver baseline desarmado"
-            FinAdulto.ARMAR_BOOT -> "Armar reinicio: persistirá al reiniciar"
-            FinAdulto.FINALIZAR_BOOT -> "Finalizar ensayo: desarmar ANTES de restaurar políticas"
-            FinAdulto.PROTEGER_APP -> "Confirmar protección de app — alcance global"
-            FinAdulto.RESTAURAR_APP -> "Restaurar protección al baseline de ensayo"
+            FinAdulto.ARMAR_RED -> "Preparar control local"
+            FinAdulto.USO_NORMAL -> "Permitir libre · normal"
+            FinAdulto.USO_OFFLINE -> "Permitir libre · sin internet"
+            FinAdulto.USO_TIEMPO_NORMAL -> "Permitir por tiempo · normal"
+            FinAdulto.USO_TIEMPO_OFFLINE -> "Permitir por tiempo · sin internet"
+            FinAdulto.BLOQUEAR_RED -> "Bloquear ahora"
+            FinAdulto.FINALIZAR_RED -> "Desactivar control local"
+            FinAdulto.ARMAR_BOOT -> "Preparar bloqueo de arranque"
+            FinAdulto.FINALIZAR_BOOT -> "Restaurar configuración de arranque"
+            FinAdulto.PROTEGER_APP -> "Activar protección de la app"
+            FinAdulto.RESTAURAR_APP -> "Restaurar protección anterior"
             FinAdulto.BLOQUEAR -> "Confirmar bloqueo local"
-            else -> "Confirmar salida reversible de ensayo"
+            else -> "Salida adulta del bloqueo inicial"
         })
-        if (red) texto("Piloto LOCAL: red predeterminada INTERNET+VALIDATED, no DNS/relay. NORMAL pierde autorización tras10.000ms elapsedRealtime desde señal negativa; si vuelve antes cancela gracia, después NO reabre. Excepción OFFLINE LOCAL no se revoca solo por falta de red, ni se crea por recuperación. Reboot invalida ambos. Armar requiere baseline desarmado/LOCAL03 restaurada y crea bootpiloto + FGS visible; FINALIZAR RED cancela referencias/gracia/observador antes desarmar/restaurar. No permiso remoto ni persistencia permanente autorizada. Instalación, notificaciones, armado y cambios de conectividad requieren coordinación física específica.")
+        if (red) texto(when {
+            fin == FinAdulto.ARMAR_RED -> "Activa el aviso visible del sistema y el bloqueo al reiniciar. No concede uso. La primera activación requiere coordinar la prueba presencial."
+            fin == FinAdulto.FINALIZAR_RED -> "Cancela el permiso vigente y restaura la configuración previa del control local. No retira la protección de la app."
+            fin == FinAdulto.BLOQUEAR_RED -> "Cancela el permiso y el tiempo vigente. Volver a internet no desbloquea."
+            offline -> "Excepción local explícita: permite uso sin internet. Reiniciar cancela el permiso."
+            else -> "Requiere internet validada. Perderla durante 10 segundos cancela el permiso; reconectar no desbloquea. Reiniciar también lo cancela."
+        })
         val minutos = if (temporal) {
-            texto("Elige 1–1440 minutos enteros, sin valor predeterminado. Cuenta tiempo transcurrido con pantalla apagada y otras apps; al vencer exige bloqueo sin código. NORMAL puede revocarse antes por red; OFFLINE también vence. Cerrar panel no pausa. Nueva acción válida reemplaza la anterior; no se reanuda tras boot/proceso. Doze/latencia física no garantizados.")
-            campo("Minutos (vacío hasta que el adulto elija)", secreto = false, maximo = 10).apply { inputType = InputType.TYPE_CLASS_NUMBER }
+            texto("Cuenta también con pantalla apagada y en otras apps. Al terminar, se bloquea. Cerrar este panel no pausa el contador.")
+            campo("Minutos · de 1 a 1440", secreto = false, maximo = 10).apply { inputType = InputType.TYPE_CLASS_NUMBER }
         } else null
         val confirmarOffline = if (offline) CheckBox(this).apply {
-            text = getString(R.string.confirmar_offline_local)
-            isChecked = false; columna.addView(this)
+            text = "Autorizo la excepción sin internet"
+            setTextColor(EstiloLocal.tinta); textSize = 17f
+            isChecked = false; isSaveEnabled = false; columna.addView(this)
         } else null
-        if (boot) texto("Piloto enrolado con intención DP durable: reinicio exige bloqueo nuevo, no reanuda tiempo/permiso/sesión. No garantía de cero ventana antes de LOCKED ni supervivencia ante crash. Keyguard/emergencia permanecen. Para volver al baseline usa FINALIZAR ENSAYO con código fresco; salir de administración no desarma. No activar protección LOCAL03 ni reiniciar sin coordinar ensayo específico.")
-        if (proteccion) texto("setUninstallBlocked: solo hijo. DISALLOW_APPS_CONTROL: TODAS las apps del usuario; impide desinstalar/deshabilitar/borrar datos o caché/forzar detención/cambiar valores predeterminados desde Ajustes o launcher. No bloquea todo Ajustes ni establece restricciones de instalación/actualización; compatibilidad de estas pendiente. ADB conserva acceso de laboratorio. Puede persistir tras reboot; no es Lock Task persistente. Cerrar/fondo/recuperar código o salir del quiosco NO retiran protección; restaurar exige otra autenticación.")
-        texto("Requiere código adulto fresco para esta operación. No cambia conectividad ni autoriza ALLOW CP/2. Cancelar/fondo no sale de LOCKED.")
+        if (boot) texto("Cambia la configuración de bloqueo tras reinicio. No reinicies durante esta operación. Emergencia y recuperación permanecen disponibles.")
+        if (proteccion) texto(if (fin == FinAdulto.PROTEGER_APP)
+            "Impide la desinstalación normal del hijo. También restringe borrar datos, deshabilitar y forzar detención de TODAS las apps desde Ajustes. No bloquea toda instalación. Se mantiene al salir y reiniciar; restaurar requiere tu código. Primero coordina la prueba presencial y comprueba emergencia y recuperación."
+            else "Retira nuestra protección y restaura la configuración anterior comprobada. El teléfono puede volver a permitir desinstalar la app; no cambia el permiso de uso.")
+        texto("Confirma con tu código. Cancelar no cambia el permiso anterior.")
         val codigo = campo("Código adulto", codigo = true)
-        boton("Confirmar con mi código") {
+        boton("Confirmar") {
             if (confirmarOffline != null && !confirmarOffline.isChecked) { texto("Confirma la excepción OFFLINE LOCAL antes de autenticar esta operación."); return@boton }
             val eleccion = minutos?.let { MinutosUso.desdeTexto(it.text.toString()) }
             if (temporal && eleccion == null) { texto("Introduce entre 1 y 1440 minutos enteros. No hay duración por defecto."); return@boton }
@@ -698,12 +751,12 @@ class AccesoAdultoActivity : ComponentActivity() {
                         cerrarAutoridad(); sesion.reanudar(); mensajePublico = "Operación no autorizada."; consultar()
                         return@runOnUiThread
                     }
-                    base("Intención aceptada; pendiente de readback — no afirmar aplicado todavía")
+                    base("Comprobando resultado…")
                     if (red) {
                         val resultado = {
                             if (activa && consulta.get() == n) {
                                 cerrarAutoridad(); sesion.reanudar()
-                                mensajePublico = "Resultado red=${ControlRedAndroid.uso}; default=${ControlRedAndroid.validacion}. Permiso solicitado no prueba NONE/LOCKED: consultar readback y diagnóstico."
+                                mensajePublico = resumenActual().let { "${it.estado}. ${it.tiempo}. Si no coincide con lo esperado, entra y actualiza el estado." }
                                 consultar()
                             }
                         }
@@ -711,7 +764,8 @@ class AccesoAdultoActivity : ComponentActivity() {
                             FinAdulto.ARMAR_RED -> {
                                 if (!getSystemService(NotificationManager::class.java).areNotificationsEnabled()) {
                                     if (android.os.Build.VERSION.SDK_INT >= 33) requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 105)
-                                    texto("Se requiere notificación visible; vuelve a autenticar después de autorizar Android. No se ha armado RED.")
+                                    texto("Activa las notificaciones de esta app y vuelve a entrar. El control no se ha preparado.")
+                                    boton("Volver al acceso adulto") { cerrarAutoridad(); sesion.reanudar(); consultar() }
                                     return@runOnUiThread
                                 }
                                 if (ControlRedAndroid.activo) {
@@ -735,7 +789,7 @@ class AccesoAdultoActivity : ComponentActivity() {
                         val resultado = {
                             if (activa && consulta.get() == n) {
                                 cerrarAutoridad(); sesion.reanudar()
-                                mensajePublico = "Piloto reinicio=${ArranquePilotoAndroid.fase}; enrolado=${ArranquePilotoAndroid.enrolado}. Comprueba readback Lock Task; armado persistirá al próximo reboot hasta finalizar ensayo."
+                                mensajePublico = "${resumenActual().estado}. Comprueba la configuración en Seguridad."
                                 consultar()
                             }
                         }
@@ -748,7 +802,7 @@ class AccesoAdultoActivity : ComponentActivity() {
                             { sesion.accionVigente(t) }) resultadoProteccion@{ d ->
                             if (!activa || consulta.get() != n) return@resultadoProteccion
                             cerrarAutoridad(); sesion.reanudar()
-                            mensajePublico = "Protección=${d.fase}/${d.causa}; uninstall/control propio/global/efectivo=${d.lectura}. No es permiso de uso."
+                            mensajePublico = "${resumenActual().proteccion}. Consulta Seguridad para comprobar o restaurar."
                             consultar()
                         }
                         if (!iniciada) { cerrarAutoridad(); sesion.reanudar(); mensajePublico = "Protección ocupada o autoridad caducada."; consultar() }
@@ -758,7 +812,7 @@ class AccesoAdultoActivity : ComponentActivity() {
                         { sesion.accionVigente(t) }) resultadoLock@{ d ->
                         if (!activa || consulta.get() != n) return@resultadoLock
                         cerrarAutoridad(); sesion.reanudar()
-                        mensajePublico = "Resultado=${d.fase}/${d.causa}. ${if (d.fase == FaseLocal.LOCKED) "Bloqueo real leído." else "No es autorización de uso productiva."}"
+                        mensajePublico = if (d.fase == FaseLocal.LOCKED) "Teléfono bloqueado." else "${resumenActual().estado}. Comprueba el estado antes de continuar."
                         consultar()
                     }
                     if (!iniciada) { cerrarAutoridad(); sesion.reanudar(); mensajePublico = "Otra transición en curso o autoridad caducada."; consultar() }
@@ -766,7 +820,7 @@ class AccesoAdultoActivity : ComponentActivity() {
             }
             if (!admitida) { cerrarAutoridad(); sesion.reanudar(); consultar() }
         }
-        boton("Cancelar operación (no desbloquea)") { cerrarAutoridad(); sesion.reanudar(); consultar() }
+        boton("Cancelar y volver al control") { administrar() }
     }
     private fun operar(t: TicketAdulto, accion: (AccesoAdultoLocal) -> ResultadoAdulto) {
         mensajePublico = ""
@@ -780,7 +834,7 @@ class AccesoAdultoActivity : ComponentActivity() {
             }
             alta = null; bootstrap.set(false)
             mensajePublico = when (r.tipo) {
-                TipoAdulto.GUARDADO -> "Cambio guardado con readback. Entra con tu código; no se concede uso."
+                TipoAdulto.GUARDADO -> "Código guardado. Entra con tu nuevo código."
                 TipoAdulto.RECHAZADO, TipoAdulto.ESPERA, TipoAdulto.ERROR ->
                     "No se pudo autorizar la operación. Comprueba los datos o la espera de seguridad."
                 else -> ""
