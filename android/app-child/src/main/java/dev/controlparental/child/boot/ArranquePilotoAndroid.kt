@@ -20,8 +20,6 @@ import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicLong
 import dev.controlparental.child.network.ControlRedAndroid
 
-internal enum class FasePiloto { DESARMADO, ARMADO, PENDIENTE_KEYGUARD, ESPERANDO_ACTIVITY, ESPERANDO_LOCKED, LOCKED, FINALIZANDO, ERROR }
-
 /** Piloto DP, actor separado CP1. Sin servicio/alarma/HOME ni permiso de uso persistido. */
 internal object ArranquePilotoAndroid {
     private val ejecutor = Executors.newSingleThreadExecutor { Thread(it, "arranque-piloto") }
@@ -30,7 +28,7 @@ internal object ArranquePilotoAndroid {
     @Volatile var fase = FasePiloto.DESARMADO; private set
     @Volatile var enrolado = false; private set
     private var receptor: BroadcastReceiver? = null
-    private var lanzamiento: Pair<String, Long>? = null
+    @Volatile private var lanzamiento: Pair<String, Long>? = null
     @Volatile private var intento: Pair<String, Long>? = null
     private fun almacen(c: Context): AlmacenPiloto {
         val dp = c.applicationContext.createDeviceProtectedStorageContext()
@@ -49,6 +47,16 @@ internal object ArranquePilotoAndroid {
                 else if (fase == FasePiloto.DESARMADO) fase = FasePiloto.ARMADO
             } catch (_: Exception) { enrolado = true; fase = FasePiloto.ERROR }
             handler.post(entregar)
+        }
+    }
+    /** Lectura serializada del enrolamiento: null es incertidumbre, no ausencia ni alta nueva. */
+    fun consultarArmado(c: Context, entregar: (Boolean?) -> Unit) {
+        ejecutor.execute {
+            val armado = try {
+                val r = almacen(c).leer(); enrolado = r != null
+                r?.armado == true
+            } catch (_: Exception) { enrolado = true; fase = FasePiloto.ERROR; null }
+            handler.post { entregar(armado) }
         }
     }
     private fun escuchar(c: Context) {
@@ -77,17 +85,18 @@ internal object ArranquePilotoAndroid {
                     fase = FasePiloto.PENDIENTE_KEYGUARD; traza(c, "KEYGUARD", r); return@execute
                 }
                 val ref = r.enrolamiento to r.generacion
-                if (lanzamiento == ref || intento == ref) return@execute
+                if (lanzamiento == ref && fase == FasePiloto.ESPERANDO_ACTIVITY) return@execute
+                if (intentoBloqueoVigente(intento == ref, fase) { BloqueoLocalAndroid.modo(c) }) return@execute
                 lanzamiento = ref; val g = token.incrementAndGet(); fase = FasePiloto.ESPERANDO_ACTIVITY
                 handler.post {
                     if (token.get() != g) return@post
                     try {
                         c.startActivity(Intent(c, LauncherActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP))
-                    } catch (_: RuntimeException) { fase = FasePiloto.ERROR }
+                    } catch (_: RuntimeException) { lanzamiento = null; fase = FasePiloto.ERROR }
                 }
                 handler.postDelayed({
                     if (token.get() == g && fase == FasePiloto.ESPERANDO_ACTIVITY) {
-                        fase = FasePiloto.ERROR; traza(c, "TIMEOUT_ACTIVITY", r)
+                        lanzamiento = null; fase = FasePiloto.ERROR; traza(c, "TIMEOUT_ACTIVITY", r)
                     }
                 }, 5_000)
             } catch (_: Exception) { enrolado = true; fase = FasePiloto.ERROR; traza(c, "ERROR_DP") }
@@ -105,7 +114,8 @@ internal object ArranquePilotoAndroid {
                     escuchar(a); fase = FasePiloto.PENDIENTE_KEYGUARD; return@execute
                 }
                 val ref = r.enrolamiento to r.generacion
-                if (intento == ref) return@execute
+                lanzamiento = null
+                if (intentoBloqueoVigente(intento == ref, fase) { BloqueoLocalAndroid.modo(a) }) return@execute
                 exigirPiloto(m.vigente(r)); intento = ref
                 val g = token.incrementAndGet(); fase = FasePiloto.ESPERANDO_LOCKED; traza(a, "SOLICITAR_LOCKED", r)
                 val revisionControl = ControlRedAndroid.revisionBloqueoCp2()
@@ -120,11 +130,11 @@ internal object ArranquePilotoAndroid {
                             d.causa == CausaLocal.KEYGUARD -> {
                                 intento = null; lanzamiento = null; FasePiloto.PENDIENTE_KEYGUARD
                             }
-                            else -> FasePiloto.ERROR
+                            else -> { intento = null; FasePiloto.ERROR }
                         }
                         traza(a, "READBACK_${d.fase}", r); entregar()
                     }
-                    if (!ok) { fase = FasePiloto.ERROR; entregar() }
+                    if (!ok) { intento = null; fase = FasePiloto.ERROR; entregar() }
                 }
             } catch (_: Exception) { enrolado = true; fase = FasePiloto.ERROR; traza(a, "ERROR_REENTRADA") }
             finally { handler.post(entregar) }
@@ -153,12 +163,9 @@ internal object ArranquePilotoAndroid {
             } catch (_: Exception) { fase = FasePiloto.ERROR; handler.post(entregar) }
         }
     }
-    /** Nueva revocación LOCAL05 invalida un intento anterior; la red reconectada no llama esto. */
+    /** Coalescer señales mientras se aplica; releer modo real después de un intento terminado. */
     fun exigirBloqueo(c: Context) {
-        ejecutor.execute {
-            token.incrementAndGet(); intento = null; lanzamiento = null
-            senal(c, "BLOQUEO_REQUERIDO_LOCAL05")
-        }
+        senal(c, "BLOQUEO_REQUERIDO_LOCAL05")
     }
     fun finalizar(a: Activity, autoridad: () -> Boolean, entregar: () -> Unit) {
         ejecutor.execute {

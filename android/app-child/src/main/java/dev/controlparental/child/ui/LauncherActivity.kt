@@ -150,6 +150,7 @@ class LauncherActivity : ComponentActivity() {
         super.onResume()
         primerPlanoPiloto = true
         abriendoApp = false
+        ControlRedAndroid.recuperarPreparado(applicationContext)
         if (ControlRedAndroid.activo) ControlRedAndroid.senal(applicationContext)
         ArranquePilotoAndroid.actividad(this, { primerPlanoPiloto && !isFinishing && !isDestroyed }) {
             if (primerPlanoPiloto) actualizarResumenLocal()
@@ -179,6 +180,13 @@ class LauncherActivity : ComponentActivity() {
         consultaEstado++ // Descartar respuesta de una pantalla que ya dejó primer plano.
         cerrarRecuperacion()
         super.onPause()
+    }
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        // SINGLE_TOP puede entregar aquí sin nuevo onResume: reevaluar obligación existente.
+        ArranquePilotoAndroid.actividad(this, { primerPlanoPiloto && !isFinishing && !isDestroyed }) {
+            if (primerPlanoPiloto) actualizarResumenLocal()
+        }
     }
 
     private fun consultarRecuperacion(proposito: PropositoRecuperacionLocal? = null, texto: String = "") {

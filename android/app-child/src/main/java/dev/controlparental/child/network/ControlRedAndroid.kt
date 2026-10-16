@@ -36,7 +36,8 @@ internal object ControlRedAndroid {
     private val epoca = AtomicLong()
     private val visible = ObservadorVisible()
     private val servicioFallido = AtomicBoolean()
-    private var modelo: UsoRedLocal? = null
+    private val inicioServicio = AtomicBoolean()
+    @Volatile private var modelo: UsoRedLocal? = null
     private var callback: ConnectivityManager.NetworkCallback? = null
     private var plazos: ProgramadorPlazo? = null
     private var revision = 0L
@@ -81,17 +82,36 @@ internal object ControlRedAndroid {
     }
     fun consultar(c: Context, entregar: () -> Unit) {
         ejecutor.execute {
-            if (modelo == null) {
-                val dp = c.createDeviceProtectedStorageContext()
-                val a = ArchivoSnapshotAndroid(File(dp.noBackupFilesDir, "uso-red-v1.marca"))
-                val b = ArchivoSnapshotAndroid(File(dp.noBackupFilesDir, "uso-red-v1.registro"))
-                try {
-                    activo = a.leer() != null || b.leer() != null
-                    if (activo) modelo = crear(c).also { it.cargar(); publicar(it, "RECUPERACION_BLOQUEADA") }
-                } catch (_: Exception) { activo = true; uso = UsoLocal.ERROR; permiteUsoRAM = false }
-            }
+            cargarSiExiste(c)
             handler.post(entregar)
         }
+    }
+    private fun cargarSiExiste(c: Context) {
+        if (modelo != null) return
+        val dp = c.createDeviceProtectedStorageContext()
+        val a = ArchivoSnapshotAndroid(File(dp.noBackupFilesDir, "uso-red-v1.marca"))
+        val b = ArchivoSnapshotAndroid(File(dp.noBackupFilesDir, "uso-red-v1.registro"))
+        try {
+            activo = a.leer() != null || b.leer() != null
+            if (activo) modelo = crear(c).also { it.cargar(); publicar(it, "RECUPERACION_BLOQUEADA") }
+        } catch (_: Exception) { activo = true; uso = UsoLocal.ERROR; permiteUsoRAM = false }
+    }
+    /** Sólo reanuda una preparación durable previa; nunca crea registros ni restaura ALLOW. */
+    fun recuperarPreparado(c: Context) {
+        ArranquePilotoAndroid.consultarArmado(c) { armado -> ejecutor.execute {
+            cargarSiExiste(c)
+            when (recuperacionControlLocal(activo, modelo?.uso, modelo?.motivoRevocacion, armado, cerrando)) {
+                RecuperacionControlLocal.INACTIVO -> Unit
+                RecuperacionControlLocal.ERROR_CERRADO -> {
+                    permiteUsoRAM = false
+                    if (inicioServicio.compareAndSet(false, true)) ArranquePilotoAndroid.exigirBloqueo(c)
+                }
+                RecuperacionControlLocal.REANUDAR -> if (!listo && inicioServicio.compareAndSet(false, true)) handler.post {
+                    try { c.startForegroundService(Intent(c, ControlRedService::class.java)) }
+                    catch (_: RuntimeException) { servicioTerminado(c) }
+                }
+            }
+        } }
     }
     fun preparar(c: Context, autoridad: () -> Boolean, entregar: () -> Unit) {
         ejecutor.execute {
@@ -128,7 +148,7 @@ internal object ControlRedAndroid {
             caps?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true,
             caps?.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED) == true)
     } catch (_: RuntimeException) { ValidacionRed.DESCONOCIDA }
-    fun confirmarForeground() { servicioFallido.set(false); visible.confirmarForeground() }
+    fun confirmarForeground() { inicioServicio.set(true); servicioFallido.set(false); visible.confirmarForeground() }
     private fun condiciones(c: Context): CondicionesObservador = try {
         val nm = c.getSystemService(NotificationManager::class.java)
         CondicionesObservador(Build.VERSION.SDK_INT >= 34,
@@ -137,9 +157,18 @@ internal object ControlRedAndroid {
             nm.getNotificationChannel("control-red-local")?.importance?.let { it != NotificationManager.IMPORTANCE_NONE } == true)
     } catch (_: RuntimeException) { CondicionesObservador(false, false, false, false) }
     fun observar(c: Context) {
-        ejecutor.execute {
-            if (callback != null || cerrando) return@execute
-            val m = modelo ?: crear(c).also { modelo = it; it.cargar() }
+        ArranquePilotoAndroid.consultarArmado(c) { armado -> ejecutor.execute {
+            if (callback != null) return@execute
+            cargarSiExiste(c)
+            val recuperacion = recuperacionControlLocal(activo, modelo?.uso, modelo?.motivoRevocacion, armado, cerrando)
+            if (recuperacion != RecuperacionControlLocal.REANUDAR) {
+                if (recuperacion == RecuperacionControlLocal.ERROR_CERRADO) ArranquePilotoAndroid.exigirBloqueo(c)
+                else cerrando = true // onDestroy no convierte una desactivación durable en fallo nuevo.
+                cancelar(c)
+                handler.post { c.stopService(Intent(c, ControlRedService::class.java)) }
+                return@execute
+            }
+            val m = modelo ?: return@execute
             val cm = c.getSystemService(ConnectivityManager::class.java)
             val g = epoca.incrementAndGet(); m.iniciarObservador(g)
             val cb = object : ConnectivityManager.NetworkCallback() {
@@ -152,8 +181,10 @@ internal object ControlRedAndroid {
                 listo = visible.vigente(condiciones(c))
                 if (!listo) { servicioTerminado(c); return@execute }
                 evaluar(c, g)
+                // Una carga nueva ya era BLOQUEADO: no esperar una transición ALLOW→LOCK inexistente.
+                if (!m.permiteUso) ArranquePilotoAndroid.exigirBloqueo(c)
             } catch (_: RuntimeException) { servicioTerminado(c) }
-        }
+        } }
     }
     fun senal(c: Context, g: Long = epoca.get()) { ejecutor.execute { evaluar(c, g) } }
     private fun evaluar(c: Context, g: Long) {
@@ -246,20 +277,33 @@ internal object ControlRedAndroid {
             }
         }
     }
-    fun bloquear(c: Context, autoridad: () -> Boolean, entregar: () -> Unit) {
+    fun bloquear(a: Activity, autoridad: () -> Boolean, entregar: () -> Unit) {
         ejecutor.execute {
+            cargarSiExiste(a)
             val m = modelo
-            if (m != null && autoridad()) {
-                if (!asegurarControlCp2(c, autoridad)) { m.bloquear { true }; publicar(m, "CONTROL_INCIERTO"); ArranquePilotoAndroid.exigirBloqueo(c); handler.post(entregar); return@execute }
-                val d = controlCp2?.local(AccionOrdenCp2.LOCK, null, false)
-                if (controlCp2 != null && d == null) { handler.post(entregar); return@execute }
-                permisoControlRef = null
-                m.bloquear { true }; publicar(m, "BLOQUEAR_ADULTO")
-                programar(c, m, epoca.get())
-                if (!m.permiteUso && d == null) ArranquePilotoAndroid.exigirBloqueo(c)
-                d?.let { observarBloqueoCp2(c, it) }; cambioCp2?.invoke()
+            if (m == null || !autoridad()) { handler.post(entregar); return@execute }
+            val disponible = asegurarControlCp2(a, autoridad)
+            val w = controlCp2
+            val d = if (disponible) w?.local(AccionOrdenCp2.LOCK, null, false) else null
+            permisoControlRef = null
+            m.bloquear { true }; publicar(m, "BLOQUEAR_ADULTO")
+            programar(a, m, epoca.get()); cambioCp2?.invoke()
+            val ref = m.referencia
+            fun vigente() = modelo === m && referenciaPublica == ref && !permiteUsoRAM
+            handler.post {
+                val confirmacion = ConfirmacionBloqueoLocal(::vigente,
+                    { try { BloqueoLocalAndroid.modo(a) } catch (_: RuntimeException) { null } },
+                    { ArranquePilotoAndroid.exigirBloqueo(a) }) { aplicado -> ejecutor.execute {
+                        if (d != null && vigente()) w?.confirmar(d.revision, aplicado)
+                        cambioCp2?.invoke(); handler.post(entregar)
+                    } }
+                confirmacion.iniciar { resultado ->
+                    BloqueoLocalAndroid.reentrar(a,
+                        { vigente() && autoridad() && !a.isFinishing && !a.isDestroyed }) { diagnostico ->
+                        resultado(diagnostico.fase == FaseLocal.LOCKED)
+                    }
+                }
             }
-            handler.post(entregar)
         }
     }
     private fun cancelar(c: Context) {
@@ -271,6 +315,7 @@ internal object ControlRedAndroid {
         anterior?.let { try { c.getSystemService(ConnectivityManager::class.java).unregisterNetworkCallback(it) } catch (_: RuntimeException) { uso = UsoLocal.ERROR } }
     }
     fun servicioTerminado(c: Context) {
+        // Un fallo no dispara un bucle de arranque desde HOME. El adulto puede reanudar explícitamente.
         visible.invalidar(); listo = false; permiteUsoRAM = false
         if (servicioFallido.getAndSet(true)) return
         ejecutor.execute {

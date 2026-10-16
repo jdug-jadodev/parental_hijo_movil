@@ -56,9 +56,10 @@ internal class UsoRedLocal(private val marca: ArchivoSnapshotLocal, private val 
     }
     fun cargar(): Boolean = seguro {
         val r = leer(); obligacion = r; referencia = ReferenciaRed(r.generacion, r.boot)
-        uso = UsoLocal.BLOQUEADO; limpiarPlazos(); red = ValidacionRed.DESCONOCIDA
+        uso = if (r.motivo == MotivoRed.CIERRE) UsoLocal.FINALIZANDO else UsoLocal.BLOQUEADO
+        limpiarPlazos(); red = ValidacionRed.DESCONOCIDA
         ultimo = ahora(); require(ultimo >= 0)
-        if (boot() != r.boot) revocar(MotivoRed.BOOT_O_RELOJ)
+        if (uso != UsoLocal.FINALIZANDO && boot() != r.boot) revocar(MotivoRed.BOOT_O_RELOJ)
     }
     private fun leer(): ObligacionRed {
         val m = marca.leer() ?: error("Marca ausente")

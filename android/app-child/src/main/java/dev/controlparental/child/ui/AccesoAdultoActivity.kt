@@ -779,7 +779,7 @@ class AccesoAdultoActivity : ComponentActivity() {
                             FinAdulto.USO_NORMAL, FinAdulto.USO_OFFLINE, FinAdulto.USO_TIEMPO_NORMAL, FinAdulto.USO_TIEMPO_OFFLINE ->
                                 ControlRedAndroid.permitir(this, if (offline) UsoLocal.EXCEPCION_OFFLINE else UsoLocal.NORMAL,
                                     { sesion.accionVigente(t) }, resultado, eleccion, referenciaConfirmada)
-                            FinAdulto.BLOQUEAR_RED -> ControlRedAndroid.bloquear(applicationContext, { sesion.accionVigente(t) }, resultado)
+                            FinAdulto.BLOQUEAR_RED -> ControlRedAndroid.bloquear(this, { sesion.accionVigente(t) }, resultado)
                             FinAdulto.FINALIZAR_RED -> ControlRedAndroid.finalizar(this, { sesion.accionVigente(t) }, resultado)
                             else -> Unit
                         }

@@ -15,7 +15,7 @@ import android.os.Build
 import android.os.IBinder
 import dev.controlparental.child.ui.LauncherActivity
 
-/** systemExempted por Device Owner real, observación visible, no sticky/wakelock ni tráfico. */
+/** systemExempted por Owner real. Recreación sticky sólo recupera obligación, nunca permiso. */
 class ControlRedService : Service() {
     private var registrado = false
     private val desbloqueo = object : BroadcastReceiver() {
@@ -47,7 +47,9 @@ class ControlRedService : Service() {
             stopSelf()
         }
     }
-    override fun onStartCommand(i: Intent?, flags: Int, startId: Int) = START_NOT_STICKY
+    // Android puede entregar intent null tras recrear: la autoridad procede del registro local.
+    // El plazo de recreación lo decide Android; no implica disponibilidad ininterrumpida.
+    override fun onStartCommand(i: Intent?, flags: Int, startId: Int) = START_STICKY
     override fun onBind(i: Intent?): IBinder? = null
     override fun onDestroy() {
         if (registrado) unregisterReceiver(desbloqueo)

@@ -1,5 +1,14 @@
 # Relevo — HIJO-UI-LOCAL01
 
+**CONTINUACIÓN ACTUAL:** el propietario pidió resolver LOCAL-PROCESO01 y anuló el
+cierre. Corrección de servicio/reentrada/bloqueo adulto preparada; 170 pruebas JVM
+sin fallos, buildDebug/lintRelease correctos (0 errores/27 avisos). Candidato
+SHA256 `56739f579540f214b14292f3ab08a0f1db87b2fe6cf2f5b4d6697a59e493e235` NO instalado.
+Último A13 verificado sigue e097e002…33bce5/NONE, fallo físico abierto. Pedir permiso
+nuevo para actualización conservadora y bloqueo manual; luego coordinar muerte de
+proceso y medir recuperación. Detalles/rutas en la sección inicial de
+`EVIDENCIA_HIJO_LOCAL_PROCESO01.md`. El cierre/push del párrafo siguiente es histórico.
+
 **FALLO MÁS RECIENTE, NO RESUELTO:** `pruebas/EVIDENCIA_HIJO_LOCAL_PROCESO01.md`.
 Reinicio permitidoportiempo→bloqueado reportado por propietario. Después, prueba
 autorizada de UNA muerte real de proceso: ausente/LockTaskNONE13,793s. Abrir hijo

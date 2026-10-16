@@ -6,7 +6,8 @@ posterior muestra «Estado por comprobar» y «Bloquear ahora» no quedó aplica
 La protección antidesinstalación sigue activa, pero **no confiar actualmente en
 el bloqueo por tiempo como garantía para uso sin supervisión**. No borrar datos
 ni retirar protección para intentar arreglarlo. Ver `EVIDENCIA_HIJO_LOCAL_PROCESO01.md`.
-La investigación quedó pausada por petición de push y cierre del propietario.
+La investigación se retomó a petición del propietario. Hay una corrección con
+pruebas locales aprobadas, todavía pendiente de instalar y comprobar en el A13.
 
 Última comprobación adicional: el propietario informó bloqueo correcto al
 probar sin internet y desinstalación normal impedida. Aceptó esas pruebas locales.
