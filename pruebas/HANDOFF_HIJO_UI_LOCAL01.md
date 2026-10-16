@@ -1,5 +1,16 @@
 # Relevo — HIJO-UI-LOCAL01
 
+**FALLO MÁS RECIENTE, NO RESUELTO:** `pruebas/EVIDENCIA_HIJO_LOCAL_PROCESO01.md`.
+Reinicio permitidoportiempo→bloqueado reportado por propietario. Después, prueba
+autorizada de UNA muerte real de proceso: ausente/LockTaskNONE13,793s. Abrir hijo
+no recuperóLOCKED; bloqueo manual tampoco acreditado, usuario confirma «Estado
+por comprobar» y puede cerrarapp/seguirusando. Última lecturaNONE/procesopresente,
+protecciónOwner sin cambios. No datos borrados ni protección retirada. Código
+START_NOT_STICKY conocido; causa completa del fallo manual pendiente. Usuario
+pidió **«haz push y cerramos ya»**: detener sin investigar más, commit/push repoHIJO
+únicamente. No repetir pruebas ni declarar listo para entregar. Detalles/permiso
+de nuevo ensayo deberán coordinarse luego. Estados exitosos inferiores históricos.
+
 ÚLTIMA RONDA: `pruebas/EVIDENCIA_HIJO_LOCAL_VALID01.md`. Propietario reportó que
 probó sininternet→bloqueo y desinstalaciónnormalimpedida, y dio por exitosa esa
 prueba. Ronda cerrada PARCIAL; no certificaciónfinal. LecturasADB autorizadas

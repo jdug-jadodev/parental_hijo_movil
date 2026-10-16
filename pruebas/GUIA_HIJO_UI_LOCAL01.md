@@ -1,5 +1,13 @@
 # Control local — guía breve del APK nuevo
 
+**Fallo pendiente encontrado después:** al terminar el proceso del hijo en una
+prueba autorizada con otraapp abierta, no volvió al bloqueo. La recuperación
+posterior muestra «Estado por comprobar» y «Bloquear ahora» no quedó aplicado.
+La protección antidesinstalación sigue activa, pero **no confiar actualmente en
+el bloqueo por tiempo como garantía para uso sin supervisión**. No borrar datos
+ni retirar protección para intentar arreglarlo. Ver `EVIDENCIA_HIJO_LOCAL_PROCESO01.md`.
+La investigación quedó pausada por petición de push y cierre del propietario.
+
 Última comprobación adicional: el propietario informó bloqueo correcto al
 probar sin internet y desinstalación normal impedida. Aceptó esas pruebas locales.
 Evidencia `EVIDENCIA_HIJO_LOCAL_VALID01.md`: no sustituye los casos todavía
