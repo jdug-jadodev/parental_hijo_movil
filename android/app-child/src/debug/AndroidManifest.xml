@@ -9,12 +9,8 @@
         <service android:name=".prototype.ServicioTemporal" android:exported="false"
             android:foregroundServiceType="systemExempted" />
         <activity android:name=".prototype.PrototipoBloqueoActivity"
-            android:exported="true" android:label="Prototipo reversible (DEBUG)" android:lockTaskMode="normal">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:exported="true" android:label="Prototipo reversible (DEBUG)" android:lockTaskMode="normal" />
+        <!-- Conserva acceso explícito de laboratorio; sin segundo icono que confunda con MAIN. -->
         <receiver android:name=".prototype.RollbackPrototipo" android:exported="true"
             android:permission="android.permission.DUMP" />
         <receiver android:name=".local.RollbackLocalDebug" android:exported="true"

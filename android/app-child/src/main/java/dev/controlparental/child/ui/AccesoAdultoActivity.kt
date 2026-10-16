@@ -92,7 +92,7 @@ class AccesoAdultoActivity : ComponentActivity() {
     private fun resumenActual(): ResumenLocal = presentarEstadoLocal(
         try { BloqueoLocalAndroid.modo(this) } catch (_: RuntimeException) { null },
         ControlRedAndroid.uso, ControlRedAndroid.permiteUsoRAM, ControlRedAndroid.vencimientoUso,
-        SystemClock.elapsedRealtime(), ProteccionAndroid.estado)
+        SystemClock.elapsedRealtime(), ProteccionAndroid.estado, ControlRedAndroid.deadline)
     private val trabajoOferta = Executors.newSingleThreadExecutor { Thread(it, "oferta-local") }
     private val caducidad = object : Runnable {
         override fun run() {

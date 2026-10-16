@@ -37,7 +37,6 @@ import dev.controlparental.child.R
 import dev.controlparental.child.admin.DeviceCapabilities
 import dev.controlparental.child.admin.PolicyEnforcer
 import dev.controlparental.child.domain.DiagnosticoAdministracion
-import dev.controlparental.child.domain.EstadoPreparacion
 import dev.controlparental.child.domain.ResultadoAccesoEmergencia
 import dev.controlparental.child.emergency.EmergencyAccess
 import dev.controlparental.child.boot.BootContextRepository
@@ -66,14 +65,52 @@ class LauncherActivity : ComponentActivity() {
     private var recuperacionVisible by mutableStateOf(false)
     private var recuperacion by mutableStateOf(EstadoPantallaRecuperacion())
     private val consultaRecuperacion = AtomicInteger()
-    private var bloqueadoLocal by mutableStateOf(false)
     @Volatile private var primerPlanoPiloto = false
     private var resumenLocal by mutableStateOf(ResumenLocal("Comprobando estado…", "", "", "Protección por comprobar"))
+    private var appsVisibles by mutableStateOf(false)
+    private var apps by mutableStateOf<List<Pair<String, android.content.ComponentName>>>(emptyList())
+    private var appsPermitidas by mutableStateOf(false)
+    private var avisoApps by mutableStateOf("")
+    private var abriendoApp = false
+    private fun permisoAppsActual(): Boolean = primerPlanoPiloto && puedeAbrirApps(
+        try { BloqueoLocalAndroid.modo(this) } catch (_: RuntimeException) { null },
+        ControlRedAndroid.uso, ControlRedAndroid.permiteUsoRAM, ControlRedAndroid.listo,
+        ControlRedAndroid.vencimientoUso, ControlRedAndroid.deadline, SystemClock.elapsedRealtime())
+    private fun mostrarApps() {
+        if (!permisoAppsActual()) { actualizarResumenLocal(); return }
+        appsVisibles = true; avisoApps = ""
+        val consulta = ++consultaApps
+        EjecutorEstado.ejecutar {
+            val lista = try {
+                packageManager.queryIntentActivities(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER), 0)
+                    .filter { it.activityInfo.packageName != packageName && it.activityInfo.exported && it.activityInfo.enabled }
+                    .map { it.loadLabel(packageManager).toString() to android.content.ComponentName(it.activityInfo.packageName, it.activityInfo.name) }
+                    .distinctBy { it.second }.sortedBy { it.first.lowercase(java.util.Locale.ROOT) }
+            } catch (_: RuntimeException) { emptyList() }
+            runOnUiThread {
+                if (consultaApps == consulta && appsVisibles && permisoAppsActual()) {
+                    apps = lista
+                    if (lista.isEmpty()) avisoApps = "No se pudieron mostrar aplicaciones. Vuelve a intentarlo."
+                }
+            }
+        }
+    }
+    private var consultaApps = 0
+    private fun abrirApp(componente: android.content.ComponentName) {
+        if (abriendoApp || !permisoAppsActual() || apps.none { it.second == componente }) { actualizarResumenLocal(); return }
+        abriendoApp = true
+        try {
+            startActivity(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER).setComponent(componente)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED))
+        } catch (_: RuntimeException) { abriendoApp = false; avisoApps = "No se pudo abrir. Prueba otra aplicación." }
+    }
     private fun actualizarResumenLocal() {
         resumenLocal = presentarEstadoLocal(
             try { BloqueoLocalAndroid.modo(this) } catch (_: RuntimeException) { null },
             ControlRedAndroid.uso, ControlRedAndroid.permiteUsoRAM, ControlRedAndroid.vencimientoUso,
-            SystemClock.elapsedRealtime(), ProteccionAndroid.estado)
+            SystemClock.elapsedRealtime(), ProteccionAndroid.estado, ControlRedAndroid.deadline)
+        appsPermitidas = permisoAppsActual()
+        if (!appsPermitidas) { appsVisibles = false; apps = emptyList(); consultaApps++ }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -89,6 +126,9 @@ class LauncherActivity : ComponentActivity() {
                 }
                 PantallaInicial(diagnostico, resultadoEmergencia, estadoComprobado,
                     resumenLocal,
+                    appsPermitidas, appsVisibles, apps, avisoApps,
+                    mostrarApps = ::mostrarApps, abrirApp = ::abrirApp,
+                    cerrarApps = { appsVisibles = false; apps = emptyList(); consultaApps++ },
                     recuperacionVisible, recuperacion,
                     solicitarEmergencia = {
                         cerrarRecuperacion()
@@ -109,11 +149,11 @@ class LauncherActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         primerPlanoPiloto = true
+        abriendoApp = false
         if (ControlRedAndroid.activo) ControlRedAndroid.senal(applicationContext)
         ArranquePilotoAndroid.actividad(this, { primerPlanoPiloto && !isFinishing && !isDestroyed }) {
-            bloqueadoLocal = try { BloqueoLocalAndroid.modo(this) == ModoLocal.LOCKED } catch (_: RuntimeException) { false }
+            if (primerPlanoPiloto) actualizarResumenLocal()
         }
-        bloqueadoLocal = try { BloqueoLocalAndroid.modo(this) == ModoLocal.LOCKED } catch (_: RuntimeException) { false }
         diagnostico = DeviceCapabilities(this).leerAdministracion()
         ProteccionAndroid.consultar(applicationContext) { if (primerPlanoPiloto) actualizarResumenLocal() }
         actualizarResumenLocal()
@@ -135,6 +175,7 @@ class LauncherActivity : ComponentActivity() {
 
     override fun onPause() {
         primerPlanoPiloto = false
+        consultaApps++; appsVisibles = false; apps = emptyList()
         consultaEstado++ // Descartar respuesta de una pantalla que ya dejó primer plano.
         cerrarRecuperacion()
         super.onPause()
@@ -170,6 +211,13 @@ private fun PantallaInicial(
     resultadoEmergencia: ResultadoAccesoEmergencia?,
     estadoComprobado: Boolean?,
     resumen: ResumenLocal,
+    appsPermitidas: Boolean,
+    appsVisibles: Boolean,
+    apps: List<Pair<String, android.content.ComponentName>>,
+    avisoApps: String,
+    mostrarApps: () -> Unit,
+    abrirApp: (android.content.ComponentName) -> Unit,
+    cerrarApps: () -> Unit,
     recuperacionVisible: Boolean,
     recuperacion: EstadoPantallaRecuperacion,
     solicitarEmergencia: () -> Unit,
@@ -203,6 +251,15 @@ private fun PantallaInicial(
                 Text("Acceso adulto", modifier = Modifier.padding(10.dp))
             }
             AccesoEmergenciaSistema(resultadoEmergencia, solicitarEmergencia)
+            if (appsPermitidas) {
+                if (!appsVisibles) Button(onClick = mostrarApps, modifier = Modifier.fillMaxWidth()) {
+                    Text("Mis aplicaciones", modifier = Modifier.padding(10.dp))
+                } else {
+                    OutlinedButton(onClick = cerrarApps, modifier = Modifier.fillMaxWidth()) { Text("Volver al inicio") }
+                    if (avisoApps.isNotEmpty()) Text(avisoApps)
+                    for ((nombre, componente) in apps) OutlinedButton(onClick = { abrirApp(componente) }, modifier = Modifier.fillMaxWidth()) { Text(nombre) }
+                }
+            }
             OutlinedButton(onClick = { detalles = !detalles }, modifier = Modifier.fillMaxWidth()) { Text("Ayuda y recuperación") }
             if (detalles || recuperacionVisible) {
                 Text("¿Olvidaste el código? Entra en Acceso adulto y toca «Olvidé mi código».")

@@ -13,6 +13,13 @@
     <!-- Peligroso/runtime, solo tras intención adulta explícita; negar cierra recepción. -->
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <!-- Visibilidad limitada al cajón de aplicaciones, sin historial ni QUERY_ALL_PACKAGES. -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+    </queries>
     <application
         android:allowBackup="false"
         android:usesCleartextTraffic="false"

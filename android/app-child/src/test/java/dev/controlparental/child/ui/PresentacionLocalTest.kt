@@ -33,7 +33,8 @@ class PresentacionLocalTest {
         assertEquals("Normal · requiere internet", resumen().modalidad)
         assertEquals("Excepción sin internet", resumen(uso = UsoLocal.EXCEPCION_OFFLINE).modalidad)
         assertEquals("Sin permiso de uso", resumen(permiso = false, uso = UsoLocal.EXCEPCION_OFFLINE).modalidad)
-        assertEquals("Permiso por comprobar", resumen(uso = UsoLocal.ERROR).modalidad)
+        assertEquals("Sin permiso de uso", resumen(uso = UsoLocal.ERROR).modalidad)
+        assertEquals("Estado por comprobar", presentarEstadoLocal(ModoLocal.NONE, UsoLocal.NORMAL, true, null, 100, pendiente, 100).estado)
     }
     @Test fun ownerOSnapshotNoSignificanProteccionActiva() {
         assertEquals("Protección pendiente", resumen().proteccion)
@@ -83,5 +84,17 @@ class PresentacionLocalTest {
         assertEquals(1, acciones)
         assertTrue(g.ejecutar(g.revision, true) { acciones++ })
         assertEquals(2, acciones)
+    }
+    @Test fun cajonAppsExigePermisoRealYNuncaPausaTiempoOEludeGracia() {
+        fun abrir(modo: ModoLocal? = ModoLocal.NONE, uso: UsoLocal = UsoLocal.NORMAL,
+            permiso: Boolean = true, listo: Boolean = true, vence: Long? = 100, gracia: Long? = null, n: Long = 99) =
+            puedeAbrirApps(modo, uso, permiso, listo, vence, gracia, n)
+        assertTrue(abrir()); assertFalse(abrir(n = 100)); assertFalse(abrir(gracia = 99))
+        assertTrue(abrir(uso = UsoLocal.EXCEPCION_OFFLINE, gracia = 99))
+        assertFalse(abrir(uso = UsoLocal.EXCEPCION_OFFLINE, n = 100))
+        assertFalse(abrir(permiso = false)); assertFalse(abrir(listo = false))
+        for (modo in listOf(null, ModoLocal.LOCKED, ModoLocal.PINNED)) assertFalse(abrir(modo = modo))
+        assertFalse(abrir(uso = UsoLocal.ERROR)); assertFalse(abrir(uso = UsoLocal.BLOQUEADO))
+        assertTrue(abrir(vence = null, n = Long.MAX_VALUE - 1))
     }
 }

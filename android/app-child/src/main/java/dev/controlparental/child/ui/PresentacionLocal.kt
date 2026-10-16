@@ -7,9 +7,17 @@ import dev.controlparental.child.protection.FaseProteccion
 
 /** Presentación solamente: nunca concede uso ni sustituye la lectura del sistema. */
 internal data class ResumenLocal(val estado: String, val tiempo: String, val modalidad: String, val proteccion: String)
+internal fun puedeAbrirApps(modo: ModoLocal?, uso: UsoLocal, permiso: Boolean, listo: Boolean,
+    vencimiento: Long?, graciaRed: Long?, ahora: Long): Boolean = modo == ModoLocal.NONE && permiso && listo &&
+    uso in setOf(UsoLocal.NORMAL, UsoLocal.EXCEPCION_OFFLINE) &&
+    (vencimiento == null || ahora < vencimiento) &&
+    (uso != UsoLocal.NORMAL || graciaRed == null || ahora < graciaRed)
+
 internal fun presentarEstadoLocal(modo: ModoLocal?, uso: UsoLocal, permiso: Boolean, vencimiento: Long?,
-    ahora: Long, proteccion: EstadoProteccion): ResumenLocal {
-    val vigente = permiso && (vencimiento == null || ahora < vencimiento)
+    ahora: Long, proteccion: EstadoProteccion, graciaRed: Long? = null): ResumenLocal {
+    val vigente = permiso && uso in setOf(UsoLocal.NORMAL, UsoLocal.EXCEPCION_OFFLINE) &&
+        (vencimiento == null || ahora < vencimiento) &&
+        (uso != UsoLocal.NORMAL || graciaRed == null || ahora < graciaRed)
     val estado = when {
         modo == ModoLocal.LOCKED -> "Bloqueado"
         modo == ModoLocal.NONE && vigente -> "Permitido"
